@@ -561,26 +561,22 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
     text_attn_size = attention_states[0].get_shape()[2].value
     speech_attn_length = attention_states[1].get_shape()[1].value
     speech_attn_size = attention_states[1].get_shape()[2].value
-    assert text_attn_size == speech_attn_size
-    
+    assert text_attn_size == speech_attn_size # == hidden_size
+    hidden_size = text_attn_size
+    text_attention_vec_size = text_attn_size  # Size of query vectors for attention.
+   
     if not attention_vec_size:
-      attn_vec_size = {}
-      attn_vec_size['text'] = text_attention_vec_size
-      attn_vec_size['speech'] = speech_attention_vec_size
-      text_attention_vec_size = text_attn_size  # Size of query vectors for attention.
-      speech_attention_vec_size = speech_attn_size  # Size of query vectors for attention.
-      attn_size = text_attn_size
+      speech_attention_vec_size = hidden_size  # Size of query vectors for attention.
     else:
-      attn_vec_size = {}
-      attn_vec_size['text'] = attention_vec_size
-      attn_vec_size['speech'] = attention_vec_size
-      text_attention_vec_size = attention_vec_size  # Size of query vectors for attention.
       speech_attention_vec_size = attention_vec_size  # Size of query vectors for attention.
-      attn_size = attention_vec_size
+
+    attn_vec_size = {}
+    attn_vec_size['text'] = text_attention_vec_size
+    attn_vec_size['speech'] = speech_attention_vec_size
     
     batch_size = array_ops.shape(decoder_inputs[0])[0]  # Needed for reshaping.
     # text and speech for each of the following
-    print("attn_size", attn_size)
+    print("hidden_size", hidden_size)
     print("attn_states", [x.get_shape() for x in attention_states])
 
     # To calculate W1 * h_t we use a 1-by-1 convolution, need to reshape before.
@@ -588,7 +584,6 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
     text_k = variable_scope.get_variable("AttnW_text", [1, 1, text_attn_size, text_attention_vec_size])
     text_hidden_features = nn_ops.conv2d(text_hidden, text_k, [1, 1, 1, 1], "SAME")
     text_v = variable_scope.get_variable("AttnV_text", [text_attention_vec_size])
-    print(text_v.get_shape())
 
     speech_hidden = array_ops.reshape(attention_states[1], [-1, speech_attn_length, 1, speech_attn_size])
     speech_k = variable_scope.get_variable("AttnW_speech", [1, 1, speech_attn_size, speech_attention_vec_size])
@@ -628,24 +623,27 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
           # Attention mask is a softmax of v^T * tanh(...).
           s = math_ops.reduce_sum(v[branch] * math_ops.tanh(hidden_features[branch] + y), [2, 3])
           a = nn_ops.softmax(s)
+          print('attention query: s', s.get_shape())
+          print('attention query: a', a.get_shape())
           # Now calculate the attention-weighted vector d.
           d = math_ops.reduce_sum(array_ops.reshape(a, [-1, attn_length[branch], 1, 1]) * hidden[branch], [1, 2])
-          ds.append(array_ops.reshape(d, [-1, attn_size]))
+          print('attention query: d', d.get_shape())
+          #ds.append(array_ops.reshape(d, [-1, attn_size]))
+          ds.append(array_ops.reshape(d, [-1, hidden_size]))
       return ds
 
 
     outputs = []
     prev = None
-    batch_attn_size = array_ops.pack([batch_size, attn_size]) 
-    #print(batch_attn_size.get_shape())
-    # attn_size*2 to account for both encoders!!!
+    batch_attn_size = array_ops.pack([batch_size, hidden_size]) 
+    # range(2) to account for both encoders!!!
     attns = [array_ops.zeros(batch_attn_size, dtype=dtype) for _ in range(2)]
     #print(attns[0].get_shape())
     for a in attns:  # Ensure the second shape of attention vectors is set.
-      a.set_shape([None, attn_size])
+      a.set_shape([None, hidden_size])
     if initial_state_attention:
       attns = attention(initial_state[0], 'text') + attention(initial_state[1], 'speech')
-      print("initial_state_attn case", [x.get_shape() for x in attns])
+      #print("initial_state_attn case", [x.get_shape() for x in attns])
     for i, inp in enumerate(decoder_inputs):
       if i > 0:
         variable_scope.get_variable_scope().reuse_variables()
@@ -662,14 +660,17 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
       x = linear([inp] + attns, input_size, True)
       # Run the RNN.
       cell_output, state = cell(x, state)
+      #print("x = linear([inp] + attns, input_size, True), dim:", x.get_shape())
       # Run the attention mechanism.
       if i == 0 and initial_state_attention:
         with variable_scope.variable_scope(variable_scope.get_variable_scope(),reuse=True):
-          attns = attention(state, 'text') + attention(state, 'speech')
-          print("i==0 case; ", [x.get_shape() for x in attns])
+          #attns = attention(state, 'text') + attention(state, 'speech')
+          attns = attention(cell_output, 'text') + attention(cell_output, 'speech')
+          #print("i==0 case; ", [x.get_shape() for x in attns])
       else:
-        attns = attention(state, 'text') + attention(state, 'speech')
-        print("i!=0 case; ", [x.get_shape() for x in attns])
+        #attns = attention(state, 'text') + attention(state, 'speech')
+        attns = attention(cell_output, 'text') + attention(cell_output, 'speech')
+        #print("i!=0 case; ", [x.get_shape() for x in attns])
         #attns = attention(state)
 
       with variable_scope.variable_scope("AttnOutputProjection"):
