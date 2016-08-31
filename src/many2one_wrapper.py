@@ -30,7 +30,7 @@ import tensorflow as tf
 import data_utils
 import many2one_seq2seq
 
-spscale = 20
+spscale = 5 
 mfcc_num = 13
 #attn_vec_size = None # i.e. = hidden_size
 attn_vec_size = 64

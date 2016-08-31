@@ -227,7 +227,7 @@ def train():
           previous_losses.append(loss)
           # Save checkpoint and zero timer and loss.
           checkpoint_path = os.path.join(FLAGS.train_dir, "parse_nn_small.ckpt")
-          model.saver.save(sess, checkpoint_path, global_step=model.global_step)
+          model.saver.save(sess, checkpoint_path, global_step=model.global_step, write_meta_graph=False)
           step_time, loss = 0.0, 0.0
           
           # Run evals on development set and print their perplexity.
