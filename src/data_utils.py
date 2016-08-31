@@ -42,7 +42,7 @@ PAD_ID = 0
 GO_ID = 1
 EOS_ID = 2
 UNK_ID = 3
-UNF_ID = 4
+UNF_ID = 4  # UNF for unfinished word
 
 # Regular expressions used to tokenize.
 _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
