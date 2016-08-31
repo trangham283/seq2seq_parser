@@ -121,7 +121,7 @@ def initialize_vocabulary(vocabulary_path):
     dog
     cat
   will result in a vocabulary {"dog": 0, "cat": 1}, and this function will
-  also return the reversed-vocabulary ["dog", "cat"].
+  also retur# Unfinished words
 
   Args:
     vocabulary_path: path to the file containing the vocabulary.
