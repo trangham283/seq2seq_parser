@@ -16,7 +16,8 @@ cd /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/
 TRAIN_DIR="/home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-0801"
 
 # using default parameters
-python parse_nn_swbd.py --data_dir ${DATA_DIR} \
+LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python parse_nn_swbd.py \
+    --data_dir ${DATA_DIR} \
     --train_dir ${TRAIN_DIR} \
     --attention \
     --steps_per_checkpoint=250 \

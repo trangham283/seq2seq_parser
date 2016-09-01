@@ -576,8 +576,8 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
     
     batch_size = array_ops.shape(decoder_inputs[0])[0]  # Needed for reshaping.
     # text and speech for each of the following
-    print("hidden_size", hidden_size)
-    print("attn_states", [x.get_shape() for x in attention_states])
+    #print("hidden_size", hidden_size)
+    #print("attn_states", [x.get_shape() for x in attention_states])
 
     # To calculate W1 * h_t we use a 1-by-1 convolution, need to reshape before.
     text_hidden = array_ops.reshape(attention_states[0], [-1, text_attn_length, 1, text_attn_size])
@@ -616,18 +616,18 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
       with variable_scope.variable_scope("Attention_%s" % branch):
           y = linear(query, attn_vec_size[branch], True)
           y = array_ops.reshape(y, [-1, 1, 1, attn_vec_size[branch]])
-          print("attention query: y", y.get_shape())
-          print("attention query: v", v[branch].get_shape())
-          print("attention query: hidden", hidden[branch].get_shape())
-          print("attention query: hidden_features", hidden_features[branch].get_shape())
+          #print("attention query: y", y.get_shape())
+          #print("attention query: v", v[branch].get_shape())
+          #print("attention query: hidden", hidden[branch].get_shape())
+          #print("attention query: hidden_features", hidden_features[branch].get_shape())
           # Attention mask is a softmax of v^T * tanh(...).
           s = math_ops.reduce_sum(v[branch] * math_ops.tanh(hidden_features[branch] + y), [2, 3])
           a = nn_ops.softmax(s)
-          print('attention query: s', s.get_shape())
-          print('attention query: a', a.get_shape())
+          #print('attention query: s', s.get_shape())
+          #print('attention query: a', a.get_shape())
           # Now calculate the attention-weighted vector d.
           d = math_ops.reduce_sum(array_ops.reshape(a, [-1, attn_length[branch], 1, 1]) * hidden[branch], [1, 2])
-          print('attention query: d', d.get_shape())
+          #print('attention query: d', d.get_shape())
           #ds.append(array_ops.reshape(d, [-1, attn_size]))
           ds.append(array_ops.reshape(d, [-1, hidden_size]))
       return ds

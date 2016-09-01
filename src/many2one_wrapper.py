@@ -25,11 +25,12 @@ import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-# from tensorflow.models.rnn.translate import data_utils
-# ttmt update: use data_utils specific to my data
 import data_utils
 import many2one_seq2seq
 
+
+# Hard-coded these in for now; 
+# TODO: incorporate these parameters in model call/init
 spscale = 5 
 mfcc_num = 13
 #attn_vec_size = None # i.e. = hidden_size
@@ -305,31 +306,36 @@ class manySeq2SeqModel(object):
     """Get a random batch of data from the specified bucket, prepare for step.
     """
     encoder_size, decoder_size = self.buckets[bucket_id]
-    encoder_inputs, decoder_inputs = [], []
+    text_encoder_inputs, speech_encoder_inputs, decoder_inputs = [], [], []
 
     # Get a random batch of encoder and decoder inputs from data,
     # pad them if needed, reverse encoder inputs and add GO to decoder.
     for _ in xrange(this_batch_size):
-      encoder_input, decoder_input = random.choice(bucketed_data)
+      text_encoder_input, decoder_input, speech_encoder_input = random.choice(bucketed_data)
 
       # Encoder inputs are padded and then reversed.
-      encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
-      encoder_inputs.append(list(reversed(encoder_input + encoder_pad)))
-
+      encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(text_encoder_input))
+      text_encoder_inputs.append(list(reversed(text_encoder_input + encoder_pad)))
+      speech_encoder_inputs.append(speech_encoder_input.T)
+      
       # Decoder inputs get an extra "GO" symbol, and are padded then.
       decoder_pad_size = decoder_size - len(decoder_input) - 1
       decoder_inputs.append([data_utils.GO_ID] + decoder_input +
                             [data_utils.PAD_ID] * decoder_pad_size)
 
     # Now we create batch-major vectors from the data selected above.
-    batch_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], []
+    batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], [], []
 
     # Batch encoder inputs are just re-indexed encoder_inputs.
     for length_idx in xrange(encoder_size):
-      batch_encoder_inputs.append(
-          np.array([encoder_inputs[batch_idx][length_idx]
+      batch_text_encoder_inputs.append(
+          np.array([text_encoder_inputs[batch_idx][length_idx]
                     for batch_idx in xrange(this_batch_size)], dtype=np.int32))
 
+    for length_idx in xrange(encoder_size * spscale):
+      batch_speech_encoder_inputs.append([speech_encoder_inputs[batch_idx][length_idx, :] 
+              for batch_idx in xrange(this_batch_size)])
+      
     # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
     for length_idx in xrange(decoder_size):
       batch_decoder_inputs.append(
@@ -346,5 +352,5 @@ class manySeq2SeqModel(object):
         if length_idx == decoder_size - 1 or target == data_utils.PAD_ID:
           batch_weight[batch_idx] = 0.0
       batch_weights.append(batch_weight)
-    return batch_encoder_inputs, batch_decoder_inputs, batch_weights
+    return batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_decoder_inputs, batch_weights
 
