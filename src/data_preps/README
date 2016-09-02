@@ -1,0 +1,7 @@
+Various scripts to preprocess data:
+- create vocabulary
+- convert tokens to ids
+- average mfccs
+- partition data into buckets
+
+
