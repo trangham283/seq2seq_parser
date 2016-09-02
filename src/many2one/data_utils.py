@@ -42,7 +42,7 @@ PAD_ID = 0
 GO_ID = 1
 EOS_ID = 2
 UNK_ID = 3
-UNF_ID = 4  # UNF for unfinished word
+UNF_ID = 4
 
 # Regular expressions used to tokenize.
 _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
@@ -121,7 +121,7 @@ def initialize_vocabulary(vocabulary_path):
     dog
     cat
   will result in a vocabulary {"dog": 0, "cat": 1}, and this function will
-  also retur# Unfinished words
+  also return the reversed-vocabulary ["dog", "cat"].
 
   Args:
     vocabulary_path: path to the file containing the vocabulary.

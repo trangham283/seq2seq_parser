@@ -28,6 +28,8 @@ import tensorflow as tf
 # from tensorflow.models.rnn.translate import data_utils
 # ttmt update: use data_utils specific to my data
 import data_utils
+import many2one_seq2seq
+
 
 class Seq2SeqModel(object):
   """Sequence-to-sequence model with attention and for multiple buckets.
@@ -47,7 +49,7 @@ class Seq2SeqModel(object):
   def __init__(self, source_vocab_size, target_vocab_size, buckets, hidden_size,
                num_layers, embedding_size, max_gradient_norm, batch_size, learning_rate,
                learning_rate_decay_factor, use_lstm=False,
-               num_samples=512, forward_only=False, attention=False):
+               num_samples=512, forward_only=False, attention=False, small_def=False):
     """Create the model.
 
     Args:
@@ -109,6 +111,14 @@ class Seq2SeqModel(object):
       if attention:  
         return tf.nn.seq2seq.embedding_attention_seq2seq(
           encoder_inputs, decoder_inputs, cell,
+          num_encoder_symbols=source_vocab_size,
+          num_decoder_symbols=target_vocab_size,
+          embedding_size=embedding_size,
+          output_projection=output_projection,
+          feed_previous=do_decode)
+      elif small_def:
+        return many2one_seq2seq.embedding_attention_seq2seq(
+          encoder_inputs_list, decoder_inputs, cell,
           num_encoder_symbols=source_vocab_size,
           num_decoder_symbols=target_vocab_size,
           embedding_size=embedding_size,
@@ -238,23 +248,11 @@ class Seq2SeqModel(object):
       return None, outputs[0], outputs[1:]  # No gradient norm, loss, outputs.
 
   def get_decode_batch(self, data, bucket_id):
-    """Get a random batch of data from the specified bucket, prepare for step.
-
-    To feed data in step(..) it must be a list of batch-major vectors, while
-    data here contains single length-major cases. So the main logic of this
-    function is to re-index data cases to be in the proper format for feeding.
-
-    Args:
-      data: a tuple of size len(self.buckets) in which each element contains
-        lists of pairs of input and output data that we use to create a batch.
-      bucket_id: integer, which bucket to get the batch for.
-
-    Returns:
-      The triple (encoder_inputs, decoder_inputs, target_weights) for
-      the constructed batch that has the proper format to call step(...) later.
+    """Get sequential batch
     """
     encoder_size, decoder_size = self.buckets[bucket_id]
     encoder_inputs, decoder_inputs = [], []
+    this_batch_size = len(data[bucket_id])
 
     # Get a random batch of encoder and decoder inputs from data,
     # pad them if needed, reverse encoder inputs and add GO to decoder.
@@ -276,16 +274,16 @@ class Seq2SeqModel(object):
     # Batch encoder inputs are just re-indexed encoder_inputs.
     for length_idx in xrange(encoder_size):
       batch_encoder_inputs.append(np.array([encoder_inputs[batch_idx][length_idx]
-                    for batch_idx in xrange(self.batch_size)], dtype=np.int32))
+                    for batch_idx in xrange(this_batch_size)], dtype=np.int32))
 
     # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
     for length_idx in xrange(decoder_size):
       batch_decoder_inputs.append(np.array([decoder_inputs[batch_idx][length_idx]
-                    for batch_idx in xrange(self.batch_size)], dtype=np.int32))
+                    for batch_idx in xrange(this_batch_size)], dtype=np.int32))
 
       # Create target_weights to be 0 for targets that are padding.
-      batch_weight = np.ones(self.batch_size, dtype=np.float32)
-      for batch_idx in xrange(self.batch_size):
+      batch_weight = np.ones(this_batch_size, dtype=np.float32)
+      for batch_idx in xrange(this_batch_size):
         # We set weight to 0 if the corresponding target is a PAD symbol.
         # The corresponding target is decoder_input shifted by 1 forward.
         if length_idx < decoder_size - 1:

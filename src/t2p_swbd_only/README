@@ -1,0 +1,2 @@
+Scripts to train only on switchboard data, as original in parse_nn_swbd.py
+This one just uses swbd data, text-to-parse with attention

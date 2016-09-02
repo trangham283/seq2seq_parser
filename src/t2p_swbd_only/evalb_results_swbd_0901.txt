@@ -1,0 +1,98 @@
+Reading model parameters from /home-nfs/ttran/transitory/speech-nlp/venv_projectsel-swbd-0901/parse_nn_small.ckpt-1000
+loaded from 1000 done steps
+Bracket only -- Num valid sentences: 2684; p: 0.6577; r: 0.6151; f1: 0.6356
+Matched XX   -- Num valid sentences: 5195; p: 0.3810; r: 0.2955; f1: 0.3328
+Batched evalb time:  343.274664879
+
+loaded from 10000 done steps
+Bracket only -- Num valid sentences: 4003; p: 0.8540; r: 0.8494; f1: 0.8517
+Matched XX   -- Num valid sentences: 5499; p: 0.6227; r: 0.5918; f1: 0.6068
+Batched evalb time:  347.85198307
+
+loaded from 10500 done steps
+Bracket only -- Num valid sentences: 4308; p: 0.8537; r: 0.8284; f1: 0.8409
+Matched XX   -- Num valid sentences: 5491; p: 0.6743; r: 0.6274; f1: 0.6500
+Batched evalb time:  358.597950935
+11000
+
+Reading model parameters from /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-0901/parse_nn_small.ckpt-11000
+loaded from 11000 done steps
+Bracket only -- Num valid sentences: 4400; p: 0.8532; r: 0.8301; f1: 0.8415
+Matched XX   -- Num valid sentences: 5466; p: 0.6934; r: 0.6495; f1: 0.6707
+Batched evalb time:  364.790452957
+
+loaded from 12500 done steps
+Bracket only -- Num valid sentences: 4719; p: 0.8473; r: 0.8334; f1: 0.8403
+Matched XX   -- Num valid sentences: 5477; p: 0.7308; r: 0.7056; f1: 0.7180
+Batched evalb time:  371.539262056
+
+loaded from 14500 done steps
+Bracket only -- Num valid sentences: 4855; p: 0.8481; r: 0.8341; f1: 0.8410
+Matched XX   -- Num valid sentences: 5482; p: 0.7509; r: 0.7262; f1: 0.7384
+Batched evalb time:  369.213760853
+
+loaded from 15500 done steps
+Bracket only -- Num valid sentences: 4878; p: 0.8517; r: 0.8373; f1: 0.8445
+Matched XX   -- Num valid sentences: 5491; p: 0.7565; r: 0.7334; f1: 0.7448
+Batched evalb time:  362.065168858
+
+loaded from 16500 done steps
+Bracket only -- Num valid sentences: 4854; p: 0.8652; r: 0.8502; f1: 0.8576
+Matched XX   -- Num valid sentences: 5481; p: 0.7610; r: 0.7351; f1: 0.7478
+Batched evalb time:  357.52562499
+
+loaded from 17500 done steps
+Bracket only -- Num valid sentences: 5014; p: 0.8531; r: 0.8515; f1: 0.8523
+Matched XX   -- Num valid sentences: 5505; p: 0.7747; r: 0.7647; f1: 0.7696
+Batched evalb time:  353.609289169
+
+loaded from 23000 done steps
+Bracket only -- Num valid sentences: 4921; p: 0.8596; r: 0.8506; f1: 0.8550
+Matched XX   -- Num valid sentences: 5429; p: 0.7794; r: 0.7605; f1: 0.7698
+Batched evalb time:  369.91061902
+
+loaded from 24000 done steps
+Bracket only -- Num valid sentences: 5067; p: 0.8662; r: 0.8595; f1: 0.8628
+Matched XX   -- Num valid sentences: 5508; p: 0.7923; r: 0.7807; f1: 0.7865
+Batched evalb time:  368.223097086
+
+loaded from 26500 done steps
+Bracket only -- Num valid sentences: 5177; p: 0.8699; r: 0.8588; f1: 0.8643
+Matched XX   -- Num valid sentences: 5550; p: 0.8074; r: 0.7910; f1: 0.7991
+Batched evalb time:  366.119772911
+
+loaded from 28500 done steps
+Bracket only -- Num valid sentences: 5236; p: 0.8642; r: 0.8586; f1: 0.8614
+Matched XX   -- Num valid sentences: 5542; p: 0.8159; r: 0.8069; f1: 0.8114
+Batched evalb time:  362.242258787
+
+loaded from 30000 done steps
+Bracket only -- Num valid sentences: 5137; p: 0.8630; r: 0.8652; f1: 0.8641
+Matched XX   -- Num valid sentences: 5514; p: 0.8032; r: 0.8009; f1: 0.8020
+Batched evalb time:  353.598973989
+
+loaded from 32000 done steps
+Bracket only -- Num valid sentences: 5227; p: 0.8725; r: 0.8650; f1: 0.8687
+Matched XX   -- Num valid sentences: 5543; p: 0.8182; r: 0.8072; f1: 0.8127
+Batched evalb time:  363.29558897
+
+loaded from 33500 done steps
+Bracket only -- Num valid sentences: 5250; p: 0.8574; r: 0.8639; f1: 0.8606
+Matched XX   -- Num valid sentences: 5542; p: 0.8089; r: 0.8118; f1: 0.8103
+Batched evalb time:  371.79085803
+
+loaded from 36000 done steps
+Bracket only -- Num valid sentences: 5247; p: 0.8696; r: 0.8616; f1: 0.8656
+Matched XX   -- Num valid sentences: 5532; p: 0.8241; r: 0.8134; f1: 0.8187
+Batched evalb time:  361.717455864
+
+loaded from 40000 done steps
+Bracket only -- Num valid sentences: 5244; p: 0.8682; r: 0.8623; f1: 0.8652
+Matched XX   -- Num valid sentences: 5547; p: 0.8197; r: 0.8102; f1: 0.8149
+Batched evalb time:  374.587993145
+
+loaded from 41000 done steps
+Bracket only -- Num valid sentences: 5114; p: 0.8733; r: 0.8671; f1: 0.8702
+Matched XX   -- Num valid sentences: 5539; p: 0.8012; r: 0.7873; f1: 0.7942
+Batched evalb time:  383.67215395
+

@@ -1,0 +1,799 @@
+global step 400 learning rate 0.1000 step-time 21.77 perplexity 6.75
+  eval: bucket 0 perplexity 3.13
+  eval: bucket 1 perplexity 9.09
+  eval: bucket 2 perplexity 11.61
+Bracket only -- Num valid sentences: 0; p: 0; r: 0; f1: nan
+Matched XX   -- Num valid sentences: 0; p: 0; r: 0; f1: nan
+
+global step 1350 learning rate 0.1000 step-time 18.94 perplexity 2.14
+  eval: bucket 0 perplexity 1.63
+  eval: bucket 1 perplexity 2.92
+  eval: bucket 2 perplexity 3.65
+Bracket only -- Num valid sentences: 2204; p: 0.7999; r: 0.8012; f1: 0.8005
+Matched XX   -- Num valid sentences: 5556; p: 0.3240; r: 0.2307; f1: 0.2695
+
+global step 1400 learning rate 0.1000 step-time 20.91 perplexity 2.15
+  eval: bucket 0 perplexity 1.52
+  eval: bucket 1 perplexity 2.83
+  eval: bucket 2 perplexity 3.48
+Bracket only -- Num valid sentences: 2707; p: 0.6775; r: 0.6296; f1: 0.6527
+Matched XX   -- Num valid sentences: 5344; p: 0.3698; r: 0.2699; f1: 0.3120
+
+global step 1450 learning rate 0.1000 step-time 16.78 perplexity 2.03
+  eval: bucket 0 perplexity 1.42
+  eval: bucket 1 perplexity 2.61
+  eval: bucket 2 perplexity 3.41
+Doing evalb
+Debug - step:  1450
+Bracket only -- Num valid sentences: 2453; p: 0.7366; r: 0.7283; f1: 0.7324
+Matched XX   -- Num valid sentences: 5545; p: 0.3403; r: 0.2558; f1: 0.2921
+
+global step 1500 learning rate 0.1000 step-time 24.83 perplexity 2.02
+  eval: bucket 0 perplexity 1.49
+  eval: bucket 1 perplexity 2.74
+  eval: bucket 2 perplexity 3.57
+Doing evalb
+Debug - step:  1500
+Bracket only -- Num valid sentences: 2172; p: 0.8437; r: 0.8136; f1: 0.8284
+Matched XX   -- Num valid sentences: 5571; p: 0.3133; r: 0.2033; f1: 0.2466
+
+global step 1550 learning rate 0.1000 step-time 17.41 perplexity 1.99
+  eval: bucket 0 perplexity 1.50
+  eval: bucket 1 perplexity 2.58
+  eval: bucket 2 perplexity 3.27
+Doing evalb
+Debug - step:  1550
+Bracket only -- Num valid sentences: 2704; p: 0.6936; r: 0.6750; f1: 0.6842
+Matched XX   -- Num valid sentences: 5486; p: 0.3436; r: 0.2662; f1: 0.3000
+
+global step 1600 learning rate 0.1000 step-time 12.84 perplexity 1.98
+  eval: bucket 0 perplexity 1.59
+  eval: bucket 1 perplexity 2.64
+  eval: bucket 2 perplexity 3.31
+Doing evalb
+Debug - step:  1600
+Bracket only -- Num valid sentences: 2171; p: 0.5555; r: 0.6458; f1: 0.5973
+Matched XX   -- Num valid sentences: 5323; p: 0.2288; r: 0.2398; f1: 0.2342
+
+global step 1650 learning rate 0.1000 step-time 14.90 perplexity 1.92
+  eval: bucket 0 perplexity 1.33
+  eval: bucket 1 perplexity 2.68
+  eval: bucket 2 perplexity 3.27
+Doing evalb
+Debug - step:  1650
+Bracket only -- Num valid sentences: 2294; p: 0.7809; r: 0.7928; f1: 0.7868
+Matched XX   -- Num valid sentences: 5558; p: 0.3083; r: 0.2400; f1: 0.2699
+
+global step 1700 learning rate 0.1000 step-time 16.86 perplexity 1.92
+  eval: bucket 0 perplexity 1.34
+  eval: bucket 1 perplexity 2.56
+  eval: bucket 2 perplexity 3.15
+Doing evalb
+Debug - step:  1700
+Bracket only -- Num valid sentences: 2574; p: 0.6085; r: 0.6516; f1: 0.6293
+Matched XX   -- Num valid sentences: 5361; p: 0.2761; r: 0.2499; f1: 0.2623
+
+global step 1750 learning rate 0.1000 step-time 15.77 perplexity 1.93
+  eval: bucket 0 perplexity 1.43
+  eval: bucket 1 perplexity 2.64
+  eval: bucket 2 perplexity 3.34
+Doing evalb
+Debug - step:  1750
+Bracket only -- Num valid sentences: 2005; p: 0.7004; r: 0.6797; f1: 0.6899
+Matched XX   -- Num valid sentences: 3916; p: 0.3508; r: 0.3452; f1: 0.3480
+
+global step 1800 learning rate 0.1000 step-time 26.13 perplexity 1.97
+  eval: bucket 0 perplexity 1.36
+  eval: bucket 1 perplexity 2.42
+  eval: bucket 2 perplexity 3.11
+Doing evalb
+Debug - step:  1800
+Bracket only -- Num valid sentences: 2662; p: 0.7076; r: 0.6960; f1: 0.7018
+Matched XX   -- Num valid sentences: 5466; p: 0.3118; r: 0.2601; f1: 0.2836
+
+global step 1850 learning rate 0.0990 step-time 14.92 perplexity 1.84
+  eval: bucket 0 perplexity 1.33
+  eval: bucket 1 perplexity 2.49
+  eval: bucket 2 perplexity 3.20
+Doing evalb
+Debug - step:  1850
+Bracket only -- Num valid sentences: 2450; p: 0.8035; r: 0.7825; f1: 0.7928
+Matched XX   -- Num valid sentences: 5565; p: 0.2993; r: 0.2366; f1: 0.2643
+
+global step 1900 learning rate 0.0990 step-time 13.90 perplexity 1.86
+  eval: bucket 0 perplexity 1.43
+  eval: bucket 1 perplexity 2.39
+  eval: bucket 2 perplexity 3.16
+Doing evalb
+Debug - step:  1900
+Bracket only -- Num valid sentences: 2446; p: 0.7914; r: 0.7854; f1: 0.7884
+Matched XX   -- Num valid sentences: 5553; p: 0.3150; r: 0.2495; f1: 0.2784
+
+global step 1950 learning rate 0.0990 step-time 18.44 perplexity 1.85
+  eval: bucket 0 perplexity 1.28
+  eval: bucket 1 perplexity 2.38
+  eval: bucket 2 perplexity 3.03
+Doing evalb
+Debug - step:  1950
+Bracket only -- Num valid sentences: 2652; p: 0.7434; r: 0.7401; f1: 0.7417
+Matched XX   -- Num valid sentences: 5530; p: 0.3317; r: 0.2634; f1: 0.2936
+
+global step 2000 learning rate 0.0990 step-time 16.83 perplexity 1.83
+  eval: bucket 0 perplexity 1.36
+  eval: bucket 1 perplexity 2.35
+  eval: bucket 2 perplexity 3.08
+Doing evalb
+Debug - step:  2000
+Bracket only -- Num valid sentences: 2803; p: 0.5634; r: 0.5939; f1: 0.5782
+Matched XX   -- Num valid sentences: 4962; p: 0.3203; r: 0.3106; f1: 0.3154
+
+global step 2250 learning rate 0.0990 step-time 20.73 perplexity 1.85
+  eval: bucket 0 perplexity 1.33
+  eval: bucket 1 perplexity 2.14
+  eval: bucket 2 perplexity 2.89
+Doing evalb
+Debug - step:  2250
+Bracket only -- Num valid sentences: 2777; p: 0.7297; r: 0.7130; f1: 0.7212
+Matched XX   -- Num valid sentences: 5491; p: 0.3538; r: 0.2789; f1: 0.3119
+
+global step 2500 learning rate 0.0990 step-time 17.72 perplexity 1.75
+  eval: bucket 0 perplexity 1.25
+  eval: bucket 1 perplexity 2.27
+  eval: bucket 2 perplexity 2.80
+Doing evalb
+Debug - step:  2500
+Bracket only -- Num valid sentences: 2913; p: 0.7084; r: 0.6929; f1: 0.7006
+Matched XX   -- Num valid sentences: 5502; p: 0.3852; r: 0.3016; f1: 0.3383
+
+global step 2750 learning rate 0.0990 step-time 24.60 perplexity 1.81
+  eval: bucket 0 perplexity 1.28
+  eval: bucket 1 perplexity 2.18
+  eval: bucket 2 perplexity 2.75
+Doing evalb
+Debug - step:  2750
+Bracket only -- Num valid sentences: 2584; p: 0.701; r: 0.706; f1: 0.704
+Matched XX   -- Num valid sentences: 5478; p: 0.308; r: 0.275; f1: 0.290
+
+global step 3000 learning rate 0.0990 step-time 20.94 perplexity 1.70
+  eval: bucket 0 perplexity 1.19
+  eval: bucket 1 perplexity 2.04
+  eval: bucket 2 perplexity 2.50
+Doing evalb
+Debug - step:  3000
+Bracket only -- Num valid sentences: 2972; p: 0.7282; r: 0.7128; f1: 0.7205
+Matched XX   -- Num valid sentences: 5501; p: 0.3802; r: 0.3092; f1: 0.3410
+
+Training from random batches
+global step 3750 learning rate 0.0990 step-time 18.59 perplexity 1.65
+  eval: bucket 0 perplexity 1.29
+  eval: bucket 1 perplexity 1.86
+  eval: bucket 2 perplexity 2.44
+Bracket only -- Num valid sentences: 3409; p: 0.6911; r: 0.6566; f1: 0.6734
+Matched XX   -- Num valid sentences: 5497; p: 0.3955; r: 0.3301; f1: 0.3598
+Batched evalb time:  381.700035095
+Decoding all dev time:  363.208639145
+
+global step 4000 learning rate 0.0990 step-time 15.31 perplexity 1.60
+  eval: bucket 0 perplexity 1.19
+  eval: bucket 1 perplexity 1.85
+  eval: bucket 2 perplexity 2.38
+loaded from 4000 done steps
+Bracket only -- Num valid sentences: 3491; p: 0.6874; r: 0.6578; f1: 0.6723
+Matched XX   -- Num valid sentences: 5492; p: 0.4244; r: 0.3529; f1: 0.3854
+Batched evalb time:  380.965983868
+Decoding all dev time:  353.297267914
+
+global step 4250 learning rate 0.0990 step-time 14.82 perplexity 1.60
+  eval: bucket 0 perplexity 1.15
+  eval: bucket 1 perplexity 1.84
+  eval: bucket 2 perplexity 2.39
+loaded from 4250 done steps
+Bracket only -- Num valid sentences: 3310; p: 0.7228; r: 0.7012; f1: 0.7118
+Matched XX   -- Num valid sentences: 5485; p: 0.4325; r: 0.3528; f1: 0.3886
+Batched evalb time:  361.604826927
+Decoding all dev time:  328.096741915
+
+global step 4500 learning rate 0.0990 step-time 13.25 perplexity 1.57
+  eval: bucket 0 perplexity 1.15
+  eval: bucket 1 perplexity 1.86
+  eval: bucket 2 perplexity 2.49
+Do EVALB outside separately
+loaded from 4500 done steps
+Bracket only -- Num valid sentences: 3001; p: 0.7804; r: 0.7600; f1: 0.7701
+Matched XX   -- Num valid sentences: 5525; p: 0.4276; r: 0.3183; f1: 0.3649
+Batched evalb time:  371.108642101
+Decoding all dev time:  332.948271036
+
+global step 4750 learning rate 0.0990 step-time 14.74 perplexity 1.57
+  eval: bucket 0 perplexity 1.19
+  eval: bucket 1 perplexity 1.88
+  eval: bucket 2 perplexity 2.36
+Do EVALB outside separately
+loaded from 4750 done steps
+Bracket only -- Num valid sentences: 3533; p: 0.7052; r: 0.6817; f1: 0.6933
+Matched XX   -- Num valid sentences: 5496; p: 0.4314; r: 0.3621; f1: 0.3937
+Batched evalb time:  362.418808937
+  
+global step 5000 learning rate 0.0990 step-time 16.57 perplexity 1.57
+  eval: bucket 0 perplexity 1.14
+  eval: bucket 1 perplexity 1.82
+  eval: bucket 2 perplexity 2.35
+Do EVALB outside separately
+loaded from 5000 done steps
+Bracket only -- Num valid sentences: 3436; p: 0.7361; r: 0.6983; f1: 0.7167
+Matched XX   -- Num valid sentences: 5553; p: 0.4410; r: 0.3512; f1: 0.3910
+
+global step 5250 learning rate 0.0990 step-time 25.47 perplexity 1.58
+  eval: bucket 0 perplexity 1.18
+  eval: bucket 1 perplexity 1.76
+  eval: bucket 2 perplexity 2.24
+Do EVALB outside separately
+loaded from 5250 done steps
+Bracket only -- Num valid sentences: 3569; p: 0.7198; r: 0.6912; f1: 0.7052
+Matched XX   -- Num valid sentences: 5484; p: 0.4529; r: 0.3778; f1: 0.4119
+Batched evalb time:  369.226827145
+
+global step 5500 learning rate 0.0990 step-time 20.41 perplexity 1.53
+   eval: bucket 0 perplexity 1.20
+   eval: bucket 1 perplexity 1.71
+   eval: bucket 2 perplexity 2.27
+Do EVALB outside separately
+loaded from 5500 done steps
+Bracket only -- Num valid sentences: 3370; p: 0.7588; r: 0.7292; f1: 0.7438
+Matched XX   -- Num valid sentences: 5561; p: 0.4533; r: 0.3604; f1: 0.4016
+Batched evalb time:  359.670363903
+
+global step 5750 learning rate 0.0990 step-time 18.72 perplexity 1.52
+  eval: bucket 0 perplexity 1.13
+  eval: bucket 1 perplexity 1.66
+  eval: bucket 2 perplexity 2.21
+Do EVALB outside separately
+loaded from 5750 done steps
+Bracket only -- Num valid sentences: 3649; p: 0.7153; r: 0.6968; f1: 0.7059
+Matched XX   -- Num valid sentences: 5479; p: 0.4468; r: 0.3932; f1: 0.4183
+Batched evalb time:  366.19175601
+
+global step 6000 learning rate 0.0990 step-time 25.22 perplexity 1.53
+  eval: bucket 0 perplexity 1.18
+  eval: bucket 1 perplexity 1.68
+  eval: bucket 2 perplexity 2.26
+Do EVALB outside separately
+loaded from 6000 done steps
+Bracket only -- Num valid sentences: 3668; p: 0.7077; r: 0.6833; f1: 0.6953
+Matched XX   -- Num valid sentences: 5500; p: 0.4484; r: 0.3777; f1: 0.4101
+Batched evalb time:  368.331883907
+
+global step 6250 learning rate 0.0990 step-time 22.69 perplexity 1.51
+  eval: bucket 0 perplexity 1.13
+  eval: bucket 1 perplexity 1.66
+  eval: bucket 2 perplexity 2.19
+Do EVALB outside separately
+loaded from 6250 done steps
+Bracket only -- Num valid sentences: 3569; p: 0.6905; r: 0.6912; f1: 0.6908
+Matched XX   -- Num valid sentences: 5515; p: 0.4374; r: 0.3951; f1: 0.4152
+Batched evalb time:  375.190545082
+
+global step 6500 learning rate 0.0990 step-time 21.92 perplexity 1.53
+  eval: bucket 0 perplexity 1.11
+  eval: bucket 1 perplexity 1.69
+  eval: bucket 2 perplexity 2.17
+Do EVALB outside separately
+loaded from 6500 done steps
+Bracket only -- Num valid sentences: 3344; p: 0.7493; r: 0.7336; f1: 0.7414
+Matched XX   -- Num valid sentences: 5490; p: 0.4289; r: 0.3576; f1: 0.3900
+Batched evalb time:  357.048990965
+
+global step 6750 learning rate 0.0990 step-time 23.30 perplexity 1.49
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.59
+  eval: bucket 2 perplexity 2.09
+Do EVALB outside separately
+loaded from 6750 done steps
+Bracket only -- Num valid sentences: 3593; p: 0.7416; r: 0.7281; f1: 0.7348
+Matched XX   -- Num valid sentences: 5476; p: 0.4658; r: 0.4050; f1: 0.4333
+Batched evalb time:  353.325412989
+
+global step 7000 learning rate 0.0990 step-time 19.57 perplexity 1.48
+  eval: bucket 0 perplexity 1.15
+  eval: bucket 1 perplexity 1.67
+  eval: bucket 2 perplexity 2.12
+Do EVALB outside separately
+loaded from 7000 done steps
+Bracket only -- Num valid sentences: 3241; p: 0.7891; r: 0.7819; f1: 0.7855
+Matched XX   -- Num valid sentences: 5533; p: 0.4682; r: 0.3784; f1: 0.4186
+Batched evalb time:  360.245184898
+
+global step 7250 learning rate 0.0990 step-time 18.40 perplexity 1.48
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.59
+  eval: bucket 2 perplexity 2.09
+Do EVALB outside separately
+loaded from 7250 done steps
+Bracket only -- Num valid sentences: 3518; p: 0.7987; r: 0.7697; f1: 0.7839
+Matched XX   -- Num valid sentences: 5544; p: 0.5004; r: 0.4065; f1: 0.4486
+Batched evalb time:  356.751568079
+
+global step 7500 learning rate 0.0990 step-time 21.15 perplexity 1.47
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.69
+  eval: bucket 2 perplexity 2.20
+loaded from 7500 done steps
+Bracket only -- Num valid sentences: 3280; p: 0.7981; r: 0.7782; f1: 0.7880
+Matched XX   -- Num valid sentences: 5498; p: 0.4678; r: 0.3763; f1: 0.4171
+Batched evalb time:  360.837514877
+
+global step 7750 learning rate 0.0990 step-time 20.66 perplexity 1.48
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.57
+  eval: bucket 2 perplexity 2.07
+Do EVALB outside separately
+loaded from 7750 done steps
+Bracket only -- Num valid sentences: 3551; p: 0.7687; r: 0.7556; f1: 0.7621
+Matched XX   -- Num valid sentences: 5503; p: 0.4919; r: 0.4173; f1: 0.4515
+Batched evalb time:  350.498739958
+
+global step 8000 learning rate 0.0990 step-time 21.41 perplexity 1.47
+  eval: bucket 0 perplexity 1.13
+  eval: bucket 1 perplexity 1.54
+  eval: bucket 2 perplexity 2.02
+Do EVALB outside separately
+loaded from 8000 done steps
+Bracket only -- Num valid sentences: 3513; p: 0.7752; r: 0.7534; f1: 0.7641
+Matched XX   -- Num valid sentences: 5499; p: 0.5006; r: 0.4239; f1: 0.4591
+Batched evalb time:  354.364108086
+
+global step 8250 learning rate 0.0990 step-time 20.89 perplexity 1.44
+  eval: bucket 0 perplexity 1.13
+  eval: bucket 1 perplexity 1.56
+  eval: bucket 2 perplexity 2.09
+Do EVALB outside separately
+loaded from 8250 done steps
+Bracket only -- Num valid sentences: 3783; p: 0.7423; r: 0.7176; f1: 0.7298
+Matched XX   -- Num valid sentences: 5353; p: 0.5054; r: 0.4419; f1: 0.4716
+Batched evalb time:  348.575999975
+
+global step 8500 learning rate 0.0990 step-time 25.57 perplexity 1.47
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.58
+  eval: bucket 2 perplexity 2.18
+Do EVALB outside separately
+loaded from 8500 done steps
+Bracket only -- Num valid sentences: 3755; p: 0.7510; r: 0.7306; f1: 0.7407
+Matched XX   -- Num valid sentences: 5122; p: 0.5349; r: 0.4948; f1: 0.5140
+Batched evalb time:  345.369605064
+
+global step 8750 learning rate 0.0990 step-time 17.53 perplexity 1.45
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.52
+  eval: bucket 2 perplexity 1.98
+Do EVALB outside separately
+loaded from 8750 done steps
+Bracket only -- Num valid sentences: 3732; p: 0.7486; r: 0.7277; f1: 0.7380
+Matched XX   -- Num valid sentences: 5317; p: 0.5142; r: 0.4458; f1: 0.4775
+Batched evalb time:  350.05806303
+
+global step 9000 learning rate 0.0990 step-time 23.82 perplexity 1.45
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.68
+  eval: bucket 2 perplexity 2.16
+Do EVALB outside separately
+loaded from 9000 done steps
+Bracket only -- Num valid sentences: 3094; p: 0.7601; r: 0.7681; f1: 0.7641
+Matched XX   -- Num valid sentences: 5071; p: 0.4437; r: 0.3953; f1: 0.4181
+Batched evalb time:  356.244127035
+
+global step 9250 learning rate 0.0990 step-time 22.72 perplexity 1.43
+  eval: bucket 0 perplexity 1.11
+  eval: bucket 1 perplexity 1.61
+  eval: bucket 2 perplexity 2.15
+Do EVALB outside separately
+loaded from 9250 done steps
+Bracket only -- Num valid sentences: 2603; p: 0.8663; r: 0.8501; f1: 0.8581
+Matched XX   -- Num valid sentences: 5574; p: 0.4902; r: 0.3678; f1: 0.4203
+Batched evalb time:  357.590917826
+
+global step 9500 learning rate 0.0990 step-time 21.26 perplexity 1.41
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.56
+  eval: bucket 2 perplexity 1.93
+Do EVALB outside separately
+loaded from 9500 done steps
+Bracket only -- Num valid sentences: 3621; p: 0.7803; r: 0.7699; f1: 0.7751
+Matched XX   -- Num valid sentences: 5187; p: 0.5348; r: 0.4667; f1: 0.4984
+Batched evalb time:  343.74413991
+
+global step 9750 learning rate 0.0990 step-time 21.66 perplexity 1.43
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.49
+  eval: bucket 2 perplexity 2.11
+Do EVALB outside separately
+loaded from 9750 done steps
+Bracket only -- Num valid sentences: 3534; p: 0.8528; r: 0.8277; f1: 0.8401
+Matched XX   -- Num valid sentences: 5570; p: 0.5369; r: 0.4367; f1: 0.4817
+Batched evalb time:  345.975735903
+
+global step 10000 learning rate 0.0990 step-time 18.03 perplexity 1.42
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.53
+  eval: bucket 2 perplexity 2.01
+Do EVALB outside separately
+Bracket only -- Num valid sentences: 3374; p: 0.8651; r: 0.8444; f1: 0.8546
+Matched XX   -- Num valid sentences: 5548; p: 0.5280; r: 0.4305; f1: 0.4743
+Batched evalb time:  351.306008101
+
+global step 10250 learning rate 0.0990 step-time 24.98 perplexity 1.41
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.47
+  eval: bucket 2 perplexity 1.90
+Do EVALB outside separately
+loaded from 10250 done steps
+Bracket only -- Num valid sentences: 3716; p: 0.7926; r: 0.7702; f1: 0.7812
+Matched XX   -- Num valid sentences: 5481; p: 0.5437; r: 0.4701; f1: 0.5043
+Batched evalb time:  358.582941055
+
+global step 10500 learning rate 0.0990 step-time 24.50 perplexity 1.40
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.48
+  eval: bucket 2 perplexity 1.87
+Do EVALB outside separately
+Bracket only -- Num valid sentences: 3731; p: 0.7793; r: 0.7614; f1: 0.7703
+Matched XX   -- Num valid sentences: 5284; p: 0.5464; r: 0.4943; f1: 0.5190
+Batched evalb time:  355.469163179
+
+global step 10750 learning rate 0.0990 step-time 22.47 perplexity 1.42
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.50
+  eval: bucket 2 perplexity 1.88
+Do EVALB outside separately
+loaded from 10750 done steps
+Bracket only -- Num valid sentences: 3624; p: 0.8200; r: 0.8123; f1: 0.8162
+Matched XX   -- Num valid sentences: 5514; p: 0.5420; r: 0.4634; f1: 0.4996
+Batched evalb time:  351.214105844
+
+global step 11000 learning rate 0.0990 step-time 18.58 perplexity 1.40
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.48
+  eval: bucket 2 perplexity 1.82
+Do EVALB outside separately
+loaded from 11000 done steps
+Bracket only -- Num valid sentences: 3693; p: 0.7749; r: 0.7627; f1: 0.7688
+Matched XX   -- Num valid sentences: 5091; p: 0.5571; r: 0.5199; f1: 0.5379
+Batched evalb time:  352.436407804
+
+global step 11250 learning rate 0.0990 step-time 24.21 perplexity 1.39
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.44
+  eval: bucket 2 perplexity 1.82
+Do EVALB outside separately
+loaded from 11250 done steps
+Bracket only -- Num valid sentences: 3745; p: 0.8207; r: 0.8148; f1: 0.8177
+Matched XX   -- Num valid sentences: 5493; p: 0.5601; r: 0.4917; f1: 0.5237
+Batched evalb time:  361.910359144
+
+global step 11500 learning rate 0.0990 step-time 21.13 perplexity 1.41
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.62
+  eval: bucket 2 perplexity 1.98
+Do EVALB outside separately
+loaded from 11500 done steps
+Bracket only -- Num valid sentences: 3008; p: 0.8671; r: 0.8482; f1: 0.8576
+Matched XX   -- Num valid sentences: 5423; p: 0.5040; r: 0.3744; f1: 0.4297
+Batched evalb time:  374.073349953
+
+global step 11750 learning rate 0.0990 step-time 20.11 perplexity 1.39
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.79
+  eval: bucket 2 perplexity 2.29
+Do EVALB outside separately
+loaded from 11750 done steps
+Bracket only -- Num valid sentences: 3270; p: 0.8546; r: 0.8419; f1: 0.8482
+Matched XX   -- Num valid sentences: 4205; p: 0.5933; r: 0.5781; f1: 0.5856
+Batched evalb time:  344.097136974
+
+global step 12000 learning rate 0.0990 step-time 19.52 perplexity 1.38
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.43
+  eval: bucket 2 perplexity 1.83
+Do EVALB outside separately
+loaded from 12000 done steps
+Bracket only -- Num valid sentences: 3598; p: 0.8679; r: 0.8522; f1: 0.8600
+Matched XX   -- Num valid sentences: 5543; p: 0.5638; r: 0.4839; f1: 0.5208
+Batched evalb time:  345.005383968
+
+global step 12250 learning rate 0.0990 step-time 21.93 perplexity 1.40
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.42
+  eval: bucket 2 perplexity 1.80
+Do EVALB outside separately
+loaded from 12250 done steps
+Bracket only -- Num valid sentences: 3631; p: 0.8605; r: 0.8469; f1: 0.8537
+Matched XX   -- Num valid sentences: 5540; p: 0.5672; r: 0.5024; f1: 0.5328
+Batched evalb time:  347.800636053
+
+global step 12500 learning rate 0.0990 step-time 18.96 perplexity 1.38
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.36
+  eval: bucket 2 perplexity 1.76
+Do EVALB outside separately
+loaded from 12500 done steps
+Bracket only -- Num valid sentences: 3891; p: 0.8279; r: 0.8046; f1: 0.8161
+Matched XX   -- Num valid sentences: 5426; p: 0.5919; r: 0.5160; f1: 0.5513
+Batched evalb time:  337.931527138
+
+global step 12750 learning rate 0.0990 step-time 19.58 perplexity 1.38
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.67
+  eval: bucket 2 perplexity 2.22
+Do EVALB outside separately
+loaded from 12750 done steps
+Bracket only -- Num valid sentences: 3616; p: 0.8448; r: 0.8395; f1: 0.8421
+Matched XX   -- Num valid sentences: 4480; p: 0.6196; r: 0.6177; f1: 0.6186
+Batched evalb time:  343.11600399
+
+global step 13000 learning rate 0.0990 step-time 21.15 perplexity 1.37
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.47
+  eval: bucket 2 perplexity 2.05
+Do EVALB outside separately
+loaded from 13000 done steps
+Bracket only -- Num valid sentences: 3808; p: 0.8360; r: 0.8111; f1: 0.8233
+Matched XX   -- Num valid sentences: 5122; p: 0.6016; r: 0.5350; f1: 0.5664
+Batched evalb time:  337.078327894
+
+global step 13250 learning rate 0.0990 step-time 19.29 perplexity 1.37
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.35
+  eval: bucket 2 perplexity 1.71
+Do EVALB outside separately
+loaded from 13250 done steps
+Bracket only -- Num valid sentences: 3702; p: 0.8687; r: 0.8539; f1: 0.8612
+Matched XX   -- Num valid sentences: 5537; p: 0.5941; r: 0.5176; f1: 0.5532
+Batched evalb time:  435.962007999
+
+global step 13500 learning rate 0.0990 step-time 19.02 perplexity 1.38
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.39
+  eval: bucket 2 perplexity 1.69
+Do EVALB outside separately
+loaded from 13500 done steps
+Bracket only -- Num valid sentences: 3807; p: 0.8440; r: 0.8322; f1: 0.8381
+Matched XX   -- Num valid sentences: 5506; p: 0.5923; r: 0.5230; f1: 0.5555
+Batched evalb time:  383.524900913
+
+global step 13750 learning rate 0.0990 step-time 20.53 perplexity 1.38
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.41
+  eval: bucket 2 perplexity 1.73
+Do EVALB outside separately
+loaded from 13750 done steps
+Bracket only -- Num valid sentences: 3490; p: 0.9073; r: 0.8953; f1: 0.9012
+Matched XX   -- Num valid sentences: 5572; p: 0.5776; r: 0.4893; f1: 0.5298
+Batched evalb time:  351.996433973
+
+global step 14000 learning rate 0.0990 step-time 20.60 perplexity 1.38
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.34
+  eval: bucket 2 perplexity 1.70
+Do EVALB outside separately
+loaded from 14000 done steps
+Bracket only -- Num valid sentences: 3877; p: 0.8448; r: 0.8208; f1: 0.8327
+Matched XX   -- Num valid sentences: 5358; p: 0.6074; r: 0.5270; f1: 0.5644
+Batched evalb time:  368.26582098
+
+global step 14250 learning rate 0.0990 step-time 21.80 perplexity 1.36
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.38
+  eval: bucket 2 perplexity 1.89
+Do EVALB outside separately
+loaded from 14250 done steps
+Bracket only -- Num valid sentences: 3749; p: 0.8862; r: 0.8783; f1: 0.8823
+Matched XX   -- Num valid sentences: 5565; p: 0.5827; r: 0.5220; f1: 0.5507
+Batched evalb time:  344.998654842
+
+global step 14500 learning rate 0.0990 step-time 22.30 perplexity 1.34
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.34
+  eval: bucket 2 perplexity 1.67
+Do EVALB outside separately
+loaded from 14500 done steps
+Bracket only -- Num valid sentences: 3778; p: 0.8900; r: 0.8770; f1: 0.8834
+Matched XX   -- Num valid sentences: 5557; p: 0.6084; r: 0.5457; f1: 0.5754
+Batched evalb time:  345.325793028
+
+global step 14750 learning rate 0.0990 step-time 21.22 perplexity 1.35
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.32
+  eval: bucket 2 perplexity 1.64
+Do EVALB outside separately
+loaded from 14750 done steps
+Bracket only -- Num valid sentences: 3922; p: 0.8608; r: 0.8488; f1: 0.8548
+Matched XX   -- Num valid sentences: 5539; p: 0.6130; r: 0.5600; f1: 0.5853
+Batched evalb time:  348.071244955
+
+global step 15000 learning rate 0.0990 step-time 21.40 perplexity 1.34
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.59
+Do EVALB outside separately
+loaded from 15000 done steps
+Bracket only -- Num valid sentences: 4101; p: 0.8352; r: 0.8241; f1: 0.8296
+Matched XX   -- Num valid sentences: 5473; p: 0.6216; r: 0.5823; f1: 0.6013
+Batched evalb time:  352.376244783
+
+global step 15250 learning rate 0.0990 step-time 17.75 perplexity 1.35
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.63
+Do EVALB outside separately
+loaded from 15250 done steps
+Bracket only -- Num valid sentences: 4056; p: 0.8580; r: 0.8459; f1: 0.8519
+Matched XX   -- Num valid sentences: 5505; p: 0.6287; r: 0.5751; f1: 0.6007
+Batched evalb time:  360.401983023
+
+global step 15500 learning rate 0.0990 step-time 15.53 perplexity 1.35
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.33
+  eval: bucket 2 perplexity 1.62
+Do EVALB outside separately
+loaded from 15500 done steps
+Bracket only -- Num valid sentences: 3926; p: 0.8785; r: 0.8621; f1: 0.8702
+Matched XX   -- Num valid sentences: 5519; p: 0.6236; r: 0.5547; f1: 0.5871
+Batched evalb time:  358.446570158
+
+global step 15750 learning rate 0.0990 step-time 14.39 perplexity 1.35
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.27
+  eval: bucket 2 perplexity 1.53
+Do EVALB outside separately
+loaded from 15750 done steps
+Bracket only -- Num valid sentences: 4142; p: 0.8402; r: 0.8337; f1: 0.8369
+Matched XX   -- Num valid sentences: 5480; p: 0.6410; r: 0.6057; f1: 0.6229
+Batched evalb time:  337.540323019
+
+global step 16000 learning rate 0.0990 step-time 34.85 perplexity 1.41
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.29
+  eval: bucket 2 perplexity 1.56
+Do EVALB outside separately
+loaded from 16000 done steps
+Bracket only -- Num valid sentences: 4177; p: 0.8457; r: 0.8294; f1: 0.8375
+Matched XX   -- Num valid sentences: 5468; p: 0.6433; r: 0.5920; f1: 0.6166
+Batched evalb time:  347.15712595
+
+global step 16250 learning rate 0.0990 step-time 21.93 perplexity 1.33
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.26
+  eval: bucket 2 perplexity 1.59
+Do EVALB outside separately
+loaded from 16250 done steps
+Bracket only -- Num valid sentences: 4138; p: 0.8576; r: 0.8422; f1: 0.8498
+Matched XX   -- Num valid sentences: 5496; p: 0.6523; r: 0.5990; f1: 0.6245
+Batched evalb time:  353.509291172
+
+global step 16500 learning rate 0.0990 step-time 26.76 perplexity 1.34
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.29
+  eval: bucket 2 perplexity 1.59
+Do EVALB outside separately
+loaded from 16500 done steps
+Bracket only -- Num valid sentences: 4135; p: 0.8624; r: 0.8484; f1: 0.8554
+Matched XX   -- Num valid sentences: 5500; p: 0.6420; r: 0.5904; f1: 0.6151
+Batched evalb time:  363.125058889
+
+global step 16750 learning rate 0.0990 step-time 26.36 perplexity 1.34
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.65
+Do EVALB outside separately
+loaded from 16750 done steps
+Bracket only -- Num valid sentences: 4055; p: 0.8655; r: 0.8475; f1: 0.8564
+Matched XX   -- Num valid sentences: 5471; p: 0.6376; r: 0.5784; f1: 0.6066
+Batched evalb time:  368.00670886
+
+global step 17000 learning rate 0.0990 step-time 24.43 perplexity 1.34
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.42
+  eval: bucket 2 perplexity 1.87
+Do EVALB outside separately
+loaded from 17000 done steps
+Bracket only -- Num valid sentences: 3913; p: 0.8692; r: 0.8557; f1: 0.8624
+Matched XX   -- Num valid sentences: 4832; p: 0.6779; r: 0.6543; f1: 0.6659
+Batched evalb time:  365.504582882
+
+global step 17250 learning rate 0.0990 step-time 16.11 perplexity 1.32
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.29
+  eval: bucket 2 perplexity 1.54
+Do EVALB outside separately
+loaded from 17250 done steps
+Bracket only -- Num valid sentences: 4084; p: 0.8633; r: 0.8536; f1: 0.8584
+Matched XX   -- Num valid sentences: 5499; p: 0.6438; r: 0.5972; f1: 0.6196
+Batched evalb time:  360.725756168
+
+global step 17500 learning rate 0.0990 step-time 15.16 perplexity 1.32
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.33
+  eval: bucket 2 perplexity 1.61
+Do EVALB outside separately
+loaded from 17500 done steps
+Bracket only -- Num valid sentences: 4092; p: 0.8814; r: 0.8629; f1: 0.8721
+Matched XX   -- Num valid sentences: 5422; p: 0.6478; r: 0.5783; f1: 0.6111
+Batched evalb time:  358.941620827
+
+global step 17750 learning rate 0.0990 step-time 14.53 perplexity 1.32
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.67
+Do EVALB outside separately
+loaded from 17750 done steps
+Bracket only -- Num valid sentences: 4146; p: 0.8589; r: 0.8535; f1: 0.8562
+Matched XX   -- Num valid sentences: 4981; p: 0.6923; r: 0.6831; f1: 0.6877
+Batched evalb time:  392.525029898
+
+global step 18000 learning rate 0.0990 step-time 16.04 perplexity 1.30
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.60
+Do EVALB outside separately
+loaded from 18000 done steps
+Bracket only -- Num valid sentences: 4143; p: 0.8811; r: 0.8669; f1: 0.8739
+Matched XX   -- Num valid sentences: 5529; p: 0.6550; r: 0.6024; f1: 0.6276
+Batched evalb time:  392.673312902
+
+global step 18250 learning rate 0.0990 step-time 19.81 perplexity 1.31
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.32
+  eval: bucket 2 perplexity 1.66
+Do EVALB outside separately
+loaded from 18250 done steps
+Bracket only -- Num valid sentences: 4350; p: 0.8526; r: 0.8413; f1: 0.8469
+Matched XX   -- Num valid sentences: 5493; p: 0.6678; r: 0.6200; f1: 0.6430
+Batched evalb time:  385.361499786
+
+global step 18500 learning rate 0.0990 step-time 21.81 perplexity 1.29
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.35
+  eval: bucket 2 perplexity 2.05
+Do EVALB outside separately
+loaded from 18500 done steps
+Bracket only -- Num valid sentences: 3864; p: 0.9116; r: 0.9046; f1: 0.9081
+Matched XX   -- Num valid sentences: 5585; p: 0.5993; r: 0.5447; f1: 0.5707
+Batched evalb time:  366.480148792
+
+global step 18750 learning rate 0.0990 step-time 25.09 perplexity 1.31
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.58
+Do EVALB outside separately
+loaded from 18750 done steps
+Bracket only -- Num valid sentences: 4420; p: 0.8499; r: 0.8368; f1: 0.8433
+Matched XX   -- Num valid sentences: 5362; p: 0.6896; r: 0.6585; f1: 0.6737
+Batched evalb time:  381.585345984
+
+global step 19000 learning rate 0.0990 step-time 21.57 perplexity 1.31
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.26
+  eval: bucket 2 perplexity 1.48
+Do EVALB outside separately
+loaded from 19000 done steps
+Bracket only -- Num valid sentences: 4428; p: 0.8707; r: 0.8552; f1: 0.8629
+Matched XX   -- Num valid sentences: 5509; p: 0.6930; r: 0.6499; f1: 0.6708
+Batched evalb time:  364.441912889
+
+global step 19250 learning rate 0.0990 step-time 18.53 perplexity 1.31
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.27
+  eval: bucket 2 perplexity 1.57
+Do EVALB outside separately
+loaded from 19250 done steps
+Bracket only -- Num valid sentences: 4343; p: 0.8758; r: 0.8653; f1: 0.8705
+Matched XX   -- Num valid sentences: 5430; p: 0.6993; r: 0.6589; f1: 0.6785
+Batched evalb time:  373.304813147
+
+
+
+
+
+
+
+

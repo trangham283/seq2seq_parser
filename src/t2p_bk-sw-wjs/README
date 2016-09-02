@@ -1,0 +1,6 @@
+Original scripts to train text-to-parse model
+Data is the combination of:
+  + bktotal (WSJ + Berkeley-parser-parsed gigaword news)
+  + swbd corpus
+
+

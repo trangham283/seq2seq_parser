@@ -115,13 +115,13 @@ def main(_):
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
     
-    train_set = process_data(data_dir, 'train', sent_vocab, parse_vocab)
-    train_file = os.path.join(output_dir, 'sw_train_both.pickle')
-    pickle.dump(train_set, open(train_file,'w'))
+#    train_set = process_data(data_dir, 'train', sent_vocab, parse_vocab)
+#    train_file = os.path.join(output_dir, 'sw_train_both.pickle')
+#    pickle.dump(train_set, open(train_file,'w'))
     
-    dev_set = process_data(data_dir, 'dev', sent_vocab, parse_vocab)
-    dev_file = os.path.join(output_dir, 'sw_dev_both.pickle')
-    pickle.dump(dev_set, open(dev_file,'w'))
+#    dev_set = process_data(data_dir, 'dev', sent_vocab, parse_vocab)
+#    dev_file = os.path.join(output_dir, 'sw_dev_both.pickle')
+#    pickle.dump(dev_set, open(dev_file,'w'))
 
     dev2_set = process_data(data_dir, 'dev2', sent_vocab, parse_vocab)
     dev2_file = os.path.join(output_dir, 'sw_dev2_both.pickle')

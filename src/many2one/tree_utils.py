@@ -66,7 +66,7 @@ def match_length(parse, sent):
     return new_tree
 
 
-# Thanks to chenghao for the sentence merge code
+
 def merge_sent_tree(parse, sent):
     tree = []
     word_idx = 0

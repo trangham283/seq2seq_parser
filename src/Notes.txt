@@ -1,0 +1,18 @@
+bk_total data (wsj train + berkeley parser):
+    bucket 0: 750097
+    bucket 1: 3934057
+    bucket 2: 3317560 
+total: 8,001,714
+
+
+sw training data:
+    bucket 0: 61923
+    bucket 1: 24618
+    bucket 2: 3405
+total: 89,946
+
+sw dev data:
+    bucket 0: 3509
+    bucket 1: 1750
+    bucket 2: 339
+total: 5,598
