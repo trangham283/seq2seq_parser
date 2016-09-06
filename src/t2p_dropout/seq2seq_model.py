@@ -25,18 +25,13 @@ import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
+# from tensorflow.models.rnn.translate import data_utils
+# ttmt update: use data_utils specific to my data
 import data_utils
 import many2one_seq2seq
 
 
-# Hard-coded these in for now; 
-# TODO: incorporate these parameters in model call/init
-spscale = 5 
-mfcc_num = 13
-#attn_vec_size = None # i.e. = hidden_size
-attn_vec_size = 64
-
-class manySeq2SeqModel(object):
+class Seq2SeqModel(object):
   """Sequence-to-sequence model with attention and for multiple buckets.
 
   This class implements a multi-layer recurrent neural network as encoder,
@@ -53,8 +48,8 @@ class manySeq2SeqModel(object):
 
   def __init__(self, source_vocab_size, target_vocab_size, buckets, hidden_size,
                num_layers, embedding_size, max_gradient_norm, batch_size, learning_rate,
-               learning_rate_decay_factor, use_lstm=False,
-               num_samples=512, forward_only=False):
+               learning_rate_decay_factor, use_lstm=False, output_keep_prob=0.8,
+               num_samples=512, forward_only=False, dropout=True):
     """Create the model.
 
     Args:
@@ -104,50 +99,58 @@ class manySeq2SeqModel(object):
 
     # Create the internal multi-layer cell for our RNN.
     single_cell = tf.nn.rnn_cell.GRUCell(hidden_size)
+    if dropout and not forward_only: 
+      print("Dropout used !!")
+      single_cell = tf.nn.rnn_cell.DropoutWrapper(single_cell, 
+              output_keep_prob=output_keep_prob)
     if use_lstm:
       single_cell = tf.nn.rnn_cell.BasicLSTMCell(hidden_size)
     cell = single_cell
     if num_layers > 1:
       cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * num_layers)
 
-    # The seq2seq function: we use embedding for the input and attention.
-    def seq2seq_f(encoder_inputs_list, decoder_inputs, do_decode, attn_vec_size):
-      return many2one_seq2seq.many2one_attention_seq2seq(
-          encoder_inputs_list, decoder_inputs, cell,
+    ## SHUBHAM - Additional variable seq_len passed
+    def seq2seq_f(encoder_inputs, decoder_inputs, seq_len, do_decode):
+        return many2one_seq2seq.embedding_attention_seq2seq(
+          encoder_inputs, decoder_inputs, 
+          seq_len, ##SHUBHAM
+          cell,
           num_encoder_symbols=source_vocab_size,
           num_decoder_symbols=target_vocab_size,
           embedding_size=embedding_size,
           output_projection=output_projection,
-          feed_previous=do_decode,
-          attention_vec_size=attn_vec_size)
+          feed_previous=do_decode)
       
     # Feeds for inputs.
-    #self.encoder_inputs = []
-    self.text_encoder_inputs = []
-    self.speech_encoder_inputs = [] 
+    self.encoder_inputs = []
     self.decoder_inputs = []
     self.target_weights = []
     for i in xrange(buckets[-1][0]):  # Last bucket is the biggest one.
-      self.text_encoder_inputs.append(tf.placeholder(tf.int32, 
-          shape=[None],name="text_encoder{0}".format(i)))
-    for i in xrange(buckets[-1][0]*spscale):
-      self.speech_encoder_inputs.append(tf.placeholder(tf.float32, 
-          shape=[None, mfcc_num],name="speech_encoder{0}".format(i)))
-    for i in xrange(buckets[-1][1]+1):
+      self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
+                                                name="encoder{0}".format(i)))
+    for i in xrange(buckets[-1][1] + 1):
       self.decoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
                                                 name="decoder{0}".format(i)))
       self.target_weights.append(tf.placeholder(tf.float32, shape=[None],
                                                 name="weight{0}".format(i)))
-    self.encoder_inputs_list = [self.text_encoder_inputs, self.speech_encoder_inputs]
+
+    ## SHUBHAM - create seq_len tensor - Placeholder might be more natural
+    ## but this ensures that it matches batch_size
+    _batch_size = tf.shape(self.encoder_inputs[0])[0]
+    self.seq_len = tf.fill(tf.expand_dims(_batch_size, 0), tf.constant(2, dtype=tf.int64)) 
+
     # Our targets are decoder inputs shifted by one.
-    targets = [self.decoder_inputs[i+1] for i in xrange(len(self.decoder_inputs)-1)]
+    targets = [self.decoder_inputs[i + 1]
+               for i in xrange(len(self.decoder_inputs) - 1)]
 
     # Training outputs and losses.
+    ## SHUBHAM - Calling many2one_seq2seq since I can modify that
     if forward_only:
-      self.outputs, self.losses = many2one_seq2seq.many2one_model_with_buckets(
-          self.encoder_inputs_list, self.decoder_inputs, targets,
-          self.target_weights, buckets, lambda x, y: seq2seq_f(x, y, True, attn_vec_size),
-          softmax_loss_function=softmax_loss_function, spscale=spscale)
+      self.outputs, self.losses = many2one_seq2seq.model_with_buckets(
+          self.encoder_inputs, self.decoder_inputs, targets,
+          self.target_weights, self.seq_len, 
+          buckets, lambda x, y, z: seq2seq_f(x, y, z, True),
+          softmax_loss_function=softmax_loss_function)
       # If we use output projection, we need to project outputs for decoding.
       if output_projection is not None:
         for b in xrange(len(buckets)):
@@ -156,11 +159,11 @@ class manySeq2SeqModel(object):
               for output in self.outputs[b]
           ]
     else:
-      self.outputs, self.losses = many2one_seq2seq.many2one_model_with_buckets(
-          self.encoder_inputs_list, self.decoder_inputs, targets,
-          self.target_weights, buckets,
-          lambda x, y: seq2seq_f(x, y, False, attn_vec_size),
-          softmax_loss_function=softmax_loss_function, spscale=spscale)
+      self.outputs, self.losses = many2one_seq2seq.model_with_buckets(
+          self.encoder_inputs, self.decoder_inputs, targets,
+          self.target_weights, self.seq_len, buckets,
+          lambda x, y, z: seq2seq_f(x, y, z, False),
+          softmax_loss_function=softmax_loss_function)
 
     # Gradients and SGD update operation for training the model.
     params = tf.trainable_variables()
@@ -171,14 +174,15 @@ class manySeq2SeqModel(object):
       opt = tf.train.AdagradOptimizer(self.learning_rate) 
       for b in xrange(len(buckets)):
         gradients = tf.gradients(self.losses[b], params)
-        clipped_gradients, norm = tf.clip_by_global_norm(gradients,max_gradient_norm)
+        clipped_gradients, norm = tf.clip_by_global_norm(gradients,
+                                                         max_gradient_norm)
         self.gradient_norms.append(norm)
         self.updates.append(opt.apply_gradients(
             zip(clipped_gradients, params), global_step=self.global_step))
 
     self.saver = tf.train.Saver(tf.all_variables())
 
-  def step(self, session, encoder_inputs_list, decoder_inputs, target_weights,
+  def step(self, session, encoder_inputs, decoder_inputs, target_weights, seq_len,
            bucket_id, forward_only):
     """Run a step of the model feeding the given inputs.
 
@@ -200,9 +204,9 @@ class manySeq2SeqModel(object):
     """
     # Check if the sizes match.
     encoder_size, decoder_size = self.buckets[bucket_id]
-    if len(encoder_inputs_list[0]) != encoder_size:
+    if len(encoder_inputs) != encoder_size:
       raise ValueError("Encoder length must be equal to the one in bucket,"
-                       " %d != %d." % (len(encoder_inputs_list[0]), encoder_size))
+                       " %d != %d." % (len(encoder_inputs), encoder_size))
     if len(decoder_inputs) != decoder_size:
       raise ValueError("Decoder length must be equal to the one in bucket,"
                        " %d != %d." % (len(decoder_inputs), decoder_size))
@@ -213,16 +217,20 @@ class manySeq2SeqModel(object):
     # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
     input_feed = {}
     for l in xrange(encoder_size):
-      input_feed[self.text_encoder_inputs[l].name] = encoder_inputs_list[0][l]
-    for l in xrange(encoder_size*spscale):
-      input_feed[self.speech_encoder_inputs[l].name] = encoder_inputs_list[1][l] 
+      input_feed[self.encoder_inputs[l].name] = encoder_inputs[l]
     for l in xrange(decoder_size):
       input_feed[self.decoder_inputs[l].name] = decoder_inputs[l]
       input_feed[self.target_weights[l].name] = target_weights[l]
 
+    ## SHUBHAM - Feed seq_len as well
+    input_feed[self.seq_len.name] = seq_len
+
     # Since our targets are decoder inputs shifted by one, we need one more.
     last_target = self.decoder_inputs[decoder_size].name
-    input_feed[last_target] = np.zeros([self.batch_size], dtype=np.int32)
+    ## SHUBHAM - batch_size was used earlier - but it can be inferred from the 
+    ## argument. This was causing error when you don't feed the specified batch
+    ## size. So it's better to infer it. 
+    input_feed[last_target] = np.zeros([len(decoder_inputs[0])], dtype=np.int32)
 
     # Output feed: depends on whether we do a backward step or not.
     if not forward_only:
@@ -240,7 +248,61 @@ class manySeq2SeqModel(object):
     else:
       return None, outputs[0], outputs[1:]  # No gradient norm, loss, outputs.
 
+  def get_decode_batch(self, data, bucket_id):
+    """Get sequential batch
+    """
+    encoder_size, decoder_size = self.buckets[bucket_id]
+    encoder_inputs, decoder_inputs = [], []
+    this_batch_size = len(data[bucket_id])
 
+    ## SHUBHAM - seq_len initialized
+    seq_len = []
+
+    # Get a random batch of encoder and decoder inputs from data,
+    # pad them if needed, reverse encoder inputs and add GO to decoder.
+    for sample in data[bucket_id]:
+      encoder_input, decoder_input = sample
+
+      ## SHUBHAM - Append Entries
+      seq_len.append(len(encoder_input))
+    
+      # Encoder inputs are padded and then reversed.
+      encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
+      ## SHUBHAM - reversing just the input
+      encoder_inputs.append(list(reversed(encoder_input)) + encoder_pad)
+
+      # Decoder inputs get an extra "GO" symbol, and are padded then.
+      decoder_pad_size = decoder_size - len(decoder_input) - 1
+      decoder_inputs.append([data_utils.GO_ID] + decoder_input +
+                            [data_utils.PAD_ID] * decoder_pad_size)
+
+    # Now we create batch-major vectors from the data selected above.
+    batch_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], []
+
+    # Batch encoder inputs are just re-indexed encoder_inputs.
+    for length_idx in xrange(encoder_size):
+      batch_encoder_inputs.append(np.array([encoder_inputs[batch_idx][length_idx]
+                    for batch_idx in xrange(this_batch_size)], dtype=np.int32))
+
+    # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
+    for length_idx in xrange(decoder_size):
+      batch_decoder_inputs.append(np.array([decoder_inputs[batch_idx][length_idx]
+                    for batch_idx in xrange(this_batch_size)], dtype=np.int32))
+
+      # Create target_weights to be 0 for targets that are padding.
+      batch_weight = np.ones(this_batch_size, dtype=np.float32)
+      for batch_idx in xrange(this_batch_size):
+        # We set weight to 0 if the corresponding target is a PAD symbol.
+        # The corresponding target is decoder_input shifted by 1 forward.
+        if length_idx < decoder_size - 1:
+          target = decoder_inputs[batch_idx][length_idx + 1]
+        if length_idx == decoder_size - 1 or target == data_utils.PAD_ID:
+          batch_weight[batch_idx] = 0.0
+      batch_weights.append(batch_weight)
+
+    ## SHUBHAM - seq_len as nparray and then passing it as well
+    seq_len = np.asarray(seq_len, dtype=np.int64)
+    return batch_encoder_inputs, batch_decoder_inputs, batch_weights, seq_len
 
   def get_batch(self, data, bucket_id):
     """Get a random batch of data from the specified bucket, prepare for step.
@@ -261,14 +323,21 @@ class manySeq2SeqModel(object):
     encoder_size, decoder_size = self.buckets[bucket_id]
     encoder_inputs, decoder_inputs = [], []
 
+    ## SHUBHAM - seq_len initialized
+    seq_len = []
+
     # Get a random batch of encoder and decoder inputs from data,
     # pad them if needed, reverse encoder inputs and add GO to decoder.
     for _ in xrange(self.batch_size):
       encoder_input, decoder_input = random.choice(data[bucket_id])
 
+      ## SHUBHAM - Append Entries
+      seq_len.append(len(encoder_input))
+    
       # Encoder inputs are padded and then reversed.
       encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
-      encoder_inputs.append(list(reversed(encoder_input + encoder_pad)))
+      ## SHUBHAM - reversing just the input
+      encoder_inputs.append(list(reversed(encoder_input)) + encoder_pad)
 
       # Decoder inputs get an extra "GO" symbol, and are padded then.
       decoder_pad_size = decoder_size - len(decoder_input) - 1
@@ -300,42 +369,60 @@ class manySeq2SeqModel(object):
         if length_idx == decoder_size - 1 or target == data_utils.PAD_ID:
           batch_weight[batch_idx] = 0.0
       batch_weights.append(batch_weight)
-    return batch_encoder_inputs, batch_decoder_inputs, batch_weights
+
+    ## SHUBHAM - seq_len as nparray and then passing it as well
+    seq_len = np.asarray(seq_len, dtype=np.int64)
+    return batch_encoder_inputs, batch_decoder_inputs, batch_weights, seq_len
 
   def get_mix_batch(self, bucketed_data, bucket_id, this_batch_size):
     """Get a random batch of data from the specified bucket, prepare for step.
+
+    To feed data in step(..) it must be a list of batch-major vectors, while
+    data here contains single length-major cases. So the main logic of this
+    function is to re-index data cases to be in the proper format for feeding.
+
+    Args:
+      data: a tuple of size len(self.buckets) in which each element contains
+        lists of pairs of input and output data that we use to create a batch.
+      bucket_id: integer, which bucket to get the batch for.
+
+    Returns:
+      The triple (encoder_inputs, decoder_inputs, target_weights) for
+      the constructed batch that has the proper format to call step(...) later.
     """
     encoder_size, decoder_size = self.buckets[bucket_id]
-    text_encoder_inputs, speech_encoder_inputs, decoder_inputs = [], [], []
+    encoder_inputs, decoder_inputs = [], []
+
+    ## SHUBHAM - seq_len initialized
+    seq_len = []
 
     # Get a random batch of encoder and decoder inputs from data,
     # pad them if needed, reverse encoder inputs and add GO to decoder.
     for _ in xrange(this_batch_size):
-      text_encoder_input, decoder_input, speech_encoder_input = random.choice(bucketed_data)
+      encoder_input, decoder_input = random.choice(bucketed_data)
 
+      ## SHUBHAM - Append Entries
+      seq_len.append(len(encoder_input))
+    
       # Encoder inputs are padded and then reversed.
-      encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(text_encoder_input))
-      text_encoder_inputs.append(list(reversed(text_encoder_input + encoder_pad)))
-      speech_encoder_inputs.append(speech_encoder_input.T)
-      
+      encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
+      ## SHUBHAM - reversing just the input
+      encoder_inputs.append(list(reversed(encoder_input)) + encoder_pad)
+
       # Decoder inputs get an extra "GO" symbol, and are padded then.
       decoder_pad_size = decoder_size - len(decoder_input) - 1
       decoder_inputs.append([data_utils.GO_ID] + decoder_input +
                             [data_utils.PAD_ID] * decoder_pad_size)
 
     # Now we create batch-major vectors from the data selected above.
-    batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], [], []
+    batch_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], []
 
     # Batch encoder inputs are just re-indexed encoder_inputs.
     for length_idx in xrange(encoder_size):
-      batch_text_encoder_inputs.append(
-          np.array([text_encoder_inputs[batch_idx][length_idx]
+      batch_encoder_inputs.append(
+          np.array([encoder_inputs[batch_idx][length_idx]
                     for batch_idx in xrange(this_batch_size)], dtype=np.int32))
 
-    for length_idx in xrange(encoder_size * spscale):
-      batch_speech_encoder_inputs.append([speech_encoder_inputs[batch_idx][length_idx, :] 
-              for batch_idx in xrange(this_batch_size)])
-      
     # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
     for length_idx in xrange(decoder_size):
       batch_decoder_inputs.append(
@@ -352,50 +439,90 @@ class manySeq2SeqModel(object):
         if length_idx == decoder_size - 1 or target == data_utils.PAD_ID:
           batch_weight[batch_idx] = 0.0
       batch_weights.append(batch_weight)
-    return batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_decoder_inputs, batch_weights
-  
-  def get_decode_batch(self, data, bucket_id, this_batch_size=None):
-    """Get all batches for evaluation purposes
+
+    ## SHUBHAM - seq_len as nparray and then passing it as well
+    seq_len = np.asarray(seq_len, dtype=np.int64)
+    return batch_encoder_inputs, batch_decoder_inputs, batch_weights, seq_len
+
+  def get_ordered_batch(self, data, bucket_id, bucket_offset):
+    """Get a batch of data from the specified bucket, prepare for step.
+
+    To feed data in step(..) it must be a list of batch-major vectors, while
+    data here contains single length-major cases. So the main logic of this
+    function is to re-index data cases to be in the proper format for feeding.
+
+    Args:
+      data: a tuple of size len(self.buckets) in which each element contains
+        lists of pairs of input and output data that we use to create a batch.
+      bucket_id: integer, which bucket to get the batch for.
+
+    Returns:
+      The triple (encoder_inputs, decoder_inputs, target_weights) for
+      the constructed batch that has the proper format to call step(...) later.
     """
-    if not this_batch_size: this_batch_size = self.batch_size
     encoder_size, decoder_size = self.buckets[bucket_id]
-    text_encoder_inputs, speech_encoder_inputs, decoder_inputs = [], [], []
+    encoder_inputs, decoder_inputs = [], []
 
-    for sample in data[bucket_id]:
-      text_encoder_input, decoder_input, speech_encoder_input = sample
+    ## SHUBHAM - seq_len initialized
+    seq_len = []
+
+    # Get a batch of encoder and decoder inputs from data,
+    # pad them if needed, reverse encoder inputs and add GO to decoder.
+    for i in xrange(self.batch_size):
+      # print (i, bucket_offset, len(data[bucket_id]) )
+      if bucket_offset + i >= len(data[bucket_id]): break 
+      encoder_input, decoder_input = data[bucket_id][bucket_offset + i]
+
+      ## SHUBHAM - Filling in seq_len
+      seq_len.append(len(encoder_input))
 
       # Encoder inputs are padded and then reversed.
-      encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(text_encoder_input))
-      text_encoder_inputs.append(list(reversed(text_encoder_input + encoder_pad)))
-      speech_encoder_inputs.append(speech_encoder_input.T)
+      encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
+
+      ## SHUBHAM - reversing just the input
+      encoder_inputs.append(list(reversed(encoder_input) + encoder_pad))
 
       # Decoder inputs get an extra "GO" symbol, and are padded then.
       decoder_pad_size = decoder_size - len(decoder_input) - 1
       decoder_inputs.append([data_utils.GO_ID] + decoder_input +
                             [data_utils.PAD_ID] * decoder_pad_size)
+    
+    # if not enough samples to make batch: randomly sample from other previous
+    if len(encoder_inputs) < self.batch_size:
+      extra_samples = self.batch_size - len(encoder_inputs)
+      for _ in range(extra_samples):
+        encoder_input, decoder_input = random.choice(data[bucket_id])
+
+        ## SHUBHAM - Filling in seq_len
+        seq_len.append(len(encoder_input))
+
+        # Encoder inputs are padded and then reversed.
+        encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(encoder_input))
+        
+        ## SHUBHAM - reversing just the input
+        encoder_inputs.append(list(reversed(encoder_input)) + encoder_pad)
+
+        # Decoder inputs get an extra "GO" symbol, and are padded then.
+        decoder_pad_size = decoder_size - len(decoder_input) - 1
+        decoder_inputs.append([data_utils.GO_ID] + decoder_input + 
+                              [data_utils.PAD_ID] * decoder_pad_size)
 
     # Now we create batch-major vectors from the data selected above.
-    batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], [], []
+    batch_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], []
 
     # Batch encoder inputs are just re-indexed encoder_inputs.
     for length_idx in xrange(encoder_size):
-      batch_text_encoder_inputs.append(
-          np.array([text_encoder_inputs[batch_idx][length_idx]
-                    for batch_idx in xrange(this_batch_size)], dtype=np.int32))
+      batch_encoder_inputs.append(np.array([encoder_inputs[batch_idx][length_idx]
+                    for batch_idx in xrange(self.batch_size)], dtype=np.int32))
 
-    for length_idx in xrange(encoder_size * spscale):
-      batch_speech_encoder_inputs.append([speech_encoder_inputs[batch_idx][length_idx, :] 
-              for batch_idx in xrange(this_batch_size)])
-      
     # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
     for length_idx in xrange(decoder_size):
-      batch_decoder_inputs.append(
-          np.array([decoder_inputs[batch_idx][length_idx]
-                    for batch_idx in xrange(this_batch_size)], dtype=np.int32))
+      batch_decoder_inputs.append(np.array([decoder_inputs[batch_idx][length_idx]
+                    for batch_idx in xrange(self.batch_size)], dtype=np.int32))
 
       # Create target_weights to be 0 for targets that are padding.
-      batch_weight = np.ones(this_batch_size, dtype=np.float32)
-      for batch_idx in xrange(this_batch_size):
+      batch_weight = np.ones(self.batch_size, dtype=np.float32)
+      for batch_idx in xrange(self.batch_size):
         # We set weight to 0 if the corresponding target is a PAD symbol.
         # The corresponding target is decoder_input shifted by 1 forward.
         if length_idx < decoder_size - 1:
@@ -403,6 +530,8 @@ class manySeq2SeqModel(object):
         if length_idx == decoder_size - 1 or target == data_utils.PAD_ID:
           batch_weight[batch_idx] = 0.0
       batch_weights.append(batch_weight)
-    return batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_decoder_inputs, batch_weights
 
+    ## SHUBHAM - seq_len as nparray and then passing it as well
+    seq_len = np.asarray(seq_len, dtype=np.int64)
+    return batch_encoder_inputs, batch_decoder_inputs, batch_weights, seq_len
 

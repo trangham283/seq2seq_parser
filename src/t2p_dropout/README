@@ -1,0 +1,3 @@
+Train using switchboard data only
+-- use dropout
+-- use sequence_length

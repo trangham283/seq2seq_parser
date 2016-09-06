@@ -1,0 +1,5 @@
+Train using switchboard data only
+-- use dropout
+-- use sequence_length
+-- use LSTM cells instead of GRU cells
+

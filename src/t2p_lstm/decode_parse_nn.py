@@ -45,7 +45,7 @@ import tensorflow as tf
 import cPickle as pickle
 import argparse
 import data_utils
-import many2one_wrapper 
+import seq2seq_model
 import subprocess
 from tree_utils import add_brackets, match_length, merge_sent_tree
 
@@ -54,41 +54,37 @@ pa.add_argument('num_load', help='model step number to load')
 args = pa.parse_args()
 num_load = args.num_load
 
-train_dir = '/home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-many2one-0831'
-data_dir = '/share/data/speech/Data/ttran/for_batch_jobs/swbd_speech/'
-model_path = os.path.join(train_dir, 'many2one_model.ckpt-' + num_load)
-
-# default parameters
+train_dir = '/home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-lstm-0905'
+#data_dir = '/scratch/ttran/swbd_data' # on cluster 
+data_dir = '/scratch/ttran/Datasets/swtotal_data' # on malamute
+model_path = os.path.join(train_dir, 'parse_nn_small.ckpt-' + num_load)
+batch_size = 128
 input_vocab_size = 90000
 output_vocab_size = 128
-hidden_size = 256 
-num_layers = 3
-embedding_size = 512
-max_gradient_norm = 5.0
-batch_size = 32 
-learning_rate = 0.1
-learning_rate_decay_factor = 0.99
+dropout=False
 
 # Use the following buckets: 
 _buckets = [(10, 40), (25, 85), (40, 150)]
 NUM_THREADS = 1
 
 # data set paths
-dev_data_path = os.path.join(data_dir, 'sw_dev_both.pickle')
-dev_set = pickle.load(open(dev_data_path))
+dev_data_path = os.path.join(data_dir, 'swbd.dev.set.pickle')
 
 # evalb paths
 evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
 prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
 
-def create_model(session, forward_only, model_path=None):
+dev_set = pickle.load(open(dev_data_path))
+
+
+def create_model_default(session, forward_only, dropout=dropout, model_path=None):
   """Create translation model and initialize or load parameters in session."""
-  model = many2one_wrapper.manySeq2SeqModel(
-      input_vocab_size, output_vocab_size, _buckets,
-      hidden_size, num_layers, embedding_size,
-      max_gradient_norm, batch_size,
-      learning_rate, learning_rate_decay_factor,
-      forward_only=forward_only)
+  model = seq2seq_model.Seq2SeqModel(
+      90000, 128, _buckets,
+      256, 3, 512,
+      5.0, 128,
+      0.1, 0.99,
+      forward_only=forward_only, dropout=dropout)
   ckpt = tf.train.get_checkpoint_state(train_dir)
   if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and not model_path:
     print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
@@ -105,8 +101,6 @@ def create_model(session, forward_only, model_path=None):
     session.run(tf.initialize_all_variables())
     steps_done = 0
   return model, steps_done
-
-
 
 def process_eval(out_lines, this_size):
   # main stuff between outlines[3:-32]
@@ -154,14 +148,12 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
         all_examples = dev_set[bucket_id][batch_offset:batch_offset + eval_batch_size]
         model_dev.batch_size = len(all_examples)        
         token_ids = [x[0] for x in all_examples]
-        mfccs = [x[2] for x in all_examples]
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights = model_dev.get_decode_batch(
-                {bucket_id: zip(token_ids, dec_ids, mfccs)} , bucket_id)
-        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs] 
-        _, _, output_logits = model_dev.step(sess, encoder_inputs_list, decoder_inputs, 
-                target_weights, bucket_id, True)
+        encoder_inputs, decoder_inputs, target_weights, seq_len = model_dev.get_decode_batch(
+                {bucket_id: zip(token_ids, dec_ids)}, bucket_id)
+        _, _, output_logits = model_dev.step(sess, encoder_inputs, decoder_inputs,target_weights, seq_len,
+                bucket_id, True)
         outputs = [np.argmax(logit, axis=1) for logit in output_logits]
         to_decode = np.array(outputs).T
         num_valid = 0
@@ -169,13 +161,16 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
         for sent_id in range(to_decode.shape[0]):
           parse = list(to_decode[sent_id, :])
           if data_utils.EOS_ID in parse:
-            parse = parse[:parse.index(data_utils.EOS_ID)] # raw decoded parse
+            parse = parse[:parse.index(data_utils.EOS_ID)]
+          # raw decoded parse
+          # print(parse)
           decoded_parse = []
           for output in parse:
               if output < len(rev_parse_vocab):
                 decoded_parse.append(tf.compat.as_str(rev_parse_vocab[output]))
               else:
                 decoded_parse.append("_UNK") 
+          # decoded_parse = [tf.compat.as_str(rev_parse_vocab[output]) for output in parse]
           # add brackets for tree balance
           parse_br, valid = add_brackets(decoded_parse)
           num_valid += valid
@@ -202,7 +197,6 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
         out, err = p.communicate()
         out_lines = out.split("\n")
         vv = [x for x in out_lines if "Number of Valid sentence " in x]
-        print( out )
         s1 = float(vv[0].split()[-1])
         num_valid_br.append(s1)
         m_br, g_br, t_br = process_eval(out_lines, to_decode.shape[0])
@@ -213,7 +207,6 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
         out, err = p.communicate()
         out_lines = out.split("\n")
         vv = [x for x in out_lines if "Number of Valid sentence " in x]
-        print( out )
         s2 = float(vv[0].split()[-1])
         num_valid_mx.append(s2)
         m_mx, g_mx, t_mx = process_eval(out_lines, to_decode.shape[0])
@@ -229,9 +222,7 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
   sum_mx_f1 = 2 * sum_mx_pre*sum_mx_rec / (sum_mx_rec + sum_mx_pre)
   br_valid = sum(num_valid_br)
   mx_valid = sum(num_valid_mx)
-  print(num_valid_br)
   print("Bracket only -- Num valid sentences: %d; p: %.4f; r: %.4f; f1: %.4f" %(br_valid, sum_br_pre, sum_br_rec, sum_br_f1) ) 
-  print(num_valid_mx)
   print("Matched XX   -- Num valid sentences: %d; p: %.4f; r: %.4f; f1: %.4f" %(mx_valid, sum_mx_pre, sum_mx_rec, sum_mx_f1) ) 
 
 
@@ -261,15 +252,11 @@ def write_decode(model_dev, sess, dev_set):
         all_examples = dev_set[bucket_id][batch_offset:batch_offset+batch_size]
         model_dev.batch_size = len(all_examples)        
         token_ids = [x[0] for x in all_examples]
-        mfccs = [x[2] for x in all_examples]
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights = model_dev.get_decode_batch(
-                {bucket_id: zip(token_ids, dec_ids, mfccs)} , bucket_id)
-        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs] 
-        _, _, output_logits = model_dev.step(sess, encoder_inputs_list, decoder_inputs, 
-                target_weights, bucket_id, True)
-
+        encoder_inputs, decoder_inputs, target_weights, seq_len = model_dev.get_decode_batch(
+                {bucket_id: zip(token_ids, dec_ids)}, bucket_id)
+        _, _, output_logits = model_dev.step(sess, encoder_inputs, decoder_inputs,target_weights, seq_len, bucket_id, True)
         outputs = [np.argmax(logit, axis=1) for logit in output_logits]
         to_decode = np.array(outputs).T
         num_valid = 0
@@ -314,23 +301,23 @@ def decode():
   with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
     # Create model and load parameters.
     with tf.variable_scope("model", reuse=None):
-      model_dev, steps_done = create_model(sess, forward_only=True, model_path=model_path)
-    
-    for v in tf.all_variables():
-      print(v.name, v.get_shape())
-    #eval_batch_size = 32 
-    #start_time = time.time()
-    #do_evalb(model_dev, sess, dev_set, eval_batch_size)
-    #time_elapsed = time.time() - start_time
-    #print("Batched evalb time: ", time_elapsed)
+      model_dev, steps_done = create_model_default(sess, forward_only=True, dropout=False, model_path=model_path)
 
-    #start_time = time.time()
-    #write_decode(model_dev, sess, dev_set) 
-    #time_elapsed = time.time() - start_time
-    #print("Decoding all dev time: ", time_elapsed)
+    #for v in tf.all_variables():
+    #  print(v.name, v.get_shape())
+
+    eval_batch_size = 64
+    start_time = time.time()
+    do_evalb(model_dev, sess, dev_set, eval_batch_size)
+    time_elapsed = time.time() - start_time
+    print("Batched evalb time: ", time_elapsed)
+
+#    start_time = time.time()
+#    write_decode(model_dev, sess, dev_set) 
+#    time_elapsed = time.time() - start_time
+#    print("Decoding all dev time: ", time_elapsed)
+
+
 
 if __name__ == "__main__":
   decode() 
-
-
-
