@@ -1,8 +1,11 @@
 Various models for sequence-to-sequence RNN parser:
+- baseline: random parser, to use as baseline experiment
 - t2p_combined: text-to-parse, using big data as in "Grammar as a Foreign Language"
 - t2p_swbd_only: text-to-parse, using only switchboard data
 - t2p_seqlen: text-to-parse, using only switchboard data; 
   version with controlled seq_len
+- t2p_dropout: same as t2p_seqlen, but with dropout during training
+- t2p_lstm: same as t2p_dropout, but use LSTM cells instead of GRU cells
 - many2one: a two-encoder, one-decoder network, with speech input 
   going into the second decoder
 
