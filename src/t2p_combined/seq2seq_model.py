@@ -28,7 +28,6 @@ import tensorflow as tf
 # from tensorflow.models.rnn.translate import data_utils
 # ttmt update: use data_utils specific to my data
 import data_utils
-import many2one_seq2seq
 
 
 class Seq2SeqModel(object):
@@ -49,7 +48,7 @@ class Seq2SeqModel(object):
   def __init__(self, source_vocab_size, target_vocab_size, buckets, hidden_size,
                num_layers, embedding_size, max_gradient_norm, batch_size, learning_rate,
                learning_rate_decay_factor, use_lstm=False,
-               num_samples=512, forward_only=False, attention=False, small_def=False):
+               num_samples=512, forward_only=False, attention=False):
     """Create the model.
 
     Args:
@@ -111,14 +110,6 @@ class Seq2SeqModel(object):
       if attention:  
         return tf.nn.seq2seq.embedding_attention_seq2seq(
           encoder_inputs, decoder_inputs, cell,
-          num_encoder_symbols=source_vocab_size,
-          num_decoder_symbols=target_vocab_size,
-          embedding_size=embedding_size,
-          output_projection=output_projection,
-          feed_previous=do_decode)
-      elif small_def:
-        return many2one_seq2seq.embedding_attention_seq2seq(
-          encoder_inputs_list, decoder_inputs, cell,
           num_encoder_symbols=source_vocab_size,
           num_decoder_symbols=target_vocab_size,
           embedding_size=embedding_size,

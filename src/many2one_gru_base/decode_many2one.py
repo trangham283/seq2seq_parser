@@ -3,6 +3,7 @@ Based on parse_nn_swbd.py and debug_many2one.py
 Train 2-encoder 1-decoder network for parsing
 Data: switchboard
 
+Modified from train_many2one.py for interactive "session"
 """
 
 from __future__ import absolute_import
@@ -24,30 +25,21 @@ import data_utils
 import many2one_model
 from tree_utils import add_brackets, match_length, merge_sent_tree
 
-tf.app.flags.DEFINE_float("learning_rate", 0.1, "Learning rate.")
-tf.app.flags.DEFINE_float("learning_rate_decay_factor", 0.99,
-                          "Learning rate decays by this much.")
-tf.app.flags.DEFINE_float("max_gradient_norm", 5.0,
-                          "Clip gradients to this norm.")
-tf.app.flags.DEFINE_integer("batch_size", 64,
-                            "Batch size to use during training.")
-tf.app.flags.DEFINE_boolean("dropout", True, "To use dropout or not.")
-tf.app.flags.DEFINE_integer("hidden_size", 256, "Size of each model layer.")
-tf.app.flags.DEFINE_integer("embedding_size", 512, "Size embeddings.")
-tf.app.flags.DEFINE_integer("num_layers", 3, "Number of layers in the model.")
-tf.app.flags.DEFINE_integer("input_vocab_size", 90000, "input vocabulary size.")
-tf.app.flags.DEFINE_integer("output_vocab_size", 128, "output vocabulary size.")
-tf.app.flags.DEFINE_integer("max_steps", 1000, "max number of steps, in terms of batch passes.")
-tf.app.flags.DEFINE_string("data_dir", "/tmp", "Data directory")
-tf.app.flags.DEFINE_string("train_dir", "/tmp", "Training directory.")
-tf.app.flags.DEFINE_integer("max_train_data_size", 0,
-                            "Limit on the size of training data (0: no limit).")
-tf.app.flags.DEFINE_integer("steps_per_checkpoint", 100,
-                            "checkpoint frequency, in terms of steps")
-tf.app.flags.DEFINE_string("model_path", None, "path to model for evaluation")
-tf.app.flags.DEFINE_boolean("decode", False, "Run decoding")
-tf.app.flags.DEFINE_boolean("train_random", False, "train random or go through whole epochs")
-FLAGS = tf.app.flags.FLAGS
+stepnum = 160000
+
+learning_rate = 0.1
+learning_rate_decay_factor = 0.99
+max_gradient_norm = 5.0
+batch_size = 1
+hidden_size = 256
+embedding_size = 512
+num_layers = 3
+input_vocab_size = 90000
+output_vocab_size = 128
+
+data_dir = '/share/data/speech/Data/ttran/for_batch_jobs/swbd_speech/'
+train_dir = '/share/data/speech/Data/ttran/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-many2one-0905'
+model_path = os.path.join(train_dir, 'many2one_parse.ckpt-' + str(stepnum))
 
 # Use the following buckets: 
 _buckets = [(10, 40), (25, 85), (40, 150)]
@@ -55,22 +47,11 @@ train_buckets_scale = [0.6, 0.8, 1.0]
 NUM_THREADS = 1
 
 # data set paths
-swtrain_data_path = os.path.join(FLAGS.data_dir, 'sw_train_both.pickle')
-train_sw = pickle.load(open(swtrain_data_path))
-dev_path = os.path.join(FLAGS.data_dir, 'sw_dev_both.pickle')
+dev_path = os.path.join(data_dir, 'sw_dev_both.pickle')
 dev_set = pickle.load(open(dev_path))
 
-train_bucket_sizes = [len(train_sw[b]) for b in xrange(len(_buckets))]
-train_bucket_offsets = [np.arange(0, x, FLAGS.batch_size) for x in train_bucket_sizes]
-offset_lengths = [len(x) for x in train_bucket_offsets]
-tiled_buckets = [[i]*s for (i,s) in zip(range(len(_buckets)), offset_lengths)]
-all_bucks = [x for sublist in tiled_buckets for x in sublist]
-all_offsets = [x for sublist in list(train_bucket_offsets) for x in sublist]
-train_set = zip(all_bucks, all_offsets)
-np.random.shuffle(train_set)
-
 dev_bucket_sizes = [len(dev_set[b]) for b in xrange(len(_buckets))]
-dev_bucket_offsets = [np.arange(0, x, FLAGS.batch_size) for x in dev_bucket_sizes]
+dev_bucket_offsets = [np.arange(0, x, batch_size) for x in dev_bucket_sizes]
 
 
 # evalb paths
@@ -78,8 +59,8 @@ evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
 prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
 
 # prep eval vocabularies
-sents_vocab_path = os.path.join(FLAGS.data_dir,"vocab%d.sents" % 90000)
-parse_vocab_path = os.path.join(FLAGS.data_dir,"vocab%d.parse" % 128)
+sents_vocab_path = os.path.join(data_dir,"vocab%d.sents" % 90000)
+parse_vocab_path = os.path.join(data_dir,"vocab%d.parse" % 128)
 sents_vocab, rev_sent_vocab = data_utils.initialize_vocabulary(sents_vocab_path)
 _, rev_parse_vocab = data_utils.initialize_vocabulary(parse_vocab_path)
 
@@ -103,12 +84,12 @@ def process_eval(out_lines, this_size):
 def create_model(session, forward_only, dropout, model_path=None):
   """Create translation model and initialize or load parameters in session."""
   model = many2one_model.manySeq2SeqModel(
-      FLAGS.input_vocab_size, FLAGS.output_vocab_size, _buckets,
-      FLAGS.hidden_size, FLAGS.num_layers, FLAGS.embedding_size,
-      FLAGS.max_gradient_norm, FLAGS.batch_size,
-      FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
+      input_vocab_size, output_vocab_size, _buckets,
+      hidden_size, num_layers, embedding_size,
+      max_gradient_norm, batch_size,
+      learning_rate, learning_rate_decay_factor,
       forward_only=forward_only, dropout=dropout)
-  ckpt = tf.train.get_checkpoint_state(FLAGS.train_dir)
+  ckpt = tf.train.get_checkpoint_state(train_dir)
   if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and not model_path:
     print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
     model.saver.restore(session, ckpt.model_checkpoint_path)
@@ -125,148 +106,13 @@ def create_model(session, forward_only, dropout, model_path=None):
     steps_done = 0
   return model, steps_done
 
-def train():
-  """Train a sequence to sequence parser."""
-
-  with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
-    # Create model.
-    print("Creating %d layers of %d units." % (FLAGS.num_layers, FLAGS.hidden_size))
-    with tf.variable_scope("model", reuse=None):
-      model, steps_done = create_model(sess, forward_only=False, dropout=True)
-    with tf.variable_scope("model", reuse=True):
-      model_dev = many2one_model.manySeq2SeqModel(
-      FLAGS.input_vocab_size, FLAGS.output_vocab_size, _buckets,
-      FLAGS.hidden_size, FLAGS.num_layers, FLAGS.embedding_size,
-      FLAGS.max_gradient_norm, FLAGS.batch_size,
-      FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
-      forward_only=True, dropout=False)
-
-    num_remaining_steps = FLAGS.max_steps - steps_done
-    print("Num remaining steps: ", num_remaining_steps)
-    step_time, loss = 0.0, 0.0
-    current_step = 0
-    previous_losses = []
-    epoch = 0
-   
-    while current_step <= num_remaining_steps:
-      epoch += 1
-      print("Doing epoch: ", epoch)
-      np.random.shuffle(train_set) 
-
-      for bucket_id, bucket_offset in train_set:
-        this_sample = train_sw[bucket_id][bucket_offset:bucket_offset+FLAGS.batch_size]
-        this_batch_size = len(this_sample)
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, seq_len = model.get_batch(
-                {bucket_id: this_sample}, bucket_id)
-        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs] 
-        start_time = time.time()
-        _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs,  
-                target_weights, seq_len, bucket_id, False)
-        step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
-        loss += step_loss / FLAGS.steps_per_checkpoint
-        current_step += 1
-        
-        # Once in a while, we save checkpoint, print statistics, and run evals.
-        if current_step % FLAGS.steps_per_checkpoint == 0:
-          # Print statistics for the previous epoch.
-          perplexity = math.exp(loss) if loss < 300 else float('inf')
-          print ("global step %d learning rate %.4f step-time %.2f perplexity "
-               "%.2f" % (model.global_step.eval(), model.learning_rate.eval(),
-                         step_time, perplexity))
-          # Decrease learning rate if no improvement was seen over last 3 times.
-          if len(previous_losses) > 2 and loss > max(previous_losses[-3:]):
-            sess.run(model.learning_rate_decay_op)
-          previous_losses.append(loss)
-          # Save checkpoint and zero timer and loss.
-          save_time = time.time()
-          checkpoint_path = os.path.join(FLAGS.train_dir, "many2one_parse.ckpt")
-          model.saver.save(sess, checkpoint_path, global_step=model.global_step,write_meta_graph=False)
-          step_time, loss = 0.0, 0.0
-        
-        if current_step > num_remaining_steps: break
-
-      # end of one epoch, do write decodes to do evalb
-      print("Current step: ", current_step)
-      globstep = model.global_step.eval()
-      eval_batch_size = FLAGS.batch_size
-      write_time = time.time()
-      write_decode(model_dev, sess, dev_set, eval_batch_size, globstep)
-      time_elapsed = time.time() - write_time
-      print("decode writing time: ", time_elapsed)
-      sys.stdout.flush()
-    
-def train_random():
-  """Train a sequence to sequence parser."""
-  np.random.shuffle(train_sw[0])
-  np.random.shuffle(train_sw[1])
-  np.random.shuffle(train_sw[2])
-
-  with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
-    # Create model.
-    print("Creating %d layers of %d units." % (FLAGS.num_layers, FLAGS.hidden_size))
-    with tf.variable_scope("model", reuse=None):
-      model, steps_done = create_model(sess, False)
-
-    num_remaining_steps = FLAGS.max_steps - steps_done
-    print("Num remaining steps: ", num_remaining_steps)
-    step_time, loss = 0.0, 0.0
-    current_step = 0
-    previous_losses = []
-   
-    while current_step <= num_remaining_steps:
-        # Choose a bucket according to data distribution. We pick a random number
-        # in [0, 1] and use the corresponding interval in train_buckets_scale.
-        random_number_01 = np.random.random_sample()
-        bucket_id = min([i for i in xrange(len(train_buckets_scale)) 
-            if train_buckets_scale[i] > random_number_01])
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights = model.get_mix_batch(
-                train_sw[bucket_id], bucket_id, FLAGS.batch_size)
-        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs] 
-        start_time = time.time()
-        _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs,
-                                   target_weights, bucket_id, False)
-        step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
-        loss += step_loss / FLAGS.steps_per_checkpoint
-        current_step += 1
-        
-        # Once in a while, we save checkpoint, print statistics, and run evals.
-        if current_step % FLAGS.steps_per_checkpoint == 0:
-          # Print statistics for the previous epoch.
-          perplexity = math.exp(loss) if loss < 300 else float('inf')
-          print ("global step %d learning rate %.4f step-time %.2f perplexity "
-               "%.2f" % (model.global_step.eval(), model.learning_rate.eval(),
-                         step_time, perplexity))
-          # Decrease learning rate if no improvement was seen over last 3 times.
-          if len(previous_losses) > 2 and loss > max(previous_losses[-3:]):
-            sess.run(model.learning_rate_decay_op)
-          previous_losses.append(loss)
-          # Save checkpoint and zero timer and loss.
-          save_time = time.time()
-          checkpoint_path = os.path.join(FLAGS.train_dir, "many2one_parse.ckpt")
-          model.saver.save(sess, checkpoint_path, global_step=model.global_step, write_meta_graph=False)
-          step_time, loss = 0.0, 0.0
-
-          # Run evals on development set and print their perplexity.
-          for bucket_id in xrange(len(_buckets)):
-            if len(dev_set[bucket_id]) == 0:
-              print("  eval: empty bucket %d" % (bucket_id))
-              continue
-            text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights = model.get_batch(
-                dev_set[bucket_id], bucket_id)
-            _, eval_loss, _ = model.step(sess, [text_encoder_inputs, speech_encoder_inputs], decoder_inputs,
-                                       target_weights, bucket_id, True)
-            eval_ppx = math.exp(eval_loss) if eval_loss < 300 else float('inf')
-            print("  eval: bucket %d perplexity %.2f" % (bucket_id, eval_ppx))
-          print("Do EVALB outside separately")
-          sys.stdout.flush()
-
     
 def do_evalb(model_dev, sess, dev_set, eval_batch_size):  
-  gold_file_name = os.path.join(FLAGS.train_dir, 'partial.gold.txt')
+  gold_file_name = os.path.join(train_dir, 'partial.gold.txt')
   # file with matched brackets
-  decoded_br_file_name = os.path.join(FLAGS.train_dir, 'partial.decoded.br.txt')
+  decoded_br_file_name = os.path.join(train_dir, 'partial.decoded.br.txt')
   # file filler XX help as well
-  decoded_mx_file_name = os.path.join(FLAGS.train_dir, 'partial.decoded.mx.txt')
+  decoded_mx_file_name = os.path.join(train_dir, 'partial.decoded.mx.txt')
   
   num_sents = []
   num_valid_br = []
@@ -316,6 +162,7 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
           sent_text = [tf.compat.as_str(rev_sent_vocab[output]) for output in token_ids[sent_id]]
           # parse with also matching "XX" length
           parse_mx = match_length(parse_br, sent_text)
+          parse_mx = delete_empty_constituents(parse_mx)
           to_write_gold = merge_sent_tree(gold_parse, sent_text) 
           to_write_br = merge_sent_tree(parse_br, sent_text)
           to_write_mx = merge_sent_tree(parse_mx, sent_text)
@@ -366,12 +213,12 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
 def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep):  
   # Load vocabularies.
   stepname = str(globstep)
-  gold_file_name = os.path.join(FLAGS.train_dir, 'gold-step'+ stepname +'.txt')
+  gold_file_name = os.path.join(train_dir, 'gold-step'+ stepname +'.txt')
   print(gold_file_name)
   # file with matched brackets
-  decoded_br_file_name = os.path.join(FLAGS.train_dir, 'decoded-br-step'+ stepname +'.txt')
+  decoded_br_file_name = os.path.join(train_dir, 'decoded-br-step'+ stepname +'.txt')
   # file filler XX help as well
-  decoded_mx_file_name = os.path.join(FLAGS.train_dir, 'decoded-mx-step'+ stepname +'.txt')
+  decoded_mx_file_name = os.path.join(train_dir, 'decoded-mx-step'+ stepname +'.txt')
   
   fout_gold = open(gold_file_name, 'w')
   fout_br = open(decoded_br_file_name, 'w')
@@ -415,6 +262,7 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep):
           sent_text = [tf.compat.as_str(rev_sent_vocab[output]) for output in token_ids[sent_id]]
           # parse with also matching "XX" length
           parse_mx = match_length(parse_br, sent_text)
+          parse_mx = delete_empty_constituents(parse_mx)
 
           to_write_gold = merge_sent_tree(gold_parse, sent_text) # account for EOS
           to_write_br = merge_sent_tree(parse_br, sent_text)
@@ -435,7 +283,7 @@ def decode(debug=True):
   with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
     # Create model and load parameters.
     with tf.variable_scope("model", reuse=None):
-      model_dev, steps_done = create_model(sess, forward_only=True, dropout=False, model_path=FLAGS.model_path)
+      model_dev, steps_done = create_model(sess, forward_only=True, dropout=False, model_path=model_path)
 
     if debug:
       for v in tf.all_variables(): print(v.name, v.get_shape())
@@ -453,12 +301,7 @@ def decode(debug=True):
 
 
 def main(_):
-  if FLAGS.train_random:
-    train_random()
-  elif FLAGS.decode:
     decode()
-  else:
-    train()
 
 if __name__ == "__main__":
   tf.app.run()

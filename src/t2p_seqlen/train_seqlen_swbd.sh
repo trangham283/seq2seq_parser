@@ -22,4 +22,4 @@ LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python train_swbd_only.py
     --attention \
     --steps_per_checkpoint=500 \
     --batch_size=128 \
-    --max_steps=100000 >> output.swbd_seqlen_0902.txt
+    --max_steps=80000 >> output.swbd_seqlen_0902.txt

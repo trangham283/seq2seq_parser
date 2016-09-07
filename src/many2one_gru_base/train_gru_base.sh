@@ -14,9 +14,9 @@ cp /share/data/speech/Data/ttran/for_batch_jobs/swbd_speech/vocab* ${DATA_DIR}
 source /home-nfs/ttran/transitory/speech-nlp/venv_projects/ven4/bin/activate
 source /home-nfs/ttran/environ
 #source /home-nfs/ttran/transitory/speech-nlp/venv_projects/venv1/bin/activate
-cd /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/many2one
+cd /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/many2one_gru_base
 
-TRAIN_DIR="/home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-many2one-0905"
+TRAIN_DIR="/home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-gru-base-0907"
 
 # using default parameters
 LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python train_many2one.py \
@@ -25,7 +25,7 @@ LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python train_many2one.py 
     --steps_per_checkpoint=500 \
     --batch_size=64 \
     --dropout \
-    --max_steps=80000 >> output_many2one_0905.txt
+    --max_steps=80000 >> output_gru_base_0907.txt
 deactivate
 
     

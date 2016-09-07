@@ -49,7 +49,7 @@ import cPickle as pickle
 import data_utils
 import seq2seq_model
 import subprocess
-from tree_utils import add_brackets, match_length, merge_sent_tree
+from tree_utils import add_brackets, match_length, merge_sent_tree, delete_empty_constituents
 
 
 tf.app.flags.DEFINE_float("learning_rate", 0.1, "Learning rate.")
@@ -293,6 +293,7 @@ def do_evalb(model_dev, model, sess, dev_set):
           sent_text = [tf.compat.as_str(rev_sent_vocab[output]) for output in token_ids[sent_id]]
           # parse with also matching "XX" length
           parse_mx = match_length(parse_br, sent_text)
+          parse_mx = delete_empty_constituents(parse_mx)
 
           to_write_gold = merge_sent_tree(gold_parse[:-1], sent_text) # account for EOS
           to_write_br = merge_sent_tree(parse_br, sent_text)

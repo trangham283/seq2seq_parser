@@ -451,3 +451,1424 @@ global step 39000 learning rate 0.0951 step-time 0.30 perplexity 1.18
   eval: bucket 1 perplexity 1.38
   eval: bucket 2 perplexity 1.73
 Do EVALB outside separately
+Doing epoch:  57
+global step 39500 learning rate 0.0951 step-time 0.32 perplexity 1.18
+  eval: bucket 0 perplexity 1.11
+  eval: bucket 1 perplexity 1.43
+  eval: bucket 2 perplexity 1.74
+Do EVALB outside separately
+global step 40000 learning rate 0.0951 step-time 0.33 perplexity 1.16
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.42
+  eval: bucket 2 perplexity 1.70
+Do EVALB outside separately
+Doing epoch:  58
+global step 40500 learning rate 0.0951 step-time 0.32 perplexity 1.17
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.34
+  eval: bucket 2 perplexity 1.69
+Do EVALB outside separately
+Doing epoch:  59
+global step 41000 learning rate 0.0951 step-time 0.33 perplexity 1.17
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.35
+  eval: bucket 2 perplexity 1.83
+Do EVALB outside separately
+[61923, 24618, 3405]
+Loading data from /tmp/ttran/swbd_data
+Creating 3 layers of 256 units.
+Using LSTM cells
+Dropout used !!
+Reading model parameters from /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-lstm-0905/parse_nn_small.ckpt-41000
+loaded from 41000 done steps
+Using LSTM cells
+Doing epoch:  1
+global step 41500 learning rate 0.0951 step-time 0.37 perplexity 1.17
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.37
+  eval: bucket 2 perplexity 1.69
+Do EVALB outside separately
+Doing epoch:  2
+global step 42000 learning rate 0.0951 step-time 0.29 perplexity 1.16
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.34
+  eval: bucket 2 perplexity 1.70
+Do EVALB outside separately
+Doing epoch:  3
+global step 42500 learning rate 0.0951 step-time 0.30 perplexity 1.16
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.33
+  eval: bucket 2 perplexity 1.72
+Do EVALB outside separately
+global step 43000 learning rate 0.0951 step-time 0.31 perplexity 1.17
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.37
+  eval: bucket 2 perplexity 1.68
+Do EVALB outside separately
+Doing epoch:  4
+global step 43500 learning rate 0.0951 step-time 0.30 perplexity 1.15
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.34
+  eval: bucket 2 perplexity 1.68
+Do EVALB outside separately
+Doing epoch:  5
+global step 44000 learning rate 0.0951 step-time 0.29 perplexity 1.15
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.33
+  eval: bucket 2 perplexity 1.65
+Do EVALB outside separately
+global step 44500 learning rate 0.0951 step-time 0.30 perplexity 1.16
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.34
+  eval: bucket 2 perplexity 1.59
+Do EVALB outside separately
+Doing epoch:  6
+global step 45000 learning rate 0.0951 step-time 0.30 perplexity 1.15
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.35
+  eval: bucket 2 perplexity 1.72
+Do EVALB outside separately
+Doing epoch:  7
+global step 45500 learning rate 0.0951 step-time 0.30 perplexity 1.15
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.34
+  eval: bucket 2 perplexity 1.64
+Do EVALB outside separately
+Doing epoch:  8
+global step 46000 learning rate 0.0951 step-time 0.30 perplexity 1.15
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.36
+  eval: bucket 2 perplexity 1.62
+Do EVALB outside separately
+global step 46500 learning rate 0.0951 step-time 0.31 perplexity 1.15
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.29
+  eval: bucket 2 perplexity 1.60
+Do EVALB outside separately
+Doing epoch:  9
+global step 47000 learning rate 0.0951 step-time 0.30 perplexity 1.14
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.60
+Do EVALB outside separately
+Doing epoch:  10
+global step 47500 learning rate 0.0951 step-time 0.31 perplexity 1.15
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.33
+  eval: bucket 2 perplexity 1.55
+Do EVALB outside separately
+global step 48000 learning rate 0.0951 step-time 0.30 perplexity 1.14
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.33
+  eval: bucket 2 perplexity 1.64
+Do EVALB outside separately
+Doing epoch:  11
+global step 48500 learning rate 0.0951 step-time 0.31 perplexity 1.15
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.32
+  eval: bucket 2 perplexity 1.61
+Do EVALB outside separately
+Doing epoch:  12
+global step 49000 learning rate 0.0951 step-time 0.29 perplexity 1.13
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.57
+Do EVALB outside separately
+Doing epoch:  13
+global step 49500 learning rate 0.0951 step-time 0.31 perplexity 1.14
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.31
+  eval: bucket 2 perplexity 1.62
+Do EVALB outside separately
+global step 50000 learning rate 0.0951 step-time 0.30 perplexity 1.13
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.33
+  eval: bucket 2 perplexity 1.61
+Do EVALB outside separately
+Doing epoch:  14
+global step 50500 learning rate 0.0951 step-time 0.31 perplexity 1.14
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.31
+  eval: bucket 2 perplexity 1.56
+Do EVALB outside separately
+Doing epoch:  15
+global step 51000 learning rate 0.0951 step-time 0.33 perplexity 1.14
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.29
+  eval: bucket 2 perplexity 1.60
+Do EVALB outside separately
+global step 51500 learning rate 0.0951 step-time 0.30 perplexity 1.13
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.31
+  eval: bucket 2 perplexity 1.56
+Do EVALB outside separately
+Doing epoch:  16
+global step 52000 learning rate 0.0951 step-time 0.30 perplexity 1.13
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.61
+Do EVALB outside separately
+Doing epoch:  17
+global step 52500 learning rate 0.0951 step-time 0.30 perplexity 1.13
+  eval: bucket 0 perplexity 1.12
+  eval: bucket 1 perplexity 1.39
+  eval: bucket 2 perplexity 1.75
+Do EVALB outside separately
+Doing epoch:  18
+global step 53000 learning rate 0.0951 step-time 0.31 perplexity 1.13
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.36
+  eval: bucket 2 perplexity 1.63
+Do EVALB outside separately
+global step 53500 learning rate 0.0951 step-time 0.30 perplexity 1.12
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.53
+Do EVALB outside separately
+Doing epoch:  19
+global step 54000 learning rate 0.0951 step-time 0.31 perplexity 1.13
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.31
+  eval: bucket 2 perplexity 1.56
+Do EVALB outside separately
+Doing epoch:  20
+global step 54500 learning rate 0.0951 step-time 0.31 perplexity 1.12
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.29
+  eval: bucket 2 perplexity 1.52
+Do EVALB outside separately
+global step 55000 learning rate 0.0951 step-time 0.33 perplexity 1.13
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.27
+  eval: bucket 2 perplexity 1.51
+Do EVALB outside separately
+Doing epoch:  21
+global step 55500 learning rate 0.0941 step-time 0.31 perplexity 1.12
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.58
+Do EVALB outside separately
+Doing epoch:  22
+global step 56000 learning rate 0.0941 step-time 0.31 perplexity 1.12
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.55
+Do EVALB outside separately
+Doing epoch:  23
+global step 56500 learning rate 0.0941 step-time 0.31 perplexity 1.13
+  eval: bucket 0 perplexity 1.10
+  eval: bucket 1 perplexity 1.35
+  eval: bucket 2 perplexity 1.62
+Do EVALB outside separately
+global step 57000 learning rate 0.0941 step-time 0.30 perplexity 1.12
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.52
+Do EVALB outside separately
+Doing epoch:  24
+global step 57500 learning rate 0.0941 step-time 0.31 perplexity 1.13
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.50
+Do EVALB outside separately
+Doing epoch:  25
+global step 58000 learning rate 0.0941 step-time 0.30 perplexity 1.12
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.29
+  eval: bucket 2 perplexity 1.50
+Do EVALB outside separately
+global step 58500 learning rate 0.0941 step-time 0.31 perplexity 1.12
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.26
+  eval: bucket 2 perplexity 1.52
+Do EVALB outside separately
+Doing epoch:  26
+global step 59000 learning rate 0.0941 step-time 0.33 perplexity 1.12
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.27
+  eval: bucket 2 perplexity 1.52
+Do EVALB outside separately
+Doing epoch:  27
+global step 59500 learning rate 0.0941 step-time 0.34 perplexity 1.11
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.48
+Do EVALB outside separately
+global step 60000 learning rate 0.0941 step-time 0.35 perplexity 1.12
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.30
+  eval: bucket 2 perplexity 1.52
+Do EVALB outside separately
+Doing epoch:  28
+global step 60500 learning rate 0.0941 step-time 0.35 perplexity 1.11
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.27
+  eval: bucket 2 perplexity 1.54
+Do EVALB outside separately
+Doing epoch:  29
+global step 61000 learning rate 0.0941 step-time 0.33 perplexity 1.11
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.24
+  eval: bucket 2 perplexity 1.51
+Do EVALB outside separately
+Doing epoch:  30
+global step 61500 learning rate 0.0941 step-time 0.31 perplexity 1.11
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.28
+  eval: bucket 2 perplexity 1.46
+Do EVALB outside separately
+global step 62000 learning rate 0.0941 step-time 0.34 perplexity 1.11
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.27
+  eval: bucket 2 perplexity 1.50
+Do EVALB outside separately
+Doing epoch:  31
+global step 62500 learning rate 0.0941 step-time 0.35 perplexity 1.12
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.48
+Do EVALB outside separately
+Doing epoch:  32
+global step 63000 learning rate 0.0932 step-time 0.30 perplexity 1.11
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.26
+  eval: bucket 2 perplexity 1.48
+Do EVALB outside separately
+global step 63500 learning rate 0.0932 step-time 0.30 perplexity 1.11
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.26
+  eval: bucket 2 perplexity 1.47
+Do EVALB outside separately
+Doing epoch:  33
+global step 64000 learning rate 0.0932 step-time 0.29 perplexity 1.10
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.25
+  eval: bucket 2 perplexity 1.49
+Do EVALB outside separately
+Doing epoch:  34
+global step 64500 learning rate 0.0932 step-time 0.30 perplexity 1.11
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.26
+  eval: bucket 2 perplexity 1.45
+Do EVALB outside separately
+Doing epoch:  35
+global step 65000 learning rate 0.0923 step-time 0.32 perplexity 1.11
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.24
+  eval: bucket 2 perplexity 1.49
+Do EVALB outside separately
+global step 65500 learning rate 0.0914 step-time 0.34 perplexity 1.11
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.25
+  eval: bucket 2 perplexity 1.47
+Do EVALB outside separately
+Doing epoch:  36
+global step 66000 learning rate 0.0914 step-time 0.31 perplexity 1.10
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.24
+  eval: bucket 2 perplexity 1.46
+Do EVALB outside separately
+Doing epoch:  37
+global step 66500 learning rate 0.0914 step-time 0.31 perplexity 1.11
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.24
+  eval: bucket 2 perplexity 1.47
+Do EVALB outside separately
+global step 67000 learning rate 0.0914 step-time 0.34 perplexity 1.10
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.26
+  eval: bucket 2 perplexity 1.44
+Do EVALB outside separately
+Doing epoch:  38
+global step 67500 learning rate 0.0914 step-time 0.33 perplexity 1.10
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.25
+  eval: bucket 2 perplexity 1.65
+Do EVALB outside separately
+Doing epoch:  39
+global step 68000 learning rate 0.0914 step-time 0.34 perplexity 1.10
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.23
+  eval: bucket 2 perplexity 1.43
+Do EVALB outside separately
+Doing epoch:  40
+global step 68500 learning rate 0.0914 step-time 0.34 perplexity 1.10
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.25
+  eval: bucket 2 perplexity 1.45
+Do EVALB outside separately
+global step 69000 learning rate 0.0914 step-time 0.35 perplexity 1.10
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.24
+  eval: bucket 2 perplexity 1.48
+Do EVALB outside separately
+Doing epoch:  41
+global step 69500 learning rate 0.0914 step-time 0.33 perplexity 1.11
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.42
+Do EVALB outside separately
+Doing epoch:  42
+global step 70000 learning rate 0.0904 step-time 0.30 perplexity 1.10
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.42
+Do EVALB outside separately
+global step 70500 learning rate 0.0904 step-time 0.32 perplexity 1.10
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.46
+Do EVALB outside separately
+Doing epoch:  43
+global step 71000 learning rate 0.0904 step-time 0.34 perplexity 1.10
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.23
+  eval: bucket 2 perplexity 1.45
+Do EVALB outside separately
+Doing epoch:  44
+global step 71500 learning rate 0.0904 step-time 0.33 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.44
+Do EVALB outside separately
+Doing epoch:  45
+global step 72000 learning rate 0.0904 step-time 0.33 perplexity 1.10
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.41
+Do EVALB outside separately
+global step 72500 learning rate 0.0904 step-time 0.30 perplexity 1.09
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.25
+  eval: bucket 2 perplexity 1.40
+Do EVALB outside separately
+Doing epoch:  46
+global step 73000 learning rate 0.0904 step-time 0.30 perplexity 1.09
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.25
+  eval: bucket 2 perplexity 1.43
+Do EVALB outside separately
+Doing epoch:  47
+global step 73500 learning rate 0.0904 step-time 0.31 perplexity 1.09
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.42
+Do EVALB outside separately
+global step 74000 learning rate 0.0904 step-time 0.34 perplexity 1.10
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.44
+Do EVALB outside separately
+Doing epoch:  48
+global step 74500 learning rate 0.0895 step-time 0.34 perplexity 1.10
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.43
+Do EVALB outside separately
+Doing epoch:  49
+global step 75000 learning rate 0.0895 step-time 0.33 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.39
+Do EVALB outside separately
+Doing epoch:  50
+global step 75500 learning rate 0.0895 step-time 0.33 perplexity 1.09
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.42
+Do EVALB outside separately
+global step 76000 learning rate 0.0895 step-time 0.33 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.50
+Do EVALB outside separately
+Doing epoch:  51
+global step 76500 learning rate 0.0895 step-time 0.31 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.24
+  eval: bucket 2 perplexity 1.49
+Do EVALB outside separately
+Doing epoch:  52
+global step 77000 learning rate 0.0895 step-time 0.31 perplexity 1.09
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.41
+Do EVALB outside separately
+global step 77500 learning rate 0.0886 step-time 0.32 perplexity 1.09
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.23
+  eval: bucket 2 perplexity 1.40
+Do EVALB outside separately
+Doing epoch:  53
+global step 78000 learning rate 0.0886 step-time 0.31 perplexity 1.09
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+Doing epoch:  54
+global step 78500 learning rate 0.0886 step-time 0.31 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.41
+Do EVALB outside separately
+global step 79000 learning rate 0.0886 step-time 0.29 perplexity 1.09
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.24
+  eval: bucket 2 perplexity 1.44
+Do EVALB outside separately
+Doing epoch:  55
+global step 79500 learning rate 0.0886 step-time 0.30 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.39
+Do EVALB outside separately
+Doing epoch:  56
+global step 80000 learning rate 0.0886 step-time 0.32 perplexity 1.09
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.39
+Do EVALB outside separately
+[61923, 24618, 3405]
+Loading data from /tmp/ttran/swbd_data
+Creating 3 layers of 256 units.
+Using LSTM cells
+Dropout used !!
+Reading model parameters from /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-lstm-0905/parse_nn_small.ckpt-80000
+loaded from 80000 done steps
+Using LSTM cells
+Doing epoch:  1
+global step 80500 learning rate 0.0886 step-time 0.36 perplexity 1.09
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.44
+Do EVALB outside separately
+Doing epoch:  2
+global step 81000 learning rate 0.0886 step-time 0.32 perplexity 1.09
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.40
+Do EVALB outside separately
+Doing epoch:  3
+global step 81500 learning rate 0.0886 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+global step 82000 learning rate 0.0886 step-time 0.30 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.23
+  eval: bucket 2 perplexity 1.40
+Do EVALB outside separately
+Doing epoch:  4
+global step 82500 learning rate 0.0886 step-time 0.30 perplexity 1.09
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.23
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+Doing epoch:  5
+global step 83000 learning rate 0.0886 step-time 0.30 perplexity 1.09
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.35
+  eval: bucket 2 perplexity 2.04
+Do EVALB outside separately
+global step 83500 learning rate 0.0878 step-time 0.31 perplexity 1.10
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.40
+Do EVALB outside separately
+Doing epoch:  6
+global step 84000 learning rate 0.0869 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.40
+Do EVALB outside separately
+Doing epoch:  7
+global step 84500 learning rate 0.0869 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.39
+Do EVALB outside separately
+Doing epoch:  8
+global step 85000 learning rate 0.0869 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.39
+Do EVALB outside separately
+global step 85500 learning rate 0.0869 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+Doing epoch:  9
+global step 86000 learning rate 0.0869 step-time 0.31 perplexity 1.09
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+Doing epoch:  10
+global step 86500 learning rate 0.0860 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+global step 87000 learning rate 0.0860 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+Doing epoch:  11
+global step 87500 learning rate 0.0860 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  12
+global step 88000 learning rate 0.0860 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+Doing epoch:  13
+global step 88500 learning rate 0.0860 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.35
+Do EVALB outside separately
+global step 89000 learning rate 0.0851 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.40
+Do EVALB outside separately
+Doing epoch:  14
+global step 89500 learning rate 0.0843 step-time 0.29 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.39
+Do EVALB outside separately
+Doing epoch:  15
+global step 90000 learning rate 0.0843 step-time 0.32 perplexity 1.09
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.39
+Do EVALB outside separately
+global step 90500 learning rate 0.0835 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  16
+global step 91000 learning rate 0.0835 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+Doing epoch:  17
+global step 91500 learning rate 0.0835 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+Doing epoch:  18
+global step 92000 learning rate 0.0835 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+global step 92500 learning rate 0.0835 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+Doing epoch:  19
+global step 93000 learning rate 0.0835 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.22
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+Doing epoch:  20
+global step 93500 learning rate 0.0835 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+global step 94000 learning rate 0.0835 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+Doing epoch:  21
+global step 94500 learning rate 0.0835 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  22
+global step 95000 learning rate 0.0835 step-time 0.32 perplexity 1.08
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+Doing epoch:  23
+global step 95500 learning rate 0.0826 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.38
+Do EVALB outside separately
+global step 96000 learning rate 0.0818 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  24
+global step 96500 learning rate 0.0818 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  25
+global step 97000 learning rate 0.0818 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+global step 97500 learning rate 0.0818 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  26
+global step 98000 learning rate 0.0818 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  27
+global step 98500 learning rate 0.0810 step-time 0.30 perplexity 1.08
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+global step 99000 learning rate 0.0810 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  28
+global step 99500 learning rate 0.0810 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  29
+global step 100000 learning rate 0.0810 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+Doing epoch:  30
+global step 100500 learning rate 0.0802 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+global step 101000 learning rate 0.0802 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  31
+global step 101500 learning rate 0.0802 step-time 0.31 perplexity 1.08
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.35
+Do EVALB outside separately
+Doing epoch:  32
+global step 102000 learning rate 0.0802 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+global step 102500 learning rate 0.0802 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  33
+global step 103000 learning rate 0.0802 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  34
+global step 103500 learning rate 0.0802 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+Doing epoch:  35
+global step 104000 learning rate 0.0794 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+global step 104500 learning rate 0.0794 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  36
+global step 105000 learning rate 0.0786 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.35
+Do EVALB outside separately
+Doing epoch:  37
+global step 105500 learning rate 0.0786 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.09
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+global step 106000 learning rate 0.0786 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  38
+global step 106500 learning rate 0.0786 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  39
+global step 107000 learning rate 0.0786 step-time 0.29 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  40
+global step 107500 learning rate 0.0786 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+global step 108000 learning rate 0.0778 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  41
+global step 108500 learning rate 0.0778 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  42
+global step 109000 learning rate 0.0778 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.35
+Do EVALB outside separately
+global step 109500 learning rate 0.0778 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  43
+global step 110000 learning rate 0.0778 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  44
+global step 110500 learning rate 0.0770 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+Doing epoch:  45
+global step 111000 learning rate 0.0770 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+global step 111500 learning rate 0.0770 step-time 0.29 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  46
+global step 112000 learning rate 0.0770 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  47
+global step 112500 learning rate 0.0770 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+global step 113000 learning rate 0.0762 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  48
+global step 113500 learning rate 0.0762 step-time 0.29 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  49
+global step 114000 learning rate 0.0762 step-time 0.32 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+Doing epoch:  50
+global step 114500 learning rate 0.0755 step-time 0.28 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+global step 115000 learning rate 0.0755 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.36
+Do EVALB outside separately
+Doing epoch:  51
+global step 115500 learning rate 0.0755 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  52
+global step 116000 learning rate 0.0755 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+global step 116500 learning rate 0.0747 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  53
+global step 117000 learning rate 0.0747 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  54
+global step 117500 learning rate 0.0747 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+global step 118000 learning rate 0.0747 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.02
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  55
+global step 118500 learning rate 0.0740 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.35
+Do EVALB outside separately
+Doing epoch:  56
+global step 119000 learning rate 0.0740 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+Doing epoch:  57
+global step 119500 learning rate 0.0732 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+global step 120000 learning rate 0.0732 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  58
+global step 120500 learning rate 0.0732 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  59
+global step 121000 learning rate 0.0732 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+global step 121500 learning rate 0.0725 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  60
+global step 122000 learning rate 0.0725 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  61
+global step 122500 learning rate 0.0725 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  62
+global step 123000 learning rate 0.0725 step-time 0.30 perplexity 1.07
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+global step 123500 learning rate 0.0725 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  63
+global step 124000 learning rate 0.0725 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+[61923, 24618, 3405]
+Loading data from /tmp/ttran/swbd_data
+Creating 3 layers of 256 units.
+Using LSTM cells
+Dropout used !!
+Reading model parameters from /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-lstm-0905/parse_nn_small.ckpt-124000
+loaded from 124000 done steps
+Using LSTM cells
+Doing epoch:  1
+global step 124500 learning rate 0.0725 step-time 0.37 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  2
+global step 125000 learning rate 0.0725 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  3
+global step 125500 learning rate 0.0725 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+global step 126000 learning rate 0.0725 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  4
+global step 126500 learning rate 0.0725 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  5
+global step 127000 learning rate 0.0725 step-time 0.31 perplexity 1.07
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+global step 127500 learning rate 0.0718 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  6
+global step 128000 learning rate 0.0718 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+Doing epoch:  7
+global step 128500 learning rate 0.0718 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  8
+global step 129000 learning rate 0.0718 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+global step 129500 learning rate 0.0718 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  9
+global step 130000 learning rate 0.0718 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  10
+global step 130500 learning rate 0.0718 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.37
+Do EVALB outside separately
+global step 131000 learning rate 0.0711 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  11
+global step 131500 learning rate 0.0711 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  12
+global step 132000 learning rate 0.0711 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.14
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  13
+global step 132500 learning rate 0.0711 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+global step 133000 learning rate 0.0711 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  14
+global step 133500 learning rate 0.0703 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  15
+global step 134000 learning rate 0.0703 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+global step 134500 learning rate 0.0696 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  16
+global step 135000 learning rate 0.0696 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  17
+global step 135500 learning rate 0.0696 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  18
+global step 136000 learning rate 0.0696 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+global step 136500 learning rate 0.0689 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  19
+global step 137000 learning rate 0.0683 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  20
+global step 137500 learning rate 0.0683 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.34
+Do EVALB outside separately
+global step 138000 learning rate 0.0683 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  21
+global step 138500 learning rate 0.0683 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.02
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  22
+global step 139000 learning rate 0.0683 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  23
+global step 139500 learning rate 0.0683 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+global step 140000 learning rate 0.0676 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  24
+global step 140500 learning rate 0.0676 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+Doing epoch:  25
+global step 141000 learning rate 0.0676 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+global step 141500 learning rate 0.0676 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+Doing epoch:  26
+global step 142000 learning rate 0.0676 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  27
+global step 142500 learning rate 0.0669 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.20
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+global step 143000 learning rate 0.0669 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.21
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  28
+global step 143500 learning rate 0.0669 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  29
+global step 144000 learning rate 0.0669 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  30
+global step 144500 learning rate 0.0662 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.14
+  eval: bucket 2 perplexity 1.33
+Do EVALB outside separately
+global step 145000 learning rate 0.0662 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+Doing epoch:  31
+global step 145500 learning rate 0.0662 step-time 0.29 perplexity 1.05
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  32
+global step 146000 learning rate 0.0662 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+global step 146500 learning rate 0.0656 step-time 0.29 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  33
+global step 147000 learning rate 0.0656 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.07
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  34
+global step 147500 learning rate 0.0656 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  35
+global step 148000 learning rate 0.0656 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+global step 148500 learning rate 0.0649 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  36
+global step 149000 learning rate 0.0643 step-time 0.29 perplexity 1.05
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  37
+global step 149500 learning rate 0.0643 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+global step 150000 learning rate 0.0636 step-time 0.29 perplexity 1.05
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+Doing epoch:  38
+global step 150500 learning rate 0.0636 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  39
+global step 151000 learning rate 0.0636 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.32
+Do EVALB outside separately
+Doing epoch:  40
+global step 151500 learning rate 0.0636 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+global step 152000 learning rate 0.0636 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.25
+Do EVALB outside separately
+Doing epoch:  41
+global step 152500 learning rate 0.0636 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  42
+global step 153000 learning rate 0.0630 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.18
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+global step 153500 learning rate 0.0624 step-time 0.29 perplexity 1.05
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  43
+global step 154000 learning rate 0.0624 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.14
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+Doing epoch:  44
+global step 154500 learning rate 0.0617 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.02
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  45
+global step 155000 learning rate 0.0617 step-time 0.30 perplexity 1.05
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.15
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+global step 155500 learning rate 0.0617 step-time 0.30 perplexity 1.05
+  eval: bucket 0 perplexity 1.08
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.27
+Do EVALB outside separately
+Doing epoch:  46
+global step 156000 learning rate 0.0617 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  47
+global step 156500 learning rate 0.0611 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+global step 157000 learning rate 0.0611 step-time 0.30 perplexity 1.05
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.19
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+Doing epoch:  48
+global step 157500 learning rate 0.0611 step-time 0.30 perplexity 1.05
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.29
+Do EVALB outside separately
+Doing epoch:  49
+global step 158000 learning rate 0.0611 step-time 0.30 perplexity 1.05
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.16
+  eval: bucket 2 perplexity 1.27
+Do EVALB outside separately
+Doing epoch:  50
+global step 158500 learning rate 0.0611 step-time 0.30 perplexity 1.05
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.27
+Do EVALB outside separately
+global step 159000 learning rate 0.0605 step-time 0.30 perplexity 1.06
+  eval: bucket 0 perplexity 1.04
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.31
+Do EVALB outside separately
+Doing epoch:  51
+global step 159500 learning rate 0.0599 step-time 0.31 perplexity 1.06
+  eval: bucket 0 perplexity 1.05
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+Doing epoch:  52
+global step 160000 learning rate 0.0593 step-time 0.29 perplexity 1.05
+  eval: bucket 0 perplexity 1.03
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.28
+Do EVALB outside separately
+global step 160500 learning rate 0.0593 step-time 0.31 perplexity 1.05
+  eval: bucket 0 perplexity 1.06
+  eval: bucket 1 perplexity 1.17
+  eval: bucket 2 perplexity 1.30
+Do EVALB outside separately
+[61923, 24618, 3405]
+Loading data from /tmp/ttran/swbd_data
+Creating 3 layers of 256 units.
+Using LSTM cells
+Dropout used !!
+Reading model parameters from /home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-lstm-0905/parse_nn_small.ckpt-160500
+loaded from 160500 done steps
+Using LSTM cells

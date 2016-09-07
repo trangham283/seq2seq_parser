@@ -47,7 +47,7 @@ import argparse
 import data_utils
 import seq2seq_model
 import subprocess
-from tree_utils import add_brackets, match_length, merge_sent_tree
+from tree_utils import add_brackets, match_length, delete_empty_constituents, merge_sent_tree
 
 pa = argparse.ArgumentParser(description='Evaluate swbd model')
 pa.add_argument('num_load', help='model step number to load')
@@ -55,8 +55,8 @@ args = pa.parse_args()
 num_load = args.num_load
 
 train_dir = '/home-nfs/ttran/transitory/speech-nlp/venv_projects/seq2seq_parser/tmp_results/model-swbd-dropout-0902'
-#data_dir = '/scratch/ttran/swbd_data' # on cluster 
-data_dir = '/scratch/ttran/Datasets/swtotal_data' # on malamute
+data_dir = '/tmp/ttran/swbd_data' # on cluster 
+#data_dir = '/scratch/ttran/Datasets/swtotal_data' # on malamute
 model_path = os.path.join(train_dir, 'parse_nn_small.ckpt-' + num_load)
 batch_size = 128
 input_vocab_size = 90000
@@ -179,6 +179,7 @@ def do_evalb(model_dev, sess, dev_set, eval_batch_size):
           sent_text = [tf.compat.as_str(rev_sent_vocab[output]) for output in token_ids[sent_id]]
           # parse with also matching "XX" length
           parse_mx = match_length(parse_br, sent_text)
+          parse_mx = delete_empty_constituents(parse_mx)
           to_write_gold = merge_sent_tree(gold_parse[:-1], sent_text) # account for EOS
           to_write_br = merge_sent_tree(parse_br, sent_text)
           to_write_mx = merge_sent_tree(parse_mx, sent_text)
@@ -235,11 +236,11 @@ def write_decode(model_dev, sess, dev_set):
   sents_vocab, rev_sent_vocab = data_utils.initialize_vocabulary(sents_vocab_path)
   _, rev_parse_vocab = data_utils.initialize_vocabulary(parse_vocab_path)
 
-  gold_file_name = os.path.join(train_dir, 'debug.gold.txt')
+  gold_file_name = os.path.join('debug.gold.txt')
   # file with matched brackets
-  decoded_br_file_name = os.path.join(train_dir, 'debug.decoded.br.txt')
+  decoded_br_file_name = os.path.join('debug.decoded.br.txt')
   # file filler XX help as well
-  decoded_mx_file_name = os.path.join(train_dir, 'debug.decoded.mx.txt')
+  decoded_mx_file_name = os.path.join('debug.decoded.mx.txt')
   
   fout_gold = open(gold_file_name, 'w')
   fout_br = open(decoded_br_file_name, 'w')
@@ -281,7 +282,7 @@ def write_decode(model_dev, sess, dev_set):
           sent_text = [tf.compat.as_str(rev_sent_vocab[output]) for output in token_ids[sent_id]]
           # parse with also matching "XX" length
           parse_mx = match_length(parse_br, sent_text)
-
+          parse_mx = delete_empty_constituents(parse_mx)
           to_write_gold = merge_sent_tree(gold_parse[:-1], sent_text) # account for EOS
           to_write_br = merge_sent_tree(parse_br, sent_text)
           to_write_mx = merge_sent_tree(parse_mx, sent_text)
@@ -306,16 +307,16 @@ def decode():
     #for v in tf.all_variables():
     #  print(v.name, v.get_shape())
 
-    eval_batch_size = 64
-    start_time = time.time()
-    do_evalb(model_dev, sess, dev_set, eval_batch_size)
-    time_elapsed = time.time() - start_time
-    print("Batched evalb time: ", time_elapsed)
-
+#    eval_batch_size = 64
 #    start_time = time.time()
-#    write_decode(model_dev, sess, dev_set) 
+#    do_evalb(model_dev, sess, dev_set, eval_batch_size)
 #    time_elapsed = time.time() - start_time
-#    print("Decoding all dev time: ", time_elapsed)
+#    print("Batched evalb time: ", time_elapsed)
+
+    start_time = time.time()
+    write_decode(model_dev, sess, dev_set) 
+    time_elapsed = time.time() - start_time
+    print("Decoding all dev time: ", time_elapsed)
 
 
 
