@@ -1,0 +1,167 @@
+Update on stats: SWBD with speech data
+Buckets: [(10, 40), (25, 85), (40, 150)
+
+***
+train set
+Bucket 0: size = 61986
+Sentence num tokens: min = 1; max = 9; mean = 3.98; median = 3.00
+Parse lengths: min = 5; max = 39; mean = 13.42; median = 11.00
+Num mfcc frames (averaged): min = 1; max = 420; mean = 19.67; median = 14.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 2746
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 44123
+ 
+Bucket 1: size = 24604
+Sentence num tokens: min = 8; max = 24; mean = 14.48; median = 14.00
+Parse lengths: min = 14; max = 84; mean = 46.66; median = 44.00
+Num mfcc frames (averaged): min = 19; max = 545; mean = 76.28; median = 69.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 2116
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 10113
+ 
+Bucket 2: size = 3357
+Sentence num tokens: min = 19; max = 39; mean = 29.34; median = 28.00
+Parse lengths: min = 49; max = 149; mean = 95.75; median = 93.00
+Num mfcc frames (averaged): min = 62; max = 527; mean = 169.79; median = 163.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 780
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 124
+ 
+
+***
+dev set
+Bucket 0: size = 3510
+Sentence num tokens: min = 1; max = 9; mean = 4.00; median = 3.00
+Parse lengths: min = 5; max = 39; mean = 13.38; median = 11.00
+Num mfcc frames (averaged): min = 1; max = 284; mean = 18.79; median = 13.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 149
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 2535
+ 
+Bucket 1: size = 1752
+Sentence num tokens: min = 10; max = 24; mean = 14.92; median = 14.00
+Parse lengths: min = 22; max = 84; mean = 48.26; median = 46.00
+Num mfcc frames (averaged): min = 22; max = 319; mean = 79.38; median = 72.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 182
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 666
+ 
+Bucket 2: size = 336
+Sentence num tokens: min = 22; max = 39; mean = 29.51; median = 28.00
+Parse lengths: min = 64; max = 144; mean = 96.15; median = 93.00
+Num mfcc frames (averaged): min = 79; max = 350; mean = 175.40; median = 170.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 95
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 10
+ 
+***
+dev2 set
+Bucket 0: size = 3691
+Sentence num tokens: min = 1; max = 9; mean = 3.90; median = 3.00
+Parse lengths: min = 5; max = 39; mean = 13.05; median = 10.00
+Num mfcc frames (averaged): min = 1; max = 137; mean = 18.45; median = 12.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 172
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 2674
+ 
+Bucket 1: size = 1743
+Sentence num tokens: min = 8; max = 24; mean = 14.74; median = 14.00
+Parse lengths: min = 22; max = 84; mean = 47.62; median = 45.00
+Num mfcc frames (averaged): min = 23; max = 333; mean = 78.75; median = 72.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 189
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 688
+ 
+Bucket 2: size = 308
+Sentence num tokens: min = 21; max = 39; mean = 29.82; median = 29.00
+Parse lengths: min = 69; max = 143; mean = 96.31; median = 93.00
+Num mfcc frames (averaged): min = 70; max = 369; mean = 180.28; median = 169.50
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 97
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 11
+
+
+***
+test set
+Bucket 0: size = 3798
+Sentence num tokens: min = 1; max = 9; mean = 3.89; median = 3.00
+Parse lengths: min = 5; max = 39; mean = 13.04; median = 10.00
+Num mfcc frames (averaged): min = 1; max = 650; mean = 19.14; median = 13.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 190
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 2727
+ 
+Bucket 1: size = 1652
+Sentence num tokens: min = 9; max = 24; mean = 14.81; median = 14.00
+Parse lengths: min = 22; max = 84; mean = 47.58; median = 45.00
+Num mfcc frames (averaged): min = 22; max = 322; mean = 80.72; median = 74.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 189
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 606
+ 
+Bucket 2: size = 294
+Sentence num tokens: min = 22; max = 39; mean = 30.00; median = 29.00
+Parse lengths: min = 65; max = 139; mean = 97.70; median = 96.00
+Num mfcc frames (averaged): min = 74; max = 312; mean = 173.86; median = 168.00
+  num sentences where mfccs were cut off (num_avg_frames > bucket_len*spscale): 75
+  num sentences where space was a bit wasted (num_avg_frames < half num_frames allowed): 10
+ 
+
+#####################################################
+Other
+bk_total data (wsj train + berkeley parser):
+    bucket 0: 750097
+    bucket 1: 3934057
+    bucket 2: 3317560 
+total: 8,001,714
+
+File:  bktotal.train.data.set-0-split-0 ; size:  37504
+File:  bktotal.train.data.set-0-split-1 ; size:  37504
+File:  bktotal.train.data.set-0-split-2 ; size:  37504
+File:  bktotal.train.data.set-0-split-3 ; size:  37504
+File:  bktotal.train.data.set-0-split-4 ; size:  37504
+File:  bktotal.train.data.set-0-split-5 ; size:  37504
+File:  bktotal.train.data.set-0-split-6 ; size:  37504
+File:  bktotal.train.data.set-0-split-7 ; size:  37504
+File:  bktotal.train.data.set-0-split-8 ; size:  37504
+File:  bktotal.train.data.set-0-split-9 ; size:  37504
+File:  bktotal.train.data.set-0-split-10 ; size:  37504
+File:  bktotal.train.data.set-0-split-11 ; size:  37504
+File:  bktotal.train.data.set-0-split-12 ; size:  37504
+File:  bktotal.train.data.set-0-split-13 ; size:  37504
+File:  bktotal.train.data.set-0-split-14 ; size:  37504
+File:  bktotal.train.data.set-0-split-15 ; size:  37504
+File:  bktotal.train.data.set-0-split-16 ; size:  37504
+File:  bktotal.train.data.set-0-split-17 ; size:  37504
+File:  bktotal.train.data.set-0-split-18 ; size:  37504
+File:  bktotal.train.data.set-0-split-19 ; size:  37521
+File:  bktotal.train.data.set-1-split-0 ; size:  196702
+File:  bktotal.train.data.set-1-split-1 ; size:  196702
+File:  bktotal.train.data.set-1-split-2 ; size:  196702
+File:  bktotal.train.data.set-1-split-3 ; size:  196702
+File:  bktotal.train.data.set-1-split-4 ; size:  196702
+File:  bktotal.train.data.set-1-split-5 ; size:  196702
+File:  bktotal.train.data.set-1-split-6 ; size:  196702
+File:  bktotal.train.data.set-1-split-7 ; size:  196702
+File:  bktotal.train.data.set-1-split-8 ; size:  196702
+File:  bktotal.train.data.set-1-split-9 ; size:  196702
+File:  bktotal.train.data.set-1-split-10 ; size:  196702
+File:  bktotal.train.data.set-1-split-11 ; size:  196702
+File:  bktotal.train.data.set-1-split-12 ; size:  196702
+File:  bktotal.train.data.set-1-split-13 ; size:  196702
+File:  bktotal.train.data.set-1-split-14 ; size:  196702
+File:  bktotal.train.data.set-1-split-15 ; size:  196702
+File:  bktotal.train.data.set-1-split-16 ; size:  196702
+File:  bktotal.train.data.set-1-split-17 ; size:  196702
+File:  bktotal.train.data.set-1-split-18 ; size:  196702
+File:  bktotal.train.data.set-1-split-19 ; size:  196719
+File:  bktotal.train.data.set-2-split-0 ; size:  165878
+File:  bktotal.train.data.set-2-split-1 ; size:  165878
+File:  bktotal.train.data.set-2-split-2 ; size:  165878
+File:  bktotal.train.data.set-2-split-3 ; size:  165878
+File:  bktotal.train.data.set-2-split-4 ; size:  165878
+File:  bktotal.train.data.set-2-split-5 ; size:  165878
+File:  bktotal.train.data.set-2-split-6 ; size:  165878
+File:  bktotal.train.data.set-2-split-7 ; size:  165878
+File:  bktotal.train.data.set-2-split-8 ; size:  165878
+File:  bktotal.train.data.set-2-split-9 ; size:  165878
+File:  bktotal.train.data.set-2-split-10 ; size:  165878
+File:  bktotal.train.data.set-2-split-11 ; size:  165878
+File:  bktotal.train.data.set-2-split-12 ; size:  165878
+File:  bktotal.train.data.set-2-split-13 ; size:  165878
+File:  bktotal.train.data.set-2-split-14 ; size:  165878
+File:  bktotal.train.data.set-2-split-15 ; size:  165878
+File:  bktotal.train.data.set-2-split-16 ; size:  165878
+File:  bktotal.train.data.set-2-split-17 ; size:  165878
+File:  bktotal.train.data.set-2-split-18 ; size:  165878
+File:  bktotal.train.data.set-2-split-19 ; size:  165878
+
