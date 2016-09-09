@@ -24,7 +24,7 @@ LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python train_many2one.py 
     --steps_per_checkpoint=500 \
     --batch_size=64 \
     --dropout \
-    --max_steps=80000 >> output_lstm_warm_0907.txt
+    --max_steps=160000 >> output_lstm_warm_0907.txt
 deactivate
 
     
