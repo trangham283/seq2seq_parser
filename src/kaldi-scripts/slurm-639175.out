@@ -1,0 +1,2 @@
+find: ‘/tmp/ttran/Datasets/audio_swbd/sph’: No such file or directory
+split_scp.pl: error: empty input scp file /tmp/ttran/Datasets/audio_swbd/wav.scp , You are splitting into too many pieces! at utils/split_scp.pl line 209.
