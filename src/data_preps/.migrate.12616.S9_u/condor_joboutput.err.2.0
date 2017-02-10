@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "process_kaldi_feats.py", line 40, in <module>
-    pickle.dump(feat_dict, open(full_name, 'w'))
-IOError: [Errno 2] No such file or directory: '/s0/ttmt001/speech_parsing/swbd_fbank/sw_10001-A.pickle'
