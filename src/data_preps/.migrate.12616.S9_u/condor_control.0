@@ -1,0 +1,17 @@
+Executable      = /g/tial/sw/pkgs/as70-amd64/python2.7.9/bin/python
+Universe        = vanilla
+copy_to_spool   = False
+getenv          = True
+coresize        = 0
+requirements    = TARGET.NikolaHost=="bird030"
+request_memory  = 24000
+request_cpus    = 1
+initialdir      = /homes/ttmt001/transitory/seq2seq_parser/seq2seq_parser/src/data_preps
+
+notification    = Error
+log             = /tmp/ttmt001_condor_logs/condor_log.12616
+Arguments       = process_kaldi_feats.py
+Output          = /homes/ttmt001/transitory/seq2seq_parser/seq2seq_parser/src/data_preps/.migrate.12616.S9_u/condor_joboutput.$(Cluster).$(Process)
+Error           = /homes/ttmt001/transitory/seq2seq_parser/seq2seq_parser/src/data_preps/.migrate.12616.S9_u/condor_joboutput.err.$(Cluster).$(Process)
+Queue
+
