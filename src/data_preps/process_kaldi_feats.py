@@ -13,16 +13,16 @@ import glob
 feattype = 'fbank'
 numc = 41 # number of feature dimensions 
 
-nsplit = 8 # number of splits when kaldi was called
+nsplit = 4 # number of splits when kaldi was called
 
-raw_dir = '/tmp/ttran/Datasets/audio_swbd/'+feattype
-output_dir = '/tmp/ttran/Datasets/swbd_'+feattype+'/'
+raw_dir = '/s0/ttmt001/speech_parsing/'+feattype
+output_dir = '/s0/ttmt001/speech_parsing/swbd_'+feattype+'/'
 
 done_files = glob.glob(output_dir + '*')
 done_files = [os.path.basename(x).split('.')[0] for x in done_files]
 
 for i in range(1,nsplit+1):
-    raw_file = os.path.join(raw_dir, 'raw_%s_sph.%d.txt' %(feattype,i) )
+    raw_file = os.path.join(raw_dir, 'raw_%s_swbd_sph.%d.txt' %(feattype,i) )
     raw_lines = open(raw_file).readlines()
     sindices = [i for i,x in enumerate(raw_lines) if 'sw' in x]
     eindices = sindices[1:] + [len(raw_lines)]

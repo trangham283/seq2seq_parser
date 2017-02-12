@@ -357,7 +357,7 @@ def main(_):
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
    
-    split = 'train'
+    split = 'dev2'
     acoustic = 'pitch3'
     this_set = process_data_both(data_dir, split, sent_vocab, parse_vocab, \
             acoustic)
