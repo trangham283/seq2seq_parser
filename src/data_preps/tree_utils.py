@@ -148,4 +148,73 @@ def merge_sent_tree(parse, sent):
 
     return new_tree
 
+def linearize_tree(tree_sent, pos_norm=True, rm_func_tag=True, dec_bracket=True,
+        lower=True, rev_sent=False):
+    keep_set = ['-NONE-', ',', ':', '``', '\'\'', '.']
+    line = tree_sent[:]
+
+    items = line.strip().split()
+    sent = []
+    tree = []
+    tag_stack = []
+    for idx, token in enumerate(items):
+        token = token.strip()
+        if token[0] == '(':
+            # a tree part
+            next_token = items[idx + 1]
+            if next_token[0] == '(':
+                # not POS
+                # push the tag in stack
+                if len(token) > 1:
+                    if token[1] == '(':
+                        tag_stack.append('(')
+                        tree.append('(')
+                    tok = token.strip('(')
+                    if rm_func_tag:
+                        try:
+                            tok = tok.replace('-', ' ').replace('=', ' ').strip().split()[0]
+                        except:
+                            sys.stderr.write('''Err: rm-func-tag {} token
+                                    {}\n'''.format(tok, token))
+                            sys.exit(1)
+                    tag_stack.append(tok)
+                    tree.append('({}'.format(tok))
+                else:
+                    tag_stack.append(token)
+                    tree.append(token)
+            else:
+                # current is POS
+                if token[1:] == next_token[:-1] or\
+                        token[1:] in keep_set:
+                    tree.append(token.strip('('))
+                elif pos_norm:
+                    tree.append('XX')
+                else:
+                    tree.append(token.strip('('))
+        elif token[0] == ')':
+            # bracket annotation
+            for i in range(len(token)):
+                try:
+                    tag = tag_stack.pop()
+                except:
+                    sys.stderr.write('Err: bracket does not match!\n')
+                    sys.stderr.write('''current partial tree
+                            {}\n'''.format(' '.join(tree)))
+                    sys.stderr.write('current token {}\n'.format(token))
+                    sys.stderr.write('current tree {}\n'.format(line))
+                    sys.exit(1)
+                if dec_bracket:
+                    tree.append(')_{}'.format(tag))
+                else:
+                    tree.append(')')
+        else:
+            # word
+            if lower:
+                sent.append(token.strip(')').lower())
+            else:
+                sent.append(token.strip(')'))
+    if rev_sent:
+        sent.reverse()
+    return sent, tree
+
 
