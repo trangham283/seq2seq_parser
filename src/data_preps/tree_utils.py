@@ -149,11 +149,14 @@ def merge_sent_tree(parse, sent):
     return new_tree
 
 def linearize_tree(tree_sent, pos_norm=True, rm_func_tag=True, dec_bracket=True,
-        lower=True, rev_sent=False):
+        lower=True, rev_sent=False, isList=True):
     keep_set = ['-NONE-', ',', ':', '``', '\'\'', '.']
-    line = tree_sent[:]
-
-    items = line.strip().split()
+    
+    if not isList:
+        line = tree_sent
+        items = line.strip().split()
+    else: 
+        items = tree_sent[:]
     sent = []
     tree = []
     tag_stack = []
@@ -215,6 +218,6 @@ def linearize_tree(tree_sent, pos_norm=True, rm_func_tag=True, dec_bracket=True,
                 sent.append(token.strip(')'))
     if rev_sent:
         sent.reverse()
-    return sent, tree
+    return ' '.join(sent), ' '.join(tree)
 
 

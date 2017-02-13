@@ -9,7 +9,10 @@ format. The difference is that there's no issue of aligning the dps files etc.""
 import os
 import sys
 import Treebank.PTB
-
+import pandas as pd
+import numpy as np
+from itertools import izip
+from tree_utils import linearize_tree
 
 def get_dfl(word, sent):
     turn = '%s%s' % (sent.speaker, sent.turnID[1:])
@@ -65,6 +68,13 @@ def prune_trace(sent):
     for word in sent.listWords():
         if word.isTrace(): word.prune()
 
+def cleanup(sent):
+    for word in sent.listWords():
+        if word.text == '?':
+            word.prune()
+        if word.isPunct() or word.isTrace(): 
+            word.prune()
+        word.text = word.text.lower()
 
 
 # detach immediate bracket from terminal for later linearize_tree formatting
@@ -84,59 +94,37 @@ def detach_brackets(line):
 
 
 def do_section(ptb_files, out_dir, name):
-    trees_file = os.path.join(out_dir, '%s.trees' % name)
-    times_file = os.path.join(out_dir, '%s.times' % name)
-    trees = open(trees_file, 'w')
-    times = open(times_file, 'w')
-    err_sents = []
-    p2_sents = []
+    times_file = os.path.join(out_dir, '%s.data.csv' % name)
+    list_row = []
     for file_ in ptb_files:
         sents = []
         orig_words = []
         for sent in file_.children():
-            prune_trace(sent)
-            assert len(sent._children) == 1
-            stimes = [w.start_time for w in sent.listWords() if w.start_time is not None]
-            etimes = [w.end_time for w in sent.listWords() if w.end_time is not None]
-            if not stimes or not etimes:
-                err_sents.append(sent.globalID)
-                continue
-                
-            start_time = stimes[0]
-            end_time = etimes[-1]
-            if start_time == -1 or end_time == -1:
-                # skip non-aligned sentence
-                continue
-            
-            # check if utterance contains multiple sentences
-            w = [c.text for c in sent.listWords()]
-            indices = [i for i, x in enumerate(w) if x == "."]
-            if len(indices) > 1:
-                p2_sents.append(sent.globalID)
-                
-                #if indices[-1] == len(w) - 1: # last period is last in sentence
-                #    start_indices = [0] + [k-1 for k in indices[:-1]] 
-                #    end_indices = [k+1 for k in indices]
-                #else:
-                #    start_indices = [0] + [k-1 for k in indices]
-                #    end_indices = [k+1 for k in indices] + [len(w)]
-                #for s, e in zip(start_indices, end_indices):
-                #    sub_sent = sent[s:e]
+            cleanup(sent)
             line = str(sent)
             new_tree = detach_brackets(line)
-            trees.write('{}\n'.format(' '.join(new_tree)))
-            # write timing info
-            # filename \t speaker \t globalID \t start_time \t end_time \t length \n
-            item = '{}\t{}\t{}\t{}\t{}\t{}\n'.format(file_.filename, sent.speaker, \
-                sent.globalID, start_time, end_time, len(w) )
-            times.write(item)
-
-    print "Sentences without time-alignment: "
-    for s in err_sents: print s
-
-    print "Sentence with more than 1 period: "
-    for s in p2_sents: print s
-
+            # Weird non-sentence case:
+            if len(new_tree) <= 1: continue
+            sentence, parse = linearize_tree(new_tree)
+            assert len(sent._children) == 1
+            stimes = [w.start_time for w in sent.listWords()] 
+            etimes = [w.end_time for w in sent.listWords()] 
+            words = [w.text for w in sent.listWords()]
+            assert len(stimes) == len(etimes) == len(words)
+            if not stimes or not etimes:
+                print "no time info for ", sent.globalID
+                continue
+            list_row.append({'file_id': file_.ID, \
+                    'speaker': sent.speaker, \
+                    'sent_id': sent.globalID, \
+                    'tokens': words, \
+                    'start_times': stimes, \
+                    'end_times': etimes, \
+                    'sentence': sentence, \
+                    'parse': parse})
+    data_df = pd.DataFrame(list_row)
+    data_df.to_csv(times_file, sep='\t', index=False)
+             
 
 def main(nxt_loc, out_dir):
     corpus = Treebank.PTB.NXTSwitchboard(path=nxt_loc)
@@ -147,4 +135,6 @@ def main(nxt_loc, out_dir):
 
 
 if __name__ == '__main__':
-    plac.call(main)
+    nxt_loc = '/s0/ttmt001/speech_parsing'
+    out_dir = '/s0/ttmt001/speech_parsing/swbd_trees'
+    main(nxt_loc, out_dir)
