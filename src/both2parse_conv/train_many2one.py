@@ -44,26 +44,28 @@ def parse_options():
     parser.add_argument("-bsize", "--batch_size", default=64, type=int, help="Mini-batch Size")
     parser.add_argument("-esize", "--embedding_size", default= 512, type=int, help="Embedding Size")
 
-    parser.add_argument("-text_hsize", "--text_hidden_size", default=256, type=int, help="Hidden layer size of text encoder")
-    parser.add_argument("-text_num_layers", "--text_num_layers", default=3, type=int, help="Number of stacked layers of text encoder")
-    parser.add_argument("-speech_hsize", "--speech_hidden_size", default=256, type=int, help="Hidden layer size of speech encoder")
-    parser.add_argument("-speech_num_layers", "--speech_num_layers", default=3, type=int, help="Number of stacked layers of speech encoder")
-    parser.add_argument("-parse_hsize", "--parse_hidden_size", default=256, type=int, help="Hidden layer size of decoder")
-    parser.add_argument("-parse_num_layers", "--parse_num_layers", default=3, type=int, help="Number of stacked layers of decoder")  
+    parser.add_argument("-text_hsize", "--text_hidden_size", default=500, type=int, help="Hidden layer size of text encoder")
+    parser.add_argument("-text_num_layers", "--text_num_layers", default=2, type=int, help="Number of stacked layers of text encoder")
+    parser.add_argument("-speech_hsize", "--speech_hidden_size", default=500, type=int, help="Hidden layer size of speech encoder")
+    parser.add_argument("-speech_num_layers", "--speech_num_layers", default=2, type=int, help="Number of stacked layers of speech encoder")
+    parser.add_argument("-parse_hsize", "--parse_hidden_size", default=500, type=int, help="Hidden layer size of decoder")
+    parser.add_argument("-parse_num_layers", "--parse_num_layers", default=2, type=int, help="Number of stacked layers of decoder") 
+    parser.add_argument("-attn_vec_size", "--attention_vector_size", default=64, type=int, help="Attention vector size in the tanh(...) operation")
     
     parser.add_argument("-max_gnorm", "--max_gradient_norm", default=5.0, type=float, help="Maximum allowed norm of gradients")
+    parser.add_argument("-sp_scale", "--speech_bucket_scale", default=5, type=int, help="Scaling factor for speech encoder buckets")
     parser.add_argument("-sv_file", "--source_vocab_file", default="vocab.sents", type=str, help="Vocab file for source")
     parser.add_argument("-tv_file", "--target_vocab_file", default="vocab.parse", type=str, help="Vocab file for target")
     
-    parser.add_argument("-data_dir", "--data_dir", default="/share/data/speech/Data/ttran/for_batch_jobs/swbd_new", type=str, help="Data directory")
-    parser.add_argument("-tb_dir", "--train_base_dir", default="/share/data/speech/Data/ttran/speech-nlp/venv_projects/seq2seq_parser/many2one_tune/models", type=str, help="Training directory")
-    parser.add_argument("-ws_path", "--warm_start_path", default="/share/data/speech/Data/ttran/speech-nlp/venv_projects/seq2seq_parser/init_models/t2p_tuned.pickle", type=str, help="Warm start model path")
+    parser.add_argument("-data_dir", "--data_dir", default="/share/data/speech/Data/ttran/for_batch_jobs/swbd_tune", type=str, help="Data directory")
+    parser.add_argument("-tb_dir", "--train_base_dir", default="/share/data/speech/Data/ttran/speech-nlp/venv_projects/seq2seq_parser/many2one_extra/models", type=str, help="Training directory")
+    parser.add_argument("-ws_path", "--warm_start_path", default="None", type=str, help="Warm start model path")
 
-    parser.add_argument("-lstm", "--lstm", default=False, action="store_true", help="RNN cell to use")
+    parser.add_argument("-lstm", "--lstm", default=True, action="store_true", help="RNN cell to use")
     parser.add_argument("-out_prob", "--output_keep_prob", default=0.8, type=float, help="Output keep probability for dropout")
 
     parser.add_argument("-max_epochs", "--max_epochs", default=500, type=int, help="Max epochs")
-    parser.add_argument("-num_check", "--steps_per_checkpoint", default=200, type=int, help="Number of steps before updated model is saved")
+    parser.add_argument("-num_check", "--steps_per_checkpoint", default=250, type=int, help="Number of steps before updated model is saved")
     parser.add_argument("-eval", "--eval_dev", default=False, action="store_true", help="Get dev set results using the last saved model")
     parser.add_argument("-test", "--test", default=False, action="store_true", help="Get test results using the last saved model")
     parser.add_argument("-run_id", "--run_id", default=0, type=int, help="Run ID")
@@ -88,6 +90,8 @@ def parse_options():
                 'speech_num_layers' + '_' + str(arg_dict['speech_num_layers']) + '_' +   
                 'parse_hsize' + '_' + str(arg_dict['parse_hidden_size']) + '_' +  
                 'parse_num_layers' + '_' + str(arg_dict['parse_num_layers']) + '_' +   
+                'attn_vec_size' + '_' + str(arg_dict['attention_vector_size']) + '_' +
+                'sp_scale' + '_' + str(arg_dict['speech_bucket_scale']) + '_' +
                 'out_prob' + '_' + str(arg_dict['output_keep_prob']) + '_' + 
                 'run_id' + '_' + str(arg_dict['run_id']) + '_' + 
                 opt_string + 
@@ -130,8 +134,7 @@ def load_dev_data():
     return dev_set
 
 def load_train_data():
-    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'sw_train_both.pickle')
-    swtrain_data_path = os.path.join(FLAGS.data_dir, 'sw_train2_both.pickle')
+    swtrain_data_path = os.path.join(FLAGS.data_dir, 'sw_combined_both.pickle')
     train_sw = pickle.load(open(swtrain_data_path))
 
     train_bucket_sizes = [len(train_sw[b]) for b in xrange(len(_buckets))]
@@ -183,6 +186,7 @@ def get_model_graph(session, forward_only):
       FLAGS.text_hidden_size, FLAGS.speech_hidden_size, FLAGS.parse_hidden_size, 
       FLAGS.text_num_layers, FLAGS.speech_num_layers, FLAGS.parse_num_layers,
       FLAGS.embedding_size, FLAGS.max_gradient_norm, FLAGS.batch_size,
+      FLAGS.attention_vector_size, FLAGS.speech_bucket_scale, 
       FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
       FLAGS.optimizer, use_lstm=FLAGS.lstm, 
       output_keep_prob=FLAGS.output_keep_prob, forward_only=forward_only)
@@ -206,7 +210,7 @@ def create_model(session, forward_only, model_path=None):
     print("Created model with fresh parameters.")
     session.run(tf.initialize_all_variables())
     steps_done = 0
-    if FLAGS.warm_start_path is not None:
+    if FLAGS.warm_start_path is not "None":
         print("Warm start")
         saved_variables = pickle.load(open(FLAGS.warm_start_path))
         my_variables = [v for v in tf.trainable_variables()]
@@ -252,11 +256,11 @@ def train():
       for bucket_id, bucket_offset in train_set:
         this_sample = train_sw[bucket_id][bucket_offset:bucket_offset+FLAGS.batch_size]
         start_time = time.time()
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, seq_len = model.get_batch(
+        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, text_seq_len, speech_seq_len  = model.get_batch(
                 {bucket_id: this_sample}, bucket_id)
         encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs] 
         _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs,  
-                target_weights, seq_len, bucket_id, False)
+                target_weights, text_seq_len, speech_seq_len, bucket_id, False)
         step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
         loss += step_loss / FLAGS.steps_per_checkpoint
         current_step += 1
@@ -322,10 +326,10 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         mfccs = [x[2] for x in all_examples]
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, seq_len = model_dev.get_batch(
+        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, text_seq_len, speech_seq_len = model_dev.get_batch(
                 {bucket_id: zip(token_ids, dec_ids, mfccs)}, bucket_id)
         _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs], 
-                decoder_inputs, target_weights, seq_len, bucket_id, True)
+                decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, True)
         outputs = [np.argmax(logit, axis=1) for logit in output_logits]
         to_decode = np.array(outputs).T
         num_dev_sents += to_decode.shape[0]

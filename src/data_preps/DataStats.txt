@@ -1,3 +1,25 @@
+Frame length stats for word-level processing:
+(after removing problem cases where edge words cannot be aligned)
+split   |#sents |avg #frames   |max #frames |min #frames    |#sents         
+                                                            |with<5frames |<25frames |<100frames
+dev2    |5,849  |240    |2557   |5  |0  |355    |2440  
+dev     |5,550  |247    |3954   |1  |1  |323    |2214 
+test    |5,448  |235    |3377   |5  |0  |320    |2318
+train   |90,780 |210    |3884   |1  |12 |3273   |39,406
+
+###
+Similar stats, but on words instead of sentences:
+split   |#words |avg #frames   |max #frames |min #frames    |#words         
+                                                            |with<5frames |<25frames |<100frames
+dev2    |49,075  |26    |320    |1  |228   |27,796    |48,951  
+dev     |47,514  |26    |1005   |1  |190   |27,194    |47,416 
+test    |44,534  |26    |282    |1  |239   |25,290    |44,449
+train   |676,210 |26    |507    |1  |3,054 |381,255   |674,404
+
+
+
+
+###################################################################    
 Update on stats: SWBD with speech data
 Buckets: [(10, 40), (25, 85), (40, 150)
 

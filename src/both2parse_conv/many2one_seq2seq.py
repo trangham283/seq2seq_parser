@@ -229,13 +229,14 @@ def many2one_embedding_attention_decoder(decoder_inputs, initial_state, attentio
 
 
 def many2one_attention_seq2seq(encoder_inputs_list, 
-        decoder_inputs, text_len, 
+        decoder_inputs, text_len, speech_len, 
         text_cell, speech_cell, parse_cell,
         num_encoder_symbols, num_decoder_symbols,
         embedding_size, output_projection=None,
         feed_previous=False, dtype=dtypes.float32,
         scope=None, initial_state_attention=False,
-        attention_vec_size=None):
+        attention_vec_size=None, 
+        filter_sizes, num_filters):
 
   text_encoder_inputs, speech_encoder_inputs = encoder_inputs_list
   with variable_scope.variable_scope(scope or "many2one_attention_seq2seq"):
@@ -252,7 +253,28 @@ def many2one_attention_seq2seq(encoder_inputs_list,
 
     with variable_scope.variable_scope(scope or "speech_encoder"):
       speech_encoder_outputs, speech_encoder_state = rnn.rnn(
-              speech_cell, speech_encoder_inputs, dtype=dtype)
+              speech_cell, speech_encoder_inputs, sequence_length=speech_len, dtype=dtype)
+
+    # TODO:
+    # Convolution stuff happens here for speech inputs
+    pooled_outputs = []
+    for i, filter_size in enumerate(filter_sizes):
+        with variable_scope.variable_scope(scope or "conv-maxpool-%s" %
+                filter_size):
+            filter_shape = [filter_size, embedding_size, 1, num_filters]
+            W = variable_scope.get_variable("conv-filter-W-%d"%i, filter_shape,
+                    initializer=tf.truncated_normal(filter_shape, stddev=0.1))
+            b = variable_scope.get_variable("conv-filter-B-%d"%i, num_filters)
+            conv = nn_ops.conv2d() 
+
+
+
+
+
+
+
+
+
 
     # First calculate a concatenation of encoder outputs to put attention on.
     text_top_states = [array_ops.reshape(e, [-1, 1, text_cell.output_size])
@@ -382,8 +404,8 @@ def sequence_loss(logits, targets, weights,
       return cost
 
 def many2one_model_with_buckets(encoder_inputs_list, decoder_inputs, targets, weights,
-                       text_len, buckets, seq2seq, softmax_loss_function=None,
-                       per_example_loss=False, name=None, spscale=5):
+                       text_len, speech_len, buckets, seq2seq, softmax_loss_function=None,
+                       per_example_loss=False, name=None, spscale=10):
   
   # Modified model with buckets to accept 2 encoders
 
@@ -411,7 +433,7 @@ def many2one_model_with_buckets(encoder_inputs_list, decoder_inputs, targets, we
         y = encoder_inputs_list[1][:speech_buckets[j][0]]
         bucket_outputs, _ = seq2seq([x, y], 
                 decoder_inputs[:bucket[1]], 
-                text_len)
+                text_len, speech_len)
         outputs.append(bucket_outputs)
         if per_example_loss:
           losses.append(sequence_loss_by_example(
