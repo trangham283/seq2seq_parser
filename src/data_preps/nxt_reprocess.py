@@ -11,6 +11,7 @@ import sys
 import Treebank.PTB
 import pandas as pd
 import numpy as np
+import cPickle as pickle
 from itertools import izip
 from tree_utils import linearize_tree
 
@@ -124,14 +125,36 @@ def do_section(ptb_files, out_dir, name):
                     'parse': parse})
     data_df = pd.DataFrame(list_row)
     data_df.to_csv(times_file, sep='\t', index=False)
-             
+
+def get_stats(ptb_files, out_dir, name):
+    dict_file = os.path.join(out_dir, '%s.pos-tag.pickle' % name)
+    pos_dict = dict()
+    for file_ in ptb_files:
+        sents = []
+        orig_words = []
+        for sent in file_.children():
+            assert len(sent._children) == 1
+            for w in sent.listWords():
+                pos = w.label
+                if pos not in pos_dict:
+                    pos_dict[pos] = 0
+                pos_dict[pos] += 1
+
+    pickle.dump(pos_dict, open(dict_file, 'w'))
+    for k in sorted(pos_dict.keys()):
+        print k, pos_dict[k] 
 
 def main(nxt_loc, out_dir):
     corpus = Treebank.PTB.NXTSwitchboard(path=nxt_loc)
-    do_section(corpus.train_files(), out_dir, 'train')
-    do_section(corpus.dev_files(), out_dir, 'dev')
-    do_section(corpus.dev2_files(), out_dir, 'dev2')
-    do_section(corpus.eval_files(), out_dir, 'test')
+    #do_section(corpus.train_files(), out_dir, 'train')
+    #do_section(corpus.dev_files(), out_dir, 'dev')
+    #do_section(corpus.dev2_files(), out_dir, 'dev2')
+    #do_section(corpus.eval_files(), out_dir, 'test')
+    
+    get_stats(corpus.train_files(), out_dir, 'train')
+    #get_stats(corpus.dev_files(), out_dir, 'dev')
+    #get_stats(corpus.dev2_files(), out_dir, 'dev2')
+    #get_stats(corpus.eval_files(), out_dir, 'test')
 
 
 if __name__ == '__main__':
