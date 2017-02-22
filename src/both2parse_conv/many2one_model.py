@@ -29,7 +29,7 @@ from tensorflow.python.ops import rnn_cell
 import data_utils
 import many2one_seq2seq
 
-mfcc_num = 13
+mfcc_num = 3
 #attn_vec_size = None # i.e. = hidden_size
 #attn_vec_size = 64
 
@@ -269,21 +269,24 @@ class manySeq2SeqModel(object):
     text_encoder_inputs, speech_encoder_inputs, decoder_inputs = [], [], []
     text_seq_len = []
     speech_seq_len = []
+    partition_inputs = []
 
     for sample in data[bucket_id]:
-      text_encoder_input, decoder_input, speech_encoder_input = sample
+      text_encoder_input, decoder_input, partitions, speech_feats = sample
+      feat_dim = speech_feats.shape[0]
       text_seq_len.append(len(text_encoder_input))
-      speech_seq_len.append(len(speech_encoder_input))
+      speech_seq_len.append(len(partitions))
+      partition_inputs.append(partitions)
 
 
       # Encoder inputs are padded and then reversed.
       encoder_pad = [data_utils.PAD_ID] * (encoder_size - len(text_encoder_input))
       text_encoder_inputs.append(list(reversed(text_encoder_input)) + encoder_pad)
       # do the same for speech encoder inputs: reverse sequence
-      mfcc_pad_num = encoder_size * self.spscale - len(speech_encoder_input) 
-      mfcc_pad = [np.zeros(mfcc_num) for _ in range(mfcc_pad_num)]
-      speech_stuff = list(reversed(speech_encoder_input)) + mfcc_pad
-      speech_encoder_inputs.append(speech_stuff)
+      #mfcc_pad_num = encoder_size * self.spscale - len(speech_encoder_input) 
+      #mfcc_pad = [np.zeros(mfcc_num) for _ in range(mfcc_pad_num)]
+      #speech_stuff = list(reversed(speech_encoder_input)) + mfcc_pad
+      speech_encoder_inputs.append(speech_feats)
       # from old version: speech_encoder_inputs.append(np.fliplr(speech_encoder_input).T)
 
       # Decoder inputs get an extra "GO" symbol, and are padded then.
@@ -300,11 +303,15 @@ class manySeq2SeqModel(object):
           np.array([text_encoder_inputs[batch_idx][length_idx]
                     for batch_idx in xrange(this_batch_size)], dtype=np.int32))
 
-    for length_idx in xrange(encoder_size * self.spscale):
-      batch_speech_encoder_inputs.append(
-          np.array([speech_encoder_inputs[batch_idx][length_idx] 
-              for batch_idx in xrange(this_batch_size)] ))
+    #for length_idx in xrange(encoder_size * self.spscale):
+    #  batch_speech_encoder_inputs.append(
+    #      np.array([speech_encoder_inputs[batch_idx][length_idx] 
+    #          for batch_idx in xrange(this_batch_size)] ))
       
+    for length_idx in xrange(speech_feats.shape[1]):
+      batch_speech_encoder_inputs.append(
+              [speech_encoder_inputs[batch_idx][:,length_idx] 
+              for batch_idx in xrange(this_batch_size)] )
     # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
     for length_idx in xrange(decoder_size):
       batch_decoder_inputs.append(
@@ -324,6 +331,8 @@ class manySeq2SeqModel(object):
     
     text_seq_len = np.asarray(text_seq_len, dtype=np.int64)
     speech_seq_len = np.asarray(speech_seq_len, dtype=np.int64)
-    return batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_decoder_inputs, batch_weights, text_seq_len, speech_seq_len
+    return batch_text_encoder_inputs, batch_speech_encoder_inputs, \
+            batch_decoder_inputs, batch_weights, text_seq_len, \
+            speech_seq_len, partition_inputs
 
 

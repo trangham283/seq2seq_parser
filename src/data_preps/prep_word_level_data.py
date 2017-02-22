@@ -252,22 +252,28 @@ def get_stats(split):
                     eix = find_bad_alignment(etimes)
                     print [tokens[i] for i in eix], stimes, etimes
 
-                #seq_len = len(pf_frames)
-                #lengths.append(seq_len)
+                seq_len = len(pf_frames)
+                lengths.append(seq_len)
 
     #num5 = len([x for x in lengths if x<5])
     #num25 = len([x for x in lengths if x<25])
     #num100 = len([x for x in lengths if x<100])
-    #lengths = np.array(lengths)
+    num2000 = len([x for x in lengths if x>=2000])
+    num3000 = len([x for x in lengths if x>=3000])
+    num3500 = len([x for x in lengths if x>=3500])
+    
+    lengths = np.array(lengths)
     #print split, np.mean(lengths), max(lengths), min(lengths)
     #print num5, num25, num100, len(lengths)
+    print "Number of sentences with >= 2000/3000/3500 frames:"
+    print num2000, num3000, num3500
     
-    num5 = len([x for x in wlens if x<5])
-    num25 = len([x for x in wlens if x<25])
-    num100 = len([x for x in wlens if x<100])
-    wlens = np.array(wlens)
-    print split, np.mean(wlens), max(wlens), min(wlens)
-    print num5, num25, num100, len(wlens)
+    #num5 = len([x for x in wlens if x<5])
+    #num25 = len([x for x in wlens if x<25])
+    #num100 = len([x for x in wlens if x<100])
+    #wlens = np.array(wlens)
+    #print split, np.mean(wlens), max(wlens), min(wlens)
+    #print num5, num25, num100, len(wlens)
 
 
 
@@ -460,16 +466,16 @@ def map_sentences(data_dir, split):
 
 
 def main(_):
-    # processing raw data into dictionary files
-    #print "Check dev2"
-    #get_stats('dev2')
-    #print "\nCheck dev"
-    #get_stats('dev')
-    #print "\nCheck test"
-    #get_stats('test')
-    #print "\nCheck train"
-    #get_stats('train')
+    print "Check dev2"
+    get_stats('dev2')
+    print "\nCheck dev"
+    get_stats('dev')
+    print "\nCheck test"
+    get_stats('test')
+    print "\nCheck train"
+    get_stats('train')
 
+'''  
     sent_vocabulary_path = os.path.join(data_dir, 'vocab.sents') 
     parse_vocabulary_path = os.path.join(data_dir, 'vocab.parse')
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
@@ -482,7 +488,7 @@ def main(_):
             acoustic)
     this_file = os.path.join(output_dir, split + '_' + acoustic + '.pickle')
     pickle.dump(this_set, open(this_file,'w'))
-
+'''
 
 if __name__ == "__main__":
     tf.app.run()

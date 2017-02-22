@@ -8,6 +8,27 @@ test    |5,448  |235    |3377   |5  |0  |320    |2318
 train   |90,780 |210    |3884   |1  |12 |3273   |39,406
 
 ###
+Stats for sentences with very high number of frames:
+Check dev2
+('No pitch file for ', 'sw4379', 'A')
+('No pitch file for ', 'sw4379', 'B')
+Number of sentences with >= 2000/3000/3500 frames:
+7 0 0
+
+Check dev
+Number of sentences with >= 2000/3000/3500 frames:
+10 1 1
+
+Check test
+Number of sentences with >= 2000/3000/3500 frames:
+10 2 0
+
+Check train
+Number of sentences with >= 2000/3000/3500 frames:
+78 6 1
+
+
+###
 Similar stats, but on words instead of sentences:
 split   |#words |avg #frames   |max #frames |min #frames    |#words         
                                                             |with<5frames |<25frames |<100frames
