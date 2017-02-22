@@ -70,7 +70,7 @@ def prune_trace(sent):
 
 def cleanup(sent):
     for word in sent.listWords():
-        if word.text == '?':
+        if word.text == '?' or word.text == '!':
             word.prune()
         if word.isPunct() or word.isTrace(): 
             word.prune()

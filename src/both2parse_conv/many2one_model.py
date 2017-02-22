@@ -120,7 +120,8 @@ class manySeq2SeqModel(object):
     # Feeds for inputs.
     #self.encoder_inputs = []
     self.text_encoder_inputs = []
-    self.speech_encoder_inputs = [] 
+    self.speech_encoder_inputs = []
+    self.speech_partitions = []
     self.decoder_inputs = []
     self.target_weights = []
     for i in xrange(buckets[-1][0]):  # Last bucket is the biggest one.
@@ -228,14 +229,18 @@ class manySeq2SeqModel(object):
 
     # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
     input_feed = {}
+    speech_feats_len = encoder_inputs_list[1].shape[1]
     for l in xrange(encoder_size):
       input_feed[self.text_encoder_inputs[l].name] = encoder_inputs_list[0][l]
-    for l in xrange(encoder_size*self.spscale):
-      input_feed[self.speech_encoder_inputs[l].name] = encoder_inputs_list[1][l] 
+    #for l in xrange(encoder_size*self.spscale):
+    #  input_feed[self.speech_encoder_inputs[l].name] = encoder_inputs_list[1][l] 
+    
     for l in xrange(decoder_size):
       input_feed[self.decoder_inputs[l].name] = decoder_inputs[l]
       input_feed[self.target_weights[l].name] = target_weights[l]
     
+    input_feed[self.speech_feats.name] = encoder_input_list[1]
+    input_feed[self.speech_partitions.name] = encoder_input_list[2]
     input_feed[self.text_seq_len.name] = text_len
     input_feed[self.speech_seq_len.name] = speech_len
 
