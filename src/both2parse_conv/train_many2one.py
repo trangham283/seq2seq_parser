@@ -271,9 +271,9 @@ def train():
     print("Creating model for training")
     with tf.variable_scope("model", reuse=None):
       model, steps_done = create_model(sess, forward_only=False)
-    #print("Now create model_dev")
-    #with tf.variable_scope("model", reuse=True):
-    #  model_dev = get_model_graph(sess, forward_only=True)
+    print("Now create model_dev")
+    with tf.variable_scope("model", reuse=True):
+      model_dev = get_model_graph(sess, forward_only=True)
 
     step_time, loss = 0.0, 0.0
     current_step = 0
@@ -286,14 +286,14 @@ def train():
       np.random.shuffle(train_set) 
 
       for bucket_id, bucket_offset in train_set:
-        print(bucket_id, bucket_offset)
+        #print(bucket_id, bucket_offset)
         this_sample = train_sw[bucket_id][bucket_offset:bucket_offset+FLAGS.batch_size]
         start_time = time.time()
         text_encoder_inputs, speech_encoder_inputs, decoder_inputs, \
                 target_weights, text_seq_len, speech_seq_len = model.get_batch(
-                {bucket_id: this_sample}, bucket_id)
+                {bucket_id: this_sample}, bucket_id, bucket_offset)
         encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs]
-        print(len(text_encoder_inputs), len(speech_encoder_inputs), [x.shape for x in speech_encoder_inputs])
+        #print(len(text_encoder_inputs), len(speech_encoder_inputs), [x.shape for x in speech_encoder_inputs])
         _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, False)
         step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
         loss += step_loss / FLAGS.steps_per_checkpoint
@@ -362,7 +362,7 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
         text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, text_seq_len, speech_seq_len = model_dev.get_batch(
-                {bucket_id: zip(token_ids, dec_ids, mfccs)}, bucket_id)
+                {bucket_id: zip(token_ids, dec_ids, mfccs)}, bucket_id, bucket_offset)
         _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs], 
                 decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, True)
         outputs = [np.argmax(logit, axis=1) for logit in output_logits]

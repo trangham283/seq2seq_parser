@@ -266,7 +266,7 @@ class manySeq2SeqModel(object):
       return None, outputs[0], outputs[1:]  # No gradient norm, loss, outputs.
 
   
-  def get_batch(self, data, bucket_id):
+  def get_batch(self, data, bucket_id, bucket_offset):
     """Get batches
     
     """
@@ -289,6 +289,9 @@ class manySeq2SeqModel(object):
           start_idx = center_frame - int(fixed_word_length/2)
           end_idx = center_frame + int(fixed_word_length/2)
           this_word_frames = speech_encoder_input[:, max(0,start_idx):end_idx]
+          if this_word_frames.shape[1]==0:  # make random if no frame info
+              this_word_frames = np.random.random((self.feat_dim, fixed_word_length))
+              print("Alignment issues: available frame for batch: ", bucket_id, bucket_offset)
           if start_idx < 0 and this_word_frames.shape[1]<fixed_word_length:
               this_word_frames = np.hstack([np.zeros((self.feat_dim,-start_idx)),this_word_frames])
           if end_idx > frame_idx[1] and this_word_frames.shape[1]<fixed_word_length:
