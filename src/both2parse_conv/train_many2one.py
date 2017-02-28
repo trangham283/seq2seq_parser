@@ -237,8 +237,10 @@ def create_model(session, forward_only, model_path=None):
     print("loaded from %d done steps" %(steps_done) )
   else:
     print("Created model with fresh parameters.")
-    session.run(tf.initialize_all_variables())
+    #session.run(tf.initialize_all_variables())
+    session.run(tf.global_variables_initializer())
     steps_done = 0
+    '''
     if FLAGS.warm_start_path is not "None":
         print("Warm start")
         saved_variables = pickle.load(open(FLAGS.warm_start_path))
@@ -254,6 +256,7 @@ def create_model(session, forward_only, model_path=None):
             if "AttnOutputProjection" in v.name: continue
             print("Initializing variable with warm start:", v.name)
             session.run(v.assign(old_v))
+    '''
   return model, steps_done
 
 
