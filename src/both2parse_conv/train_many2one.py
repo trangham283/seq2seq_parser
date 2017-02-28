@@ -358,11 +358,13 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         all_examples = dev_set[bucket_id][batch_offset:batch_offset+eval_batch_size]
         model_dev.batch_size = len(all_examples)        
         token_ids = [x[0] for x in all_examples]
-        mfccs = [x[2] for x in all_examples]
+        partition = [x[2] for x in all_examples]
+        speech_feats = [x[3] for x in all_examples]
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
         text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, text_seq_len, speech_seq_len = model_dev.get_batch(
-                {bucket_id: zip(token_ids, dec_ids, mfccs)}, bucket_id, bucket_offset)
+                {bucket_id: zip(token_ids, dec_ids, partition, speech_feats)}, \
+                        bucket_id, batch_offset)
         _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs], 
                 decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, True)
         outputs = [np.argmax(logit, axis=1) for logit in output_logits]

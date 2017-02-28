@@ -291,7 +291,7 @@ class manySeq2SeqModel(object):
           this_word_frames = speech_encoder_input[:, max(0,start_idx):end_idx]
           if this_word_frames.shape[1]==0:  # make random if no frame info
               this_word_frames = np.random.random((self.feat_dim, fixed_word_length))
-              print("Alignment issues: available frame for batch: ", bucket_id, bucket_offset)
+              print("Alignment issues: missing frames for batch ", bucket_id, bucket_offset)
           if start_idx < 0 and this_word_frames.shape[1]<fixed_word_length:
               this_word_frames = np.hstack([np.zeros((self.feat_dim,-start_idx)),this_word_frames])
           if end_idx > frame_idx[1] and this_word_frames.shape[1]<fixed_word_length:
