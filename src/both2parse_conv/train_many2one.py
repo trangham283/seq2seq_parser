@@ -35,8 +35,8 @@ _buckets = [(10, 40), (25, 85), (40, 150)]
 NUM_THREADS = 1
 FLAGS = object()
 # evalb paths
-evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
-prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
+#evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
+#prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
 
 def parse_options():
     parser = argparse.ArgumentParser()
@@ -47,7 +47,7 @@ def parse_options():
             default=0.8, type=float, help="multiplicative decay factor for learning rate")
     parser.add_argument("-opt", "--optimizer", default="adam", \
             type=str, help="Optimizer")
-    parser.add_argument("-bsize", "--batch_size", default=1, \
+    parser.add_argument("-bsize", "--batch_size", default=16, \
             type=int, help="Mini-batch Size")
     parser.add_argument("-esize", "--embedding_size", default= 256, \
             type=int, help="Embedding Size")
@@ -67,10 +67,12 @@ def parse_options():
     parser.add_argument("-attn_vec_size", "--attention_vector_size", \
             default=64, type=int, help="Attention vector size in the tanh(...) operation")
 
-    parser.add_argument("-num_filters", "--num_filters", default=3, \
+    parser.add_argument("-num_filters", "--num_filters", default=5, \
             type=int, help="Number of convolution filters")
     parser.add_argument("-filter_sizes", "--filter_sizes", \
-            default="5-10-15", type=str, help="Convolution filter sizes")
+            default="10-25-50", type=str, help="Convolution filter sizes")
+    parser.add_argument("-fixed_word_length", "--fixed_word_length", \
+            default=50, type=int, help="fixed word length for convolution")
     
     parser.add_argument("-max_gnorm", "--max_gradient_norm", default=5.0, \
             type=float, help="Maximum allowed norm of gradients")
@@ -95,7 +97,7 @@ def parse_options():
 
     parser.add_argument("-max_epochs", "--max_epochs", default=500, \
             type=int, help="Max epochs")
-    parser.add_argument("-num_check", "--steps_per_checkpoint", default=1000, \
+    parser.add_argument("-num_check", "--steps_per_checkpoint", default=10, \
             type=int, help="Number of steps before updated model is saved")
     parser.add_argument("-eval", "--eval_dev", default=False, \
             action="store_true", help="Get dev set results using the last saved model")
@@ -115,23 +117,16 @@ def parse_options():
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
     
     train_dir = ('lr' + '_' + str(arg_dict['learning_rate']) + '_' +  
-                'bsize' + '_' + str(arg_dict['batch_size']) + '_' +   
-                'esize' + '_' + str(arg_dict['embedding_size']) + '_' +  
                 'text_hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
                 'text_num_layers' + '_' + str(arg_dict['text_num_layers']) + '_' +   
                 'speech_hsize' + '_' + str(arg_dict['speech_hidden_size']) + '_' +  
                 'speech_num_layers' + '_' + str(arg_dict['speech_num_layers']) + '_' +   
                 'parse_hsize' + '_' + str(arg_dict['parse_hidden_size']) + '_' +  
                 'parse_num_layers' + '_' + str(arg_dict['parse_num_layers']) + '_' +   
-                'attn_vec_size' + '_' + str(arg_dict['attention_vector_size']) + '_' +
-                'sp_scale' + '_' + str(arg_dict['speech_bucket_scale']) + '_' +
                 'num_filters' + '_' + str(arg_dict['num_filters']) + '_' +
                 'filter_sizes' + '_' + str(arg_dict['filter_sizes']) + '_' +
                 'out_prob' + '_' + str(arg_dict['output_keep_prob']) + '_' + 
-                'run_id' + '_' + str(arg_dict['run_id']) + '_' + 
-                opt_string + 
-                lstm_string + 
-                'many2one')
+                'run_id' + '_' + str(arg_dict['run_id']) )
      
     arg_dict['train_dir'] = os.path.join(arg_dict['train_base_dir'], train_dir)
     arg_dict['apply_dropout'] = False
@@ -165,16 +160,15 @@ def parse_options():
 def load_dev_data():
     dev_data_path = os.path.join(FLAGS.data_dir, 'dev_pitch3.pickle')
     dev_set = pickle.load(open(dev_data_path))
-
     return dev_set
 
 def load_train_data():
-    swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3.pickle')
+    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3.pickle')
+    swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3.pickle')
     train_sw = pickle.load(open(swtrain_data_path))
-
     train_bucket_sizes = [len(train_sw[b]) for b in xrange(len(_buckets))]
     print(train_bucket_sizes)
-    print ("# of instances: %d" %(sum(train_bucket_sizes)))
+    print("# of instances: %d" %(sum(train_bucket_sizes)))
     sys.stdout.flush()
     train_bucket_offsets = [np.arange(0, x, FLAGS.batch_size) for x in train_bucket_sizes]
     offset_lengths = [len(x) for x in train_bucket_offsets]
@@ -182,7 +176,6 @@ def load_train_data():
     all_bucks = [x for sublist in tiled_buckets for x in sublist]
     all_offsets = [x for sublist in list(train_bucket_offsets) for x in sublist]
     train_set = zip(all_bucks, all_offsets)
-
     return train_sw, train_set
 
 def process_eval(out_lines, this_size):
@@ -213,12 +206,14 @@ def map_var_names(this_var_name):
     warm_var_name = warm_var_name.replace('Attention_text', 'Attention_0')
     return warm_var_name
 
-
+feat_dim = 3  # hard-code for now; will change later -- TODO
 def get_model_graph(session, forward_only):
+  filter_sizes = [int(x) for x in FLAGS.filter_sizes.strip().split('-')]
   model = many2one_model.manySeq2SeqModel(
       FLAGS.input_vocab_size, FLAGS.output_vocab_size, _buckets,
       FLAGS.text_hidden_size, FLAGS.speech_hidden_size, FLAGS.parse_hidden_size, 
       FLAGS.text_num_layers, FLAGS.speech_num_layers, FLAGS.parse_num_layers,
+      filter_sizes, FLAGS.num_filters, feat_dim, FLAGS.fixed_word_length,  
       FLAGS.embedding_size, FLAGS.max_gradient_norm, FLAGS.batch_size,
       FLAGS.attention_vector_size, FLAGS.speech_bucket_scale, 
       FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
@@ -291,10 +286,9 @@ def train():
         this_sample = train_sw[bucket_id][bucket_offset:bucket_offset+FLAGS.batch_size]
         start_time = time.time()
         text_encoder_inputs, speech_encoder_inputs, decoder_inputs, \
-                target_weights, text_seq_len, speech_seq_len, partitions = model.get_batch(
+                target_weights, text_seq_len, speech_seq_len = model.get_batch(
                 {bucket_id: this_sample}, bucket_id)
-        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs,
-                partitions] 
+        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs]
         _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs,  
                 target_weights, text_seq_len, speech_seq_len, bucket_id, False)
         step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
@@ -323,7 +317,8 @@ def train():
       globstep = model.global_step.eval()
       eval_batch_size = FLAGS.batch_size
       write_time = time.time()
-      write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=True)
+      #write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=True)
+      write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=False)
       time_elapsed = time.time() - write_time
       
       print("decode writing time: ", time_elapsed)
