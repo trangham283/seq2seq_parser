@@ -265,13 +265,13 @@ def many2one_attention_seq2seq(
     pooled_outputs = []
     for i, filter_size in enumerate(filter_sizes):
         print(i, filter_size)
-        with tf.name_scope("conv-maxpool-%s" % filter_size):
+        #with tf.name_scope("conv-maxpool-%s" % filter_size):
+        with variable_scope.variable_scope(scope or "conv-maxpool-%s" % filter_size):
             filter_shape = [filter_size, feat_dim, 1, num_filters]
-            W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
-            b = tf.Variable(tf.truncated_normal(shape=[num_filters], stddev=0.1), name="b")
-            #W = variable_scope.get_variable("W-%d"%i, filter_shape, 
-            #        initializer=tf.truncated_normal(filter_shape, stddev=0.1))
-            #b = variable_scope.get_variable("B-%d"%i, num_filters)
+            #W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
+            #b = tf.Variable(tf.truncated_normal(shape=[num_filters], stddev=0.1), name="b")
+            W = variable_scope.get_variable("W-%d"%i, filter_shape)
+            b = variable_scope.get_variable("B-%d"%i, num_filters)
             pooled_words = []  
             for j in range(encoder_size):
                 feats = speech_encoder_inputs[j]

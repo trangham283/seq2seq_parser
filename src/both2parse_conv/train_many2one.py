@@ -47,7 +47,7 @@ def parse_options():
             default=0.8, type=float, help="multiplicative decay factor for learning rate")
     parser.add_argument("-opt", "--optimizer", default="adam", \
             type=str, help="Optimizer")
-    parser.add_argument("-bsize", "--batch_size", default=16, \
+    parser.add_argument("-bsize", "--batch_size", default=32, \
             type=int, help="Mini-batch Size")
     parser.add_argument("-esize", "--embedding_size", default= 256, \
             type=int, help="Embedding Size")
@@ -95,9 +95,9 @@ def parse_options():
     parser.add_argument("-out_prob", "--output_keep_prob", \
             default=0.8, type=float, help="Output keep probability for dropout")
 
-    parser.add_argument("-max_epochs", "--max_epochs", default=500, \
+    parser.add_argument("-max_epochs", "--max_epochs", default=200, \
             type=int, help="Max epochs")
-    parser.add_argument("-num_check", "--steps_per_checkpoint", default=10, \
+    parser.add_argument("-num_check", "--steps_per_checkpoint", default=100, \
             type=int, help="Number of steps before updated model is saved")
     parser.add_argument("-eval", "--eval_dev", default=False, \
             action="store_true", help="Get dev set results using the last saved model")
@@ -163,8 +163,9 @@ def load_dev_data():
     return dev_set
 
 def load_train_data():
-    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3.pickle')
-    swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3.pickle')
+    swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3.pickle')
+    # debug with small data
+    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3.pickle')
     train_sw = pickle.load(open(swtrain_data_path))
     train_bucket_sizes = [len(train_sw[b]) for b in xrange(len(_buckets))]
     print(train_bucket_sizes)
@@ -225,12 +226,14 @@ def create_model(session, forward_only, model_path=None):
   """Create translation model and initialize or load parameters in session."""
   model = get_model_graph(session, forward_only)
   ckpt = tf.train.get_checkpoint_state(FLAGS.train_dir)
-  if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and not model_path:
+  #if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and not model_path:
+  if ckpt and not model_path:
     print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
     model.saver.restore(session, ckpt.model_checkpoint_path)
     steps_done = int(ckpt.model_checkpoint_path.split('-')[-1])
     print("loaded from %d done steps" %(steps_done) )
-  elif ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and model_path is not None:
+  #elif ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and model_path is not None:
+  elif ckpt and model_path is not None:
     model.saver.restore(session, model_path)
     steps_done = int(model_path.split('-')[-1])
     print("Reading model parameters from %s" % model_path)
@@ -311,12 +314,18 @@ def train():
           if len(previous_losses) > 2 and loss > max(previous_losses[-3:]):
             sess.run(model.learning_rate_decay_op)
           previous_losses.append(loss)
-          # Save checkpoint and zero timer and loss.
-          checkpoint_path = os.path.join(FLAGS.train_dir, "many2one_parse.ckpt")
-          model.saver.save(sess, checkpoint_path, global_step=model.global_step,write_meta_graph=False)
+          # zero timer and loss.
           step_time, loss = 0.0, 0.0
+          checkpoint_path = os.path.join(FLAGS.train_dir, "many2one_parse.ckpt")
+          model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
+          #model.saver.save(sess, checkpoint_path, global_step=model.global_step)
         
-      # end of one epoch, do write decodes to do evalb
+      # save model (ALL of it) at end of one epoch, do write decodes to do evalb
+      # previously models were saved more frequently because we didn't have to write graph;
+      # now we do???
+      #checkpoint_path = os.path.join(FLAGS.train_dir, "many2one_parse.ckpt")
+      #model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
+      #model.saver.save(sess, checkpoint_path, global_step=model.global_step)
       print("Current step: ", current_step)
       globstep = model.global_step.eval()
       eval_batch_size = FLAGS.batch_size
@@ -433,13 +442,19 @@ def decode(debug=True):
       model_dev, steps_done = create_model(sess, forward_only=True)
 
     if debug:
-      for v in tf.all_variables(): print(v.name, v.get_shape())
+      var_dict = {}
+      for v in tf.global_variables(): 
+          print(v.name, v.get_shape())
+          var_dict[v.name] = v.eval()
+      pickle_file = os.path.join(FLAGS.train_dir, 'variables-'+ str(steps_done) +'.pickle')
+      pickle.dump(var_dict, open(pickle_file, 'w'))
     
     dev_set = load_dev_data()
     eval_batch_size = FLAGS.batch_size
 
     start_time = time.time()
-    write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=True) 
+    #write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=True) 
+    write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=False) 
     time_elapsed = time.time() - start_time
     print("Decoding all dev time: ", time_elapsed)
 
