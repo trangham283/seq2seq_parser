@@ -235,12 +235,14 @@ def many2one_attention_seq2seq(encoder_inputs_list,
         embedding_size, output_projection=None,
         feed_previous=False, dtype=dtypes.float32,
         scope=None, initial_state_attention=False,
-        attention_vec_size=None, 
-        filter_sizes, num_filters):
+        attention_vec_size=64, fixed_word_length=50, 
+        filter_sizes=[10,25,50], num_filters=5):
 
   text_encoder_inputs, speech_encoder_inputs = encoder_inputs_list
-  feats, partitions = speech_encoder_inputs
+  encoder_size = len(text_encoder_inputs)
+  #speech_encoder_inputs is size [batch_size, seq_len, feat_dim, fixed_word_length]
   feat_dim = feats.get_shape()[0]
+
   with variable_scope.variable_scope(scope or "many2one_attention_seq2seq"):
     with ops.device("/cpu:0"):
       embedding_words = variable_scope.get_variable("embedding_words",
@@ -255,46 +257,37 @@ def many2one_attention_seq2seq(encoder_inputs_list,
 
     # TODO:
     # Convolution stuff happens here for speech inputs
-    batch_idx = 0 # for all 
     pooled_outputs = []
-
     for i, filter_size in enumerate(filter_sizes):
+        print i, filter_size
         with tf.name_scope("conv-maxpool-%s" % filter_size):
             filter_shape = [filter_size, feat_dim, 1, num_filters]
             W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
             b = tf.Variable(tf.truncated_normal(shape=[num_filters], stddev=0.1), name="b")
-            #W = variable_scope.get_variable("W-%d"%i, filter_shape,
+            #W = variable_scope.get_variable("W-%d"%i, filter_shape, 
             #        initializer=tf.truncated_normal(filter_shape, stddev=0.1))
             #b = variable_scope.get_variable("B-%d"%i, num_filters)
-            conv = tf.nn.conv2d(
-                        feats, 
-                        W,
-                        strides=[1, 1, 1, 1],
-                        padding="SAME",
-                        name="conv")
-            # Apply nonlinearity
-            h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
-
-            pooled_words = []
-            for j in range(sequence_length):
-                s_frame, e_frame = partitions[batch_idx][j]
-                word_length = e_frame - s_frame
-                pooled = tf.nn.max_pool(h[:,s_frame:e_frame,:,:],
-                        ksize=[1, word_length, 1, 1],
+            pooled_words = []  
+            for j in range(encoder_size):
+                feats = batch_speech_encoder_inputs[j]
+                feats_conv = tf.expand_dims(feats, -1)
+                conv = tf.nn.conv2d(feats_conv, W, strides=[1, 1, 1, 1],
+                            padding="VALID", name="conv")
+                # Apply nonlinearity
+                h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
+                pooled = tf.nn.max_pool(h,
+                        ksize=[1, fixed_word_length-filter_size+1, 1, 1],
                         strides=[1, 1, 1, 1],
                         padding='VALID',
                         name="pool")
                 pooled_words.append(pooled)
+            pooled_words = tf.concat(1,pooled_words)
             pooled_outputs.append(pooled_words)
 
-
-    # want output of convolution layer to have shape [batch_size, seq_len,
-    # feat_dim*num_filters_total]
     num_filters_total = num_filters * len(filter_sizes)
-    h_pool = tf.concat(4, pooled_outputs)
-    h_pool_flat = tf.reshape(h_pool, [-1, feat_dim*num_filters_total])
-    speech_conv_outputs = tf.expand_dims(h_pool_flat, 0) 
-
+    h_pool = tf.concat(3, pooled_outputs)
+    h_pool_squeeze = tf.squeeze(h_pool)
+    speech_conv_outputs = tf.transpose(h_pool_squeeze, perm=[1,0,2])
 
     with variable_scope.variable_scope(scope or "speech_encoder"):
       speech_encoder_outputs, speech_encoder_state = rnn.rnn(
