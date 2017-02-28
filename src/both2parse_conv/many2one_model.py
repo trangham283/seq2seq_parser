@@ -56,6 +56,7 @@ class manySeq2SeqModel(object):
     self.spscale = spscale
     self.epoch = 0
     self.feat_dim = feat_dim
+    self.fixed_word_length = fixed_word_length
 
     self.filter_sizes = filter_sizes
     self.num_filters = num_filters
@@ -232,18 +233,15 @@ class manySeq2SeqModel(object):
 
     # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
     input_feed = {}
-    speech_feats_len = encoder_inputs_list[1].shape[1]
     for l in xrange(encoder_size):
       input_feed[self.text_encoder_inputs[l].name] = encoder_inputs_list[0][l]
-    #for l in xrange(encoder_size*self.spscale):
-    #  input_feed[self.speech_encoder_inputs[l].name] = encoder_inputs_list[1][l] 
+    for l in xrange(encoder_size*self.spscale):
+      input_feed[self.speech_encoder_inputs[l].name] = encoder_inputs_list[1][l] 
     
     for l in xrange(decoder_size):
       input_feed[self.decoder_inputs[l].name] = decoder_inputs[l]
       input_feed[self.target_weights[l].name] = target_weights[l]
     
-    input_feed[self.speech_feats.name] = encoder_input_list[1]
-    input_feed[self.speech_partitions.name] = encoder_input_list[2]
     input_feed[self.text_seq_len.name] = text_len
     input_feed[self.speech_seq_len.name] = speech_len
 
@@ -285,15 +283,17 @@ class manySeq2SeqModel(object):
       text_encoder_inputs.append(list(reversed(text_encoder_input)) + encoder_pad)
       # need to process speech frames for each word first
       speech_frames = []
+      fixed_word_length = self.fixed_word_length
       for frame_idx in partition:
           center_frame = int((frame_idx[0] + frame_idx[1])/2)
-          start_idx = center_frame-fixed_word_length/2
-          end_idx = center_frame+fixed_word_length/2
+          start_idx = center_frame - int(fixed_word_length/2)
+          end_idx = center_frame + int(fixed_word_length/2)
           this_word_frames = speech_encoder_input[:, max(0,start_idx):end_idx]
           if start_idx < 0 and this_word_frames.shape[1]<fixed_word_length:
               this_word_frames = np.hstack([np.zeros((self.feat_dim,-start_idx)),this_word_frames])
           if end_idx > frame_idx[1] and this_word_frames.shape[1]<fixed_word_length:
-              this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, end_idx-frame_idx[1]))])
+              num_more = fixed_word_length - this_word_frames.shape[1]
+              this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, num_more))])
           speech_frames.append(this_word_frames)
       mfcc_pad_num = encoder_size - len(text_encoder_input)
       mfcc_pad = [np.zeros((self.feat_dim, fixed_word_length)) for _ in range(mfcc_pad_num)]
@@ -316,12 +316,12 @@ class manySeq2SeqModel(object):
 
     for length_idx in xrange(encoder_size):
       current_word_feats = []
-      for batch_idx in xrange(batch_size):
+      for batch_idx in xrange(this_batch_size):
         current_feats = speech_encoder_inputs[batch_idx][length_idx].T
-        current_feats = list(current_feats)
-        current_feats = [list(x) for x in current_feats]
+        #current_feats = list(current_feats)
+        #current_feats = [list(x) for x in current_feats]
         current_word_feats.append(current_feats)
-      batch_speech_encoder_inputs.append(current_word_feats)
+      batch_speech_encoder_inputs.append(np.array(current_word_feats,dtype=np.float32))
 
     # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
     for length_idx in xrange(decoder_size):
