@@ -52,15 +52,15 @@ def parse_options():
     parser.add_argument("-esize", "--embedding_size", default= 256, \
             type=int, help="Embedding Size")
 
-    parser.add_argument("-text_hsize", "--text_hidden_size", default=256, \
+    parser.add_argument("-text_hsize", "--text_hidden_size", default=128, \
             type=int, help="Hidden layer size of text encoder")
     parser.add_argument("-text_num_layers", "--text_num_layers", default=2, \
             type=int, help="Number of stacked layers of text encoder")
-    parser.add_argument("-speech_hsize", "--speech_hidden_size", default=256, \
+    parser.add_argument("-speech_hsize", "--speech_hidden_size", default=128, \
             type=int, help="Hidden layer size of speech encoder")
     parser.add_argument("-speech_num_layers", "--speech_num_layers", \
             default=2, type=int, help="Number of stacked layers of speech encoder")
-    parser.add_argument("-parse_hsize", "--parse_hidden_size", default=256, \
+    parser.add_argument("-parse_hsize", "--parse_hidden_size", default=128, \
             type=int, help="Hidden layer size of decoder")
     parser.add_argument("-parse_num_layers", "--parse_num_layers", default=2, \
             type=int, help="Number of stacked layers of decoder") 
@@ -95,7 +95,7 @@ def parse_options():
     parser.add_argument("-out_prob", "--output_keep_prob", \
             default=0.7, type=float, help="Output keep probability for dropout")
 
-    parser.add_argument("-max_epochs", "--max_epochs", default=50, \
+    parser.add_argument("-max_epochs", "--max_epochs", default=20, \
             type=int, help="Max epochs")
     parser.add_argument("-num_check", "--steps_per_checkpoint", default=100, \
             type=int, help="Number of steps before updated model is saved")
@@ -116,17 +116,7 @@ def parse_options():
     if arg_dict['optimizer'] != "adam":
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
     
-    train_dir = ('lr' + '_' + str(arg_dict['learning_rate']) + '_' +  
-                'text_hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
-                'text_num_layers' + '_' + str(arg_dict['text_num_layers']) + '_' +   
-                'speech_hsize' + '_' + str(arg_dict['speech_hidden_size']) + '_' +  
-                'speech_num_layers' + '_' + str(arg_dict['speech_num_layers']) + '_' +   
-                'parse_hsize' + '_' + str(arg_dict['parse_hidden_size']) + '_' +  
-                'parse_num_layers' + '_' + str(arg_dict['parse_num_layers']) + '_' +   
-                'num_filters' + '_' + str(arg_dict['num_filters']) + '_' +
-                'filter_sizes' + '_' + str(arg_dict['filter_sizes']) + '_' +
-                'out_prob' + '_' + str(arg_dict['output_keep_prob']) + '_' + 
-                'run_id' + '_' + str(arg_dict['run_id']) )
+    train_dir = ('run_id' + '_' + str(arg_dict['run_id']) )
      
     arg_dict['train_dir'] = os.path.join(arg_dict['train_base_dir'], train_dir)
     arg_dict['apply_dropout'] = False
@@ -295,6 +285,7 @@ def train():
         text_encoder_inputs, speech_encoder_inputs, decoder_inputs, \
                 target_weights, text_seq_len, speech_seq_len = model.get_batch(
                 {bucket_id: this_sample}, bucket_id, bucket_offset)
+        #speech_encoder_inputs = np.zeros()
         encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs]
         #print(len(text_encoder_inputs), len(speech_encoder_inputs), [x.shape for x in speech_encoder_inputs])
         _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, False)

@@ -67,7 +67,7 @@ def parse_options():
     parser.add_argument("-attn_vec_size", "--attention_vector_size", \
             default=64, type=int, help="Attention vector size in the tanh(...) operation")
 
-    parser.add_argument("-num_filters", "--num_filters", default=5, \
+    parser.add_argument("-num_filters", "--num_filters", default=10, \
             type=int, help="Number of convolution filters")
     parser.add_argument("-filter_sizes", "--filter_sizes", \
             default="10-25-50", type=str, help="Convolution filter sizes")
