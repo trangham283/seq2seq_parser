@@ -47,7 +47,7 @@ def parse_options():
             default=0.9, type=float, help="multiplicative decay factor for learning rate")
     parser.add_argument("-opt", "--optimizer", default="adam", \
             type=str, help="Optimizer")
-    parser.add_argument("-bsize", "--batch_size", default=32, \
+    parser.add_argument("-bsize", "--batch_size", default=64, \
             type=int, help="Mini-batch Size")
     parser.add_argument("-esize", "--embedding_size", default= 256, \
             type=int, help="Embedding Size")
@@ -67,7 +67,7 @@ def parse_options():
     parser.add_argument("-attn_vec_size", "--attention_vector_size", \
             default=64, type=int, help="Attention vector size in the tanh(...) operation")
 
-    parser.add_argument("-num_filters", "--num_filters", default=5, \
+    parser.add_argument("-num_filters", "--num_filters", default=10, \
             type=int, help="Number of convolution filters")
     parser.add_argument("-filter_sizes", "--filter_sizes", \
             default="10-25-50", type=str, help="Convolution filter sizes")
@@ -93,9 +93,9 @@ def parse_options():
     parser.add_argument("-lstm", "--lstm", default=True, \
             action="store_true", help="RNN cell to use")
     parser.add_argument("-out_prob", "--output_keep_prob", \
-            default=0.8, type=float, help="Output keep probability for dropout")
+            default=0.7, type=float, help="Output keep probability for dropout")
 
-    parser.add_argument("-max_epochs", "--max_epochs", default=30, \
+    parser.add_argument("-max_epochs", "--max_epochs", default=50, \
             type=int, help="Max epochs")
     parser.add_argument("-num_check", "--steps_per_checkpoint", default=100, \
             type=int, help="Number of steps before updated model is saved")
@@ -116,7 +116,17 @@ def parse_options():
     if arg_dict['optimizer'] != "adam":
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
     
-    train_dir = ('run_id' + '_' + str(arg_dict['run_id']) )
+    train_dir = ('lr' + '_' + str(arg_dict['learning_rate']) + '_' +  
+                'text_hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
+                'text_num_layers' + '_' + str(arg_dict['text_num_layers']) + '_' +   
+                'speech_hsize' + '_' + str(arg_dict['speech_hidden_size']) + '_' +  
+                'speech_num_layers' + '_' + str(arg_dict['speech_num_layers']) + '_' +   
+                'parse_hsize' + '_' + str(arg_dict['parse_hidden_size']) + '_' +  
+                'parse_num_layers' + '_' + str(arg_dict['parse_num_layers']) + '_' +   
+                'num_filters' + '_' + str(arg_dict['num_filters']) + '_' +
+                'filter_sizes' + '_' + str(arg_dict['filter_sizes']) + '_' +
+                'out_prob' + '_' + str(arg_dict['output_keep_prob']) + '_' + 
+                'run_id' + '_' + str(arg_dict['run_id']) )
      
     arg_dict['train_dir'] = os.path.join(arg_dict['train_base_dir'], train_dir)
     arg_dict['apply_dropout'] = False
@@ -283,9 +293,8 @@ def train():
         this_sample = train_sw[bucket_id][bucket_offset:bucket_offset+FLAGS.batch_size]
         start_time = time.time()
         text_encoder_inputs, speech_encoder_inputs, decoder_inputs, \
-                target_weights, text_seq_len, speech_seq_len = model.get_batch_zero(
+                target_weights, text_seq_len, speech_seq_len = model.get_batch(
                 {bucket_id: this_sample}, bucket_id, bucket_offset)
-        #speech_encoder_inputs = np.zeros()
         encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs]
         #print(len(text_encoder_inputs), len(speech_encoder_inputs), [x.shape for x in speech_encoder_inputs])
         _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, False)
@@ -363,7 +372,7 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         speech_feats = [x[3] for x in all_examples]
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, text_seq_len, speech_seq_len = model_dev.get_batch_zero(
+        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, text_seq_len, speech_seq_len = model_dev.get_batch(
                 {bucket_id: zip(token_ids, dec_ids, partition, speech_feats)}, \
                         bucket_id, batch_offset)
         _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs], 

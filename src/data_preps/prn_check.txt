@@ -1,0 +1,211 @@
+sw2067~0114 S ['you', 'know']
+(S
+  (S
+    (NP (PRP it))
+    (VP (VBZ does)
+      (SBAR (IN because)
+        (S
+          (EDITED
+            (EDITED
+              (EDITED
+                (S
+                  (NP (PRP you))
+                  (VP (VBP 're))))
+              (S
+                (PRN
+                  (S
+                    (NP (PRP you))
+                    (VP (VBP know))))))
+            (S
+              (NP (PRP you))
+              (VP (VBP 're))))
+          (PRN
+            (S
+              (NP (PRP you))
+              (VP (VBP know))))
+          (NP (PRP you))
+          (VP (VBP 're)
+            (ADVP (RB just))
+            (EDITED
+              (VP (VBG co-)))
+            (VP (VBG costing)
+              (NP (PRP yourself))
+              (NP (JJR more) (NN money))
+              (SBAR (IN because)
+                (S
+                  (EDITED
+                    (NP (PRP you)))
+                  (SBAR (IN if)
+                    (S
+                      (NP (PRP you))
+                      (VP (MD ca) (RB n't)
+                        (VP (VB make)
+                          (NP (DT the) (JJ monthly)
+                            (EDITED (DT the)) (JJ minimum) (NN payment))))))
+                  (NP (PRP you))
+                  (VP (VBP 're)
+                    (VP (VBG paying)
+                      (NP (NN interest))
+                      (ADVP (RB again)))))))))))))
+sw2093~0011 S ['you', 'know']
+(S
+  (SQ
+    (S
+      (SBAR (IN As)
+        (S
+          (NP (PRP you))
+          (VP (VBP know))))
+      (NP (PRP I))
+      (VP (VBP think)
+        (SBAR (-NONE- -NONE-)
+          (S
+            (NP (PRP it))
+            (VP (BES 's)
+              (PP
+                (ADVP (RBR more)) (IN like)
+                (NP
+                  (NP (DT the) (NN mess))
+                  (SBAR
+                    (WHNP (-NONE- -NONE-))
+                    (S
+                      (NP (PRP you))
+                      (VP (VBP make)
+                        (NP (-NONE- -NONE-))))))))))))
+    (SQ (VBZ is) (RB n't)
+      (NP (PRP it))
+      (PP (-NONE- -NONE-))) (? ?)))
+sw2488~0160 S ['you', 'know']
+(S
+  (S (CC and)
+    (NP (PRP I))
+    (VP (VBP understand)
+      (SBAR
+        (EDITED
+          (SBAR (IN that)))
+        (PRN
+          (S
+            (NP (PRP you))
+            (VP (VBP know)))) (IN that)
+        (S
+          (PRN
+            (S
+              (NP (PRP you))
+              (VP (VBP know)))))))))
+sw2571~0164 EDITED ['you', 'know']
+(S
+  (S
+    (EDITED
+      (S
+        (NP (PRP you))
+        (VP (VBP know))))
+    (NP (PRP you))
+    (VP (VBP know)
+      (SBAR
+        (WHNP (WP what))
+        (S
+          (NP (PRP I))
+          (VP (VBP mean)
+            (NP (-NONE- -NONE-)))))) (. .)))
+sw2571~0164 S ['you', 'know']
+(S
+  (S
+    (EDITED
+      (S
+        (NP (PRP you))
+        (VP (VBP know))))
+    (NP (PRP you))
+    (VP (VBP know)
+      (SBAR
+        (WHNP (WP what))
+        (S
+          (NP (PRP I))
+          (VP (VBP mean)
+            (NP (-NONE- -NONE-)))))) (. .)))
+sw2759~0050 S ['you', 'know']
+(S
+  (S
+    (PRN
+      (S
+        (NP (PRP you))
+        (VP (VBP know))))))
+sw2970~0292 S ['you', 'know']
+(S
+  (S
+    (PRN
+      (S
+        (NP (PRP you))
+        (VP (VBP know))))))
+sw3324~0002 S ['you', 'know']
+(S
+  (S
+    (INTJ (UH well))
+    (S
+      (NP (-NONE- -NONE-))
+      (ADVP (RB just))
+      (VP (TO to)
+        (VP (VB let)
+          (S
+            (NP (PRP you))
+            (VP (VBP know))))))
+    (NP (PRP I))
+    (VP (VBP have)
+      (INTJ (UH uh))
+      (NP
+        (NP (CD two)
+          (INTJ (UH uh)) (NNS children))
+        (PP (IN of)
+          (NP (PRP$ my) (JJ own))))) (. .)))
+sw3584~0065 S ['you', 'know']
+(S
+  (S
+    (SBAR
+      (EDITED
+        (SBAR (IN As))) (IN as)
+      (S
+        (NP (PRP you))
+        (VP (VBP know))))
+    (NP
+      (NP (NN anything))
+      (SBAR
+        (WHNP (WDT that))
+        (S
+          (NP (-NONE- -NONE-))
+          (VP (VBZ involves)
+            (NP (DT the) (NN government))))))
+    (EDITED
+      (VP (VBZ is)))
+    (VP
+      (VP (VBZ works)
+        (ADVP
+          (ADVP (RB half) (RB as) (RB well))
+          (SBAR (IN as)
+            (S
+              (NP (PRP it))
+              (VP (BES 's)
+                (VP (VBN supposed)
+                  (S
+                    (NP (-NONE- -NONE-))
+                    (VP (TO to)
+                      (VP (-NONE- -NONE-))))))))))
+      (VP (VBZ costs)
+        (NP
+          (NP (CD three) (NNS times))
+          (PP (RB as)
+            (NP (RB much)))))) (. .)))
+
+train {'nonPRN': 9, 'PRN': 12880}
+
+
+
+
+sw4720~0019 S ['you', 'know']
+(S
+  (S
+    (NP (PRP you))
+    (VP (VBP know))))
+
+dev {'nonPRN': 1, 'PRN': 1098}
+
+dev2 {'nonPRN': 0, 'PRN': 1012}
+
+test {'nonPRN': 0, 'PRN': 1096}

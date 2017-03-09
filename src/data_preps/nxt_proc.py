@@ -9,7 +9,7 @@ format. The difference is that there's no issue of aligning the dps files etc.""
 import os
 import sys
 import Treebank.PTB
-
+import plac
 
 def get_dfl(word, sent):
     turn = '%s%s' % (sent.speaker, sent.turnID[1:])
@@ -140,10 +140,10 @@ def do_section(ptb_files, out_dir, name):
 
 def main(nxt_loc, out_dir):
     corpus = Treebank.PTB.NXTSwitchboard(path=nxt_loc)
-    do_section(corpus.train_files(), out_dir, 'train')
+    #do_section(corpus.train_files(), out_dir, 'train')
     do_section(corpus.dev_files(), out_dir, 'dev')
-    do_section(corpus.dev2_files(), out_dir, 'dev2')
-    do_section(corpus.eval_files(), out_dir, 'test')
+    #do_section(corpus.dev2_files(), out_dir, 'dev2')
+    #do_section(corpus.eval_files(), out_dir, 'test')
 
 
 if __name__ == '__main__':

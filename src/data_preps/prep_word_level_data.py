@@ -295,6 +295,111 @@ def get_stats(split):
     print num50p, num75p
 
 
+def get_var(feat, feat_dim):
+    split = 'train'  # use training set to normalize features
+    mean_name = os.path.join(data_dir, feat+'_mean.pickle')
+    mean_vec = pickle.load(open(mean_name))
+    dname = os.path.join(data_dir, feat+'_var.pickle')
+    print dname
+    data_file = os.path.join(time_dir, split + '.data.csv')
+    df = pandas.read_csv(data_file, sep='\t')
+    sw_files = set(df.file_id.values)
+    running_sum = np.zeros((feat_dim,))
+    running_count = 0
+    for sw in sw_files:
+        for speaker in ['A', 'B']:
+            mfcc_file = os.path.join(mfcc_dir, sw + '-' + speaker + '.pickle')
+            pitch_file = os.path.join(pitch_dir, sw + '-' + speaker + '.pickle')
+            pitch_pov_file = os.path.join(pitch_pov_dir,sw+'-'+speaker+'.pickle')
+            fbank_file = os.path.join(fbank_dir, sw + '-' +speaker+'.pickle')
+
+            if feat == 'mfcc':
+                try:
+                    data_mfcc = pickle.load(open(mfcc_file))
+                except: 
+                    print("No mfcc file for ", sw, speaker)
+                    continue
+                this_feats = data_mfcc.values()[0]
+            if feat == 'pitch2':
+                try:
+                    data_pitch = pickle.load(open(pitch_file))
+                except: 
+                    print("No pitch file for ", sw, speaker)
+                    continue
+                this_feats = data_pitch.values()[0]
+            if feat == 'pitch3':
+                try:
+                    data_pitch_pov = pickle.load(open(pitch_pov_file))
+                except: 
+                    print("No pitch pov file for ", sw, speaker)
+                this_feats = data_pitch_pov.values()[0]
+            if feat == 'fbank':
+                try:
+                    data_fbank = pickle.load(open(fbank_file))
+                except: 
+                    print("No fbank file for ", sw, speaker)
+                    continue
+                this_feats = data_fbank.values()[0]
+            
+            running_count += len(this_feats)
+            this_feats = np.array(this_feats) - mean_vec
+            this_feats = this_feats * this_feats
+            running_sum = running_sum + np.sum(this_feats,0)
+    var_vec = running_sum/running_count 
+    pickle.dump(var_vec, open(dname,'w'))
+    print var_vec
+
+
+def get_mean(feat, feat_dim):
+    split = 'train'  # use training set to normalize features
+    dname = os.path.join(data_dir, feat+'_mean.pickle')
+    print dname
+    data_file = os.path.join(time_dir, split + '.data.csv')
+    df = pandas.read_csv(data_file, sep='\t')
+    sw_files = set(df.file_id.values)
+    running_sum = np.zeros((feat_dim,))
+    running_count = 0
+    for sw in sw_files:
+        for speaker in ['A', 'B']:
+            mfcc_file = os.path.join(mfcc_dir, sw + '-' + speaker + '.pickle')
+            pitch_file = os.path.join(pitch_dir, sw + '-' + speaker + '.pickle')
+            pitch_pov_file = os.path.join(pitch_pov_dir,sw+'-'+speaker+'.pickle')
+            fbank_file = os.path.join(fbank_dir, sw + '-' +speaker+'.pickle')
+
+            if feat == 'mfcc':
+                try:
+                    data_mfcc = pickle.load(open(mfcc_file))
+                except: 
+                    print("No mfcc file for ", sw, speaker)
+                    continue
+                this_feats = data_mfcc.values()[0]
+            if feat == 'pitch2':
+                try:
+                    data_pitch = pickle.load(open(pitch_file))
+                except: 
+                    print("No pitch file for ", sw, speaker)
+                    continue
+                this_feats = data_pitch.values()[0]
+            if feat == 'pitch3':
+                try:
+                    data_pitch_pov = pickle.load(open(pitch_pov_file))
+                except: 
+                    print("No pitch pov file for ", sw, speaker)
+                this_feats = data_pitch_pov.values()[0]
+            if feat == 'fbank':
+                try:
+                    data_fbank = pickle.load(open(fbank_file))
+                except: 
+                    print("No fbank file for ", sw, speaker)
+                    continue
+                this_feats = data_fbank.values()[0]
+            
+            running_count += len(this_feats)
+            running_sum = running_sum + np.sum(np.array(this_feats),0)
+    mean_vec = running_sum/running_count 
+    pickle.dump(mean_vec, open(dname,'w'))
+    print mean_vec
+
 
 # The following functions perform data processing from raw in the steps:
 # 1. look up timing to get appropriate mfcc and pitch frames
@@ -313,33 +418,34 @@ def split_frames(split, feat_types):
             pitch_pov_file = os.path.join(pitch_pov_dir,sw+'-'+speaker+'.pickle')
             fbank_file = os.path.join(fbank_dir, sw + '-' +speaker+'.pickle')
 
-            if 'mfcc' in feat_types:
-                try:
-                    data_mfcc = pickle.load(open(mfcc_file))
-                except: 
-                    print("No mfcc file for ", sw, speaker)
-                    continue
-                mfccs = data_mfcc.values()[0]
-            if 'pitch2' in feat_types:
-                try:
-                    data_pitch = pickle.load(open(pitch_file))
-                except: 
-                    print("No pitch file for ", sw, speaker)
-                    continue
-                pitchs = data_pitch.values()[0]
-            if 'pitch3' in feat_types:
-                try:
-                    data_pitch_pov = pickle.load(open(pitch_pov_file))
-                except: 
-                    print("No pitch pov file for ", sw, speaker)
-                pitch_povs = data_pitch_pov.values()[0]
-            if 'fbank' in feat_types:
-                try:
-                    data_fbank = pickle.load(open(fbank_file))
-                except: 
-                    print("No fbank file for ", sw, speaker)
-                    continue
-                fbanks = data_fbank.values()[0]
+            for feat in feat_types:
+                if 'mfcc' in feat_types:
+                    try:
+                        data_mfcc = pickle.load(open(mfcc_file))
+                    except: 
+                        print("No mfcc file for ", sw, speaker)
+                        continue
+                    mfccs = data_mfcc.values()[0]
+                if 'pitch2' in feat_types:
+                    try:
+                        data_pitch = pickle.load(open(pitch_file))
+                    except: 
+                        print("No pitch file for ", sw, speaker)
+                        continue
+                    pitchs = data_pitch.values()[0]
+                if 'pitch3' in feat_types:
+                    try:
+                        data_pitch_pov = pickle.load(open(pitch_pov_file))
+                    except: 
+                        print("No pitch pov file for ", sw, speaker)
+                    pitch_povs = data_pitch_pov.values()[0]
+                if 'fbank' in feat_types:
+                    try:
+                        data_fbank = pickle.load(open(fbank_file))
+                    except: 
+                        print("No fbank file for ", sw, speaker)
+                        continue
+                    fbanks = data_fbank.values()[0]
 
             this_df = df[(df.file_id==sw)&(df.speaker==speaker)]
             for i, row in this_df.iterrows():
@@ -429,12 +535,12 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic):
         this_data = pickle.load(open(file_path))
         for k in this_data.keys():
             sentence = this_data[k]['sents']
-            parse = this_data[k]['parse']
-            windices = this_data[k]['windices']
+
             #mfccs = make_array(this_data[k]['mfccs'])
             #pitch2 = make_array(this_data[k]['pitch2'])
             pitch3 = make_array(this_data[k]['pitch3'])
-            #fbank = make_array(this_data[k]['fbank'])
+            fbank = make_array(this_data[k]['fbank'])
+            pitch3_energy = np.vstack([pitch3, fbank[-1,:]])
             sent_ids = sentence_to_token_ids(sentence, sent_vocab, True, True)
             parse_ids = sentence_to_token_ids(parse, parse_vocab, False, False)
             if split != 'extra':
@@ -453,6 +559,8 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic):
                 data_set[bucket_id].append([sent_ids, parse_ids, windices, fbank])
             elif acoustic == 'pitch2':
                 data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch2])
+            elif acoustic == 'pitch3_energy':
+                data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch3_energy])
             else: #acoustic == 'pitch3'
                 data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch3])
 
@@ -485,6 +593,7 @@ def map_sentences(data_dir, split):
 
 
 def main(_):
+    '''
     print "Check dev2"
     get_stats('dev2')
     print "\nCheck dev"
@@ -494,20 +603,23 @@ def main(_):
     print "\nCheck train"
     get_stats('train')
     
-    ''' 
     sent_vocabulary_path = os.path.join(data_dir, 'vocab.sents') 
     parse_vocabulary_path = os.path.join(data_dir, 'vocab.parse')
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
-   
-    split = 'train'
-    acoustic = 'pitch3'
-    split_frames(split, [acoustic])  # ==> dumps to output_dir
-    this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, \
-            acoustic)
-    this_file = os.path.join(output_dir, split + '_' + acoustic + '.pickle')
-    pickle.dump(this_set, open(this_file,'w'))
+
+    split = 'dev2'
+    acoustic = ['pitch3', 'fbank'] 
+    split_frames(split, acoustic)  # ==> dumps to output_dir
     '''
+
+    get_mean('fbank', 41)
+    get_var('fbank', 41)
+    #acoustic = 'pitch3_energy'
+    #this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, \
+    #        acoustic)
+    #this_file = os.path.join(output_dir, split + '_' + acoustic + '.pickle')
+    #pickle.dump(this_set, open(this_file,'w'))
 
 if __name__ == "__main__":
     tf.app.run()

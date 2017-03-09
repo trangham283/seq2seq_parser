@@ -76,7 +76,7 @@ class NXTSwitchboard(PTBNode, Corpus):
         Read a file by zero-index offset
         """
         filename = self._children[index]
-        print >> sys.stderr, filename
+        #print >> sys.stderr, filename
         return self.fileClass(path=self.path, filename=filename)
  
     def _getFileList(self, location):
