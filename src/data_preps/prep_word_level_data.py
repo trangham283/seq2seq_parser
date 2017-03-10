@@ -28,6 +28,8 @@ pitch_pov_dir = data_dir + '/swbd_pitch_pov'
 fbank_dir = data_dir + '/swbd_fbank'
 
 hop = 10.0 # in msec
+num_sec = 0.04  # amount of time to approximate extra frames when no time info available
+
 
 # Regular expressions used to tokenize.
 _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
@@ -50,7 +52,8 @@ UNK_ID = 3
 UNF_ID = 4
 
 # Use the following buckets: 
-_buckets = [(10, 40), (25, 85), (40, 150)]
+#_buckets = [(10, 40), (25, 85), (40, 150)]
+_buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
 
 def basic_tokenizer(sentence):
   """Very basic tokenizer: split the sentence into a list of tokens."""
@@ -132,10 +135,10 @@ def check_valid(num):
 
 def clean_up(stimes, etimes):
     if not check_valid(stimes[-1]):
-        stimes[-1] = max(etimes[-1] - 0.05,0)
+        stimes[-1] = max(etimes[-1] - num_sec, 0)
     
     if not check_valid(etimes[0]):
-        etimes[0] = stimes[0] + 0.05
+        etimes[0] = stimes[0] + num_sec
     
     for i in range(1,len(stimes)-1):
         this_st = stimes[i]
@@ -150,7 +153,7 @@ def clean_up(stimes, etimes):
             stimes[i] = prev_et
 
         if not check_valid(this_st) and check_valid(prev_st):
-            stimes[i] = prev_st + 0.02
+            stimes[i] = prev_st + num_sec
 
     for i in range(1,len(etimes)-1)[::-1]:
         this_st = stimes[i]
@@ -164,7 +167,7 @@ def clean_up(stimes, etimes):
             etimes[i] = next_st
 
         if not check_valid(this_et) and check_valid(next_et):
-            etimes[i] = next_et - 0.02
+            etimes[i] = next_et - num_sec
 
     return stimes, etimes
 
@@ -202,10 +205,10 @@ def get_stats(split):
                     begin = stimes[0]
                 else:
                     if check_valid(etimes[0]): 
-                        begin = max(etimes[0] - 0.05,0) 
+                        begin = max(etimes[0] - num_sec, 0) 
                         stimes[0] = begin
                     elif check_valid(stimes[1]):
-                        begin = max(stimes[1] - 0.05,0)
+                        begin = max(stimes[1] - num_sec, 0)
                         stimes[0] = begin
                     else:
                         continue
@@ -214,10 +217,10 @@ def get_stats(split):
                     end = etimes[-1]
                 else:
                     if check_valid(stimes[-1]): 
-                        end = stimes[-1] + 0.05
+                        end = stimes[-1] + num_sec
                         etimes[-1] = end
                     elif check_valid(etimes[-2]):
-                        end = etimes[-2] + 0.05
+                        end = etimes[-2] + num_sec
                         etimes[-1] = end
                     else:
                         continue
@@ -462,10 +465,10 @@ def split_frames(split, feat_types):
                     begin = stimes[0]
                 else:
                     if check_valid(etimes[0]): 
-                        begin = max(etimes[0] - 0.05,0) 
+                        begin = max(etimes[0] - num_sec, 0) 
                         stimes[0] = begin
                     elif check_valid(stimes[1]):
-                        begin = max(stimes[1] - 0.05,0)
+                        begin = max(stimes[1] - num_sec, 0)
                         stimes[0] = begin
                     else:
                         continue
@@ -474,10 +477,10 @@ def split_frames(split, feat_types):
                     end = etimes[-1]
                 else:
                     if check_valid(stimes[-1]): 
-                        end = stimes[-1] + 0.05
+                        end = stimes[-1] + num_sec
                         etimes[-1] = end
                     elif check_valid(etimes[-2]):
-                        end = etimes[-2] + 0.05
+                        end = etimes[-2] + num_sec
                         etimes[-1] = end
                     else:
                         continue
@@ -498,8 +501,8 @@ def split_frames(split, feat_types):
                 word_lengths = [e-s for s,e in zip(sframes,eframes)]
                 invalid = [x for x in word_lengths if x <=0]
                 if len(invalid)>0: 
-                    print begin, stimes[0], etimes[0] 
-                    print 
+                    print "End time < start time for: ", row.tokens 
+                    print invalid
                     continue
 
                 offset = s_frame
@@ -527,7 +530,7 @@ def split_frames(split, feat_types):
         pickle.dump(this_dict, open(dict_name, 'w'))
 
 
-def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic):
+def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic, normalize=False):
     data_set = [[] for _ in _buckets]
     split_path = os.path.join(data_dir, split)
     split_files = glob.glob(split_path + "/*")
@@ -535,12 +538,21 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic):
         this_data = pickle.load(open(file_path))
         for k in this_data.keys():
             sentence = this_data[k]['sents']
-
+            parse = this_data[k]['parse']
+            windices = this_data[k]['windices']
             #mfccs = make_array(this_data[k]['mfccs'])
             #pitch2 = make_array(this_data[k]['pitch2'])
             pitch3 = make_array(this_data[k]['pitch3'])
             fbank = make_array(this_data[k]['fbank'])
-            pitch3_energy = np.vstack([pitch3, fbank[-1,:]])
+            if normalize:
+                dname = os.path.join(data_dir, 'fbank_mean.pickle')
+                mean_vec = pickle.load(open(dname))
+                fbank = fbank - mean_vec.reshape((mean_vec.shape[0],1))
+                dname = os.path.join(data_dir, 'fbank_var.pickle')
+                var_vec = pickle.load(open(dname))
+                fbank = fbank / np.sqrt(var_vec.reshape(var_vec.shape[0],1)) 
+            energy = fbank[0,:].reshape((1,fbank.shape[1]))
+            pitch3_energy = np.vstack([pitch3, energy])
             sent_ids = sentence_to_token_ids(sentence, sent_vocab, True, True)
             parse_ids = sentence_to_token_ids(parse, parse_vocab, False, False)
             if split != 'extra':
@@ -602,24 +614,32 @@ def main(_):
     get_stats('test')
     print "\nCheck train"
     get_stats('train')
+    '''
     
     sent_vocabulary_path = os.path.join(data_dir, 'vocab.sents') 
     parse_vocabulary_path = os.path.join(data_dir, 'vocab.parse')
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
 
-    split = 'dev2'
+    #get_mean('fbank', 41)
+    #get_var('fbank', 41)
+    
+    split = 'dev'
+    
+    # split frames into utterances first
     acoustic = ['pitch3', 'fbank'] 
     split_frames(split, acoustic)  # ==> dumps to output_dir
-    '''
 
-    get_mean('fbank', 41)
-    get_var('fbank', 41)
-    #acoustic = 'pitch3_energy'
-    #this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, \
-    #        acoustic)
-    #this_file = os.path.join(output_dir, split + '_' + acoustic + '.pickle')
-    #pickle.dump(this_set, open(this_file,'w'))
+    # process data into buckets
+    acoustic = 'pitch3_energy'
+    normalize = True
+    this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, \
+            acoustic, normalize)
+    if normalize:
+        this_file = os.path.join(output_dir, split + '_' + acoustic + '_normalized.pickle')
+    else:
+        this_file = os.path.join(output_dir, split + '_' + acoustic + '.pickle')
+    pickle.dump(this_set, open(this_file,'w'))
 
 if __name__ == "__main__":
     tf.app.run()
