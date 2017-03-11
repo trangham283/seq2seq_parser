@@ -46,7 +46,8 @@ class manySeq2SeqModel(object):
           attn_vec_size, spscale,  
           learning_rate, learning_rate_decay_factor, 
           optimizer, use_lstm=True, output_keep_prob=0.8,
-          num_samples=512, forward_only=False):
+          num_samples=512, forward_only=False, use_conv=True,
+          conv_filter_width=40, conv_num_channels=5):
     """Create the model.
     """
     self.source_vocab_size = source_vocab_size
@@ -54,7 +55,9 @@ class manySeq2SeqModel(object):
     self.buckets = buckets
     self.batch_size = batch_size
     self.spscale = spscale
-    self.epoch = 0
+    self.epoch = tf.Variable(0, trainable=False)
+    self.epoch_incr = self.epoch.assign(self.epoch + 1)
+
     self.feat_dim = feat_dim
     self.fixed_word_length = fixed_word_length
 
@@ -113,6 +116,9 @@ class manySeq2SeqModel(object):
           num_encoder_symbols=source_vocab_size,
           num_decoder_symbols=target_vocab_size,
           embedding_size=embedding_size,
+          use_conv=use_conv, 
+          conv_filter_width=conv_filter_width,
+          conv_num_channels=conv_num_channels,
           attention_vec_size=attn_vec_size,
           fixed_word_length=fixed_word_length,
           filter_sizes=filter_sizes, 
@@ -197,7 +203,7 @@ class manySeq2SeqModel(object):
             zip(clipped_gradients, params), global_step=self.global_step))
 
     #self.saver = tf.train.Saver(tf.all_variables())
-    self.saver = tf.train.Saver(tf.global_variables())
+    self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=3)
 
   def step(self, session, encoder_inputs_list, decoder_inputs, target_weights,
            text_len, speech_len, bucket_id, forward_only):

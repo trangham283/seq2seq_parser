@@ -624,7 +624,7 @@ def main(_):
     #get_mean('fbank', 41)
     #get_var('fbank', 41)
     
-    split = 'dev'
+    split = 'train'
     
     # split frames into utterances first
     acoustic = ['pitch3', 'fbank'] 

@@ -32,12 +32,15 @@ BASE_DIR=/g/ssli/transitory/ttmt001/seq2seq_parser/models
 #STEP_NUM=2824
 
 # model with zero speech, same architecture as model above
-MODEL_DIR=run_id_98
-STEP_NUM=31000
+#MODEL_DIR=run_id_98
+#STEP_NUM=31000
 
 # text-only, with same parameters as above
 #MODEL_DIR=text_only
-#STEP_NUM=81848
+#STEP_NUM=21195
+
+MODEL_DIR=text_only_prevbest
+STEP_NUM=5656
 
 GOLD=$BASE_DIR/$MODEL_DIR/gold-step${STEP_NUM}.txt
 BR=$BASE_DIR/$MODEL_DIR/decoded-br-step${STEP_NUM}.txt
