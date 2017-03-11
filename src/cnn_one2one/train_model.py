@@ -1,12 +1,3 @@
-"""
-Based on parse_nn_swbd.py and debug_many2one.py
-Train 2-encoder 1-decoder network for parsing
-Data: switchboard
-
-Warm start by a tuned text-only model, so this model
-only tunes the speech encoder part/tune things jointly
-"""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -25,18 +16,35 @@ import subprocess
 import argparse
 import operator
 import data_utils
-import many2one_model
+import seqcnn_model
 
 from bunch import bunchify
 from tree_utils import add_brackets, match_length, merge_sent_tree, delete_empty_constituents
 
 # Use the following buckets: 
-_buckets = [(10, 40), (25, 85), (40, 150)]
+#_buckets = [(10, 40), (25, 85), (40, 150)]
+_buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
 NUM_THREADS = 4 
 FLAGS = object()
 # evalb paths
-#evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
-#prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
+evalb_path = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/evalb'
+prm_file = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/seq2seq.prm'
+
+def process_eval(out_lines, this_size):
+  # main stuff between outlines[3:-32]
+  results = out_lines[3:-32]
+  assert len(results) == this_size
+  matched = 0 
+  gold = 0
+  test = 0
+  for line in results:
+      m, g, t = line.split()[5:8]
+      matched += int(m)
+      gold += int(g)
+      test += int(t)
+  #precision = matched/test
+  #recall = matched/gold
+  return matched, gold, test
 
 def parse_options():
     parser = argparse.ArgumentParser()
@@ -52,22 +60,32 @@ def parse_options():
     parser.add_argument("-esize", "--embedding_size", default= 256, \
             type=int, help="Embedding Size")
 
+    # rnn architecture
     parser.add_argument("-text_hsize", "--text_hidden_size", default=256, \
             type=int, help="Hidden layer size of text encoder")
     parser.add_argument("-text_num_layers", "--text_num_layers", default=2, \
             type=int, help="Number of stacked layers of text encoder")
-    parser.add_argument("-speech_hsize", "--speech_hidden_size", default=256, \
-            type=int, help="Hidden layer size of speech encoder")
-    parser.add_argument("-speech_num_layers", "--speech_num_layers", \
-            default=2, type=int, help="Number of stacked layers of speech encoder")
+#    parser.add_argument("-speech_hsize", "--speech_hidden_size", default=256, \
+#            type=int, help="Hidden layer size of speech encoder")
+#    parser.add_argument("-speech_num_layers", "--speech_num_layers", default=2, \
+#            type=int, help="Number of stacked layers of speech encoder")
     parser.add_argument("-parse_hsize", "--parse_hidden_size", default=256, \
             type=int, help="Hidden layer size of decoder")
     parser.add_argument("-parse_num_layers", "--parse_num_layers", default=2, \
             type=int, help="Number of stacked layers of decoder") 
+
+    # attention architecture
     parser.add_argument("-attn_vec_size", "--attention_vector_size", \
             default=64, type=int, help="Attention vector size in the tanh(...) operation")
+    parser.add_argument("-use_conv", "--use_convolution", default=True, \
+            action="store_true", help="Use convolution feature in attention")
+    parser.add_argument("-conv_filter", "--conv_filter_dimension", default=40, \
+            type=int, help="Convolution filter width dimension")
+    parser.add_argument("-conv_channel", "--conv_num_channel", default=5, \
+            type=int, help="Number of channels in the convolution feature extracted")
 
-    parser.add_argument("-num_filters", "--num_filters", default=10, \
+    # cnn architecture
+    parser.add_argument("-num_filters", "--num_filters", default=5, \
             type=int, help="Number of convolution filters")
     parser.add_argument("-filter_sizes", "--filter_sizes", \
             default="10-25-50", type=str, help="Convolution filter sizes")
@@ -93,7 +111,7 @@ def parse_options():
     parser.add_argument("-lstm", "--lstm", default=True, \
             action="store_true", help="RNN cell to use")
     parser.add_argument("-out_prob", "--output_keep_prob", \
-            default=0.7, type=float, help="Output keep probability for dropout")
+            default=0.8, type=float, help="Output keep probability for dropout")
 
     parser.add_argument("-max_epochs", "--max_epochs", default=50, \
             type=int, help="Max epochs")
@@ -103,7 +121,7 @@ def parse_options():
             action="store_true", help="Get dev set results using the last saved model")
     parser.add_argument("-test", "--test", default=False, \
             action="store_true", help="Get test results using the last saved model")
-    parser.add_argument("-run_id", "--run_id", default=0, type=int, help="Run ID")
+    parser.add_argument("-run_id", "--run_id", type=int, help="Run ID")
 
     args = parser.parse_args()
     arg_dict = vars(args)
@@ -115,16 +133,16 @@ def parse_options():
     opt_string = ""
     if arg_dict['optimizer'] != "adam":
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
+
+    conv_string = ""
+    if arg_dict['use_convolution']:
+        conv_string = "use_conv_"
+        conv_string += "filter_dim_" + str(arg_dict['conv_filter_dimension']) + "_"
+        conv_string += "num_channel_" + str(arg_dict['conv_num_channel']) + "_"
     
-    train_dir = ('lr' + '_' + str(arg_dict['learning_rate']) + '_' +  
-                'text_hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
-                'text_num_layers' + '_' + str(arg_dict['text_num_layers']) + '_' +   
-                'speech_hsize' + '_' + str(arg_dict['speech_hidden_size']) + '_' +  
-                'speech_num_layers' + '_' + str(arg_dict['speech_num_layers']) + '_' +   
-                'parse_hsize' + '_' + str(arg_dict['parse_hidden_size']) + '_' +  
-                'parse_num_layers' + '_' + str(arg_dict['parse_num_layers']) + '_' +   
+    train_dir = ('hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
+                'num_layers' + '_' + str(arg_dict['text_num_layers']) + '_' +   
                 'num_filters' + '_' + str(arg_dict['num_filters']) + '_' +
-                'filter_sizes' + '_' + str(arg_dict['filter_sizes']) + '_' +
                 'out_prob' + '_' + str(arg_dict['output_keep_prob']) + '_' + 
                 'run_id' + '_' + str(arg_dict['run_id']) )
      
@@ -157,6 +175,11 @@ def parse_options():
     options = bunchify(arg_dict) 
     return options
     
+def load_test_data():
+    test_data_path = os.path.join(FLAGS.data_dir, 'test_pitch3.pickle')
+    test_set = pickle.load(open(test_data_path))
+    return test_set
+
 def load_dev_data():
     dev_data_path = os.path.join(FLAGS.data_dir, 'dev_pitch3.pickle')
     dev_set = pickle.load(open(dev_data_path))
@@ -167,6 +190,8 @@ def load_train_data():
     # debug with small data
     #swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3.pickle')
     train_sw = pickle.load(open(swtrain_data_path))
+    sample = train_sw[0][0]
+    feat_dim = sample[3].shape[0]
     train_bucket_sizes = [len(train_sw[b]) for b in xrange(len(_buckets))]
     print(train_bucket_sizes)
     print("# of instances: %d" %(sum(train_bucket_sizes)))
@@ -177,7 +202,7 @@ def load_train_data():
     all_bucks = [x for sublist in tiled_buckets for x in sublist]
     all_offsets = [x for sublist in list(train_bucket_offsets) for x in sublist]
     train_set = zip(all_bucks, all_offsets)
-    return train_sw, train_set
+    return train_sw, train_set, feat_dim
 
 def process_eval(out_lines, this_size):
   # main stuff between outlines[3:-32]
@@ -207,24 +232,25 @@ def map_var_names(this_var_name):
     warm_var_name = warm_var_name.replace('Attention_text', 'Attention_0')
     return warm_var_name
 
-feat_dim = 3  # hard-code for now; will change later -- TODO
-def get_model_graph(session, forward_only):
+def get_model_graph(session, feat_dim, forward_only):
   filter_sizes = [int(x) for x in FLAGS.filter_sizes.strip().split('-')]
-  model = many2one_model.manySeq2SeqModel(
+  model = seqcnn_model.Seq2SeqModel(
       FLAGS.input_vocab_size, FLAGS.output_vocab_size, _buckets,
-      FLAGS.text_hidden_size, FLAGS.speech_hidden_size, FLAGS.parse_hidden_size, 
-      FLAGS.text_num_layers, FLAGS.speech_num_layers, FLAGS.parse_num_layers,
+      FLAGS.text_hidden_size, FLAGS.parse_hidden_size, 
+      FLAGS.text_num_layers, FLAGS.parse_num_layers,
       filter_sizes, FLAGS.num_filters, feat_dim, FLAGS.fixed_word_length,  
       FLAGS.embedding_size, FLAGS.max_gradient_norm, FLAGS.batch_size,
       FLAGS.attention_vector_size, FLAGS.speech_bucket_scale, 
       FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
       FLAGS.optimizer, use_lstm=FLAGS.lstm, 
-      output_keep_prob=FLAGS.output_keep_prob, forward_only=forward_only)
+      output_keep_prob=FLAGS.output_keep_prob, forward_only=forward_only
+      use_conv=FLAGS.use_convolution, conv_filter_width=FLAGS.conv_filter_dimension
+      conv_num_channels=FLAGS.conv_num_channel)
   return model
 
-def create_model(session, forward_only, model_path=None):
+def create_model(session, feat_dim, forward_only, model_path=None):
   """Create translation model and initialize or load parameters in session."""
-  model = get_model_graph(session, forward_only)
+  model = get_model_graph(session, feat_dim, forward_only)
   ckpt = tf.train.get_checkpoint_state(FLAGS.train_dir)
   #if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and not model_path:
   if ckpt and not model_path:
@@ -266,17 +292,17 @@ def create_model(session, forward_only, model_path=None):
 def train():
   """Train a sequence to sequence parser; with speech encoder"""
   # prepapre data
-  train_sw, train_set = load_train_data()
+  train_sw, train_set, feat_dim = load_train_data()
   dev_set = load_dev_data()
 
   with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
     # Create model.
     print("Creating model for training")
     with tf.variable_scope("model", reuse=None):
-      model, steps_done = create_model(sess, forward_only=False)
+      model, steps_done = create_model(sess, feat_dim, forward_only=False)
     print("Now create model_dev")
     with tf.variable_scope("model", reuse=True):
-      model_dev = get_model_graph(sess, forward_only=True)
+      model_dev = get_model_graph(sess, feat_dim, forward_only=True)
 
     step_time, loss = 0.0, 0.0
     current_step = 0
@@ -315,29 +341,33 @@ def train():
           if len(previous_losses) > 2 and loss > max(previous_losses[-3:]):
             sess.run(model.learning_rate_decay_op)
           previous_losses.append(loss)
+
+          globstep = model.global_step.eval()
+          f_score_cur = write_decode(model_dev, sess, dev_set, FLAGS.batch_size, globstep, eval_now=True)
+          # only save model if improves score on dev set
+          if f_score_best < f_score_cur:
+              f_score_best = f_score_cur
+              print("Best F-Score: %.4f" % f_score_best)
+              print("Saving updated model")
+              sys.stdout.flush()
+              checkpoint_path = os.path.join(FLAGS.train_dir, "cnn_many2one.ckpt")
+              model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
+
           # zero timer and loss.
           step_time, loss = 0.0, 0.0
-          checkpoint_path = os.path.join(FLAGS.train_dir, "many2one_parse.ckpt")
-          model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
-          #model.saver.save(sess, checkpoint_path, global_step=model.global_step)
         
-      # save model (ALL of it) at end of one epoch, do write decodes to do evalb
-      # previously models were saved more frequently because we didn't have to write graph;
-      # now we do???
-      #checkpoint_path = os.path.join(FLAGS.train_dir, "many2one_parse.ckpt")
-      #model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
-      #model.saver.save(sess, checkpoint_path, global_step=model.global_step)
-      print("Current step: ", current_step)
-      globstep = model.global_step.eval()
-      eval_batch_size = FLAGS.batch_size
-      write_time = time.time()
-      #write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=True)
-      write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=False)
-      time_elapsed = time.time() - write_time
-      
-      print("decode writing time: ", time_elapsed)
+      #print("Current step: ", current_step)
+      #globstep = model.global_step.eval()
+      #eval_batch_size = FLAGS.batch_size
+      # evaluate after one epoch
+      #write_time = time.time()
+      #f_score_cur = write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=True)
+      #write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=False)
+      #time_elapsed = time.time() - write_time
+      #print("decode writing time: ", time_elapsed)
+
       sys.stdout.flush()
-      model.epoch += 1
+      sess.run(model.epoch_incr)
       epoch += 1
     
 def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=False):  
@@ -416,6 +446,7 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
   fout_mx.close()  
 
   if eval_now:
+    f_score_mx = 0.0
     correction_types = ["Bracket only", "Matched XX"]
     corrected_files = [decoded_br_file_name, decoded_mx_file_name]
 
@@ -425,22 +456,35 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         out, err = p.communicate()
         out_lines = out.split("\n")
         vv = [x for x in out_lines if "Number of Valid sentence " in x]
+        if len(vv) == 0:
+            return 0.0
         s1 = float(vv[0].split()[-1])
         m_br, g_br, t_br = process_eval(out_lines, num_dev_sents)
         
-        recall = float(m_br)/float(g_br)
-        prec = float(m_br)/float(t_br)
-        f_score = 2 * recall * prec / (recall + prec)
+        try:
+            recall = float(m_br)/float(g_br)
+            prec = float(m_br)/float(t_br)
+            f_score = 2 * recall * prec / (recall + prec)
+        except ZeroDivisionError as e:
+            recall, prec, f_score = 0.0, 0.0, 0.0
         
         print("%s -- Num valid sentences: %d; p: %.4f; r: %.4f; f1: %.4f" %(c_type, s1, prec, recall, f_score) ) 
+        if "XX" in c_type:
+            f_score_mx = f_score
+  return f_score_mx
 
 
 def decode(debug=True):
   """ Decode file """
+  dev_set = load_dev_data()
+  eval_batch_size = FLAGS.batch_size
+  sample = dev_set[0][0]
+  feat_dim = sample[3].shape[0]
+  
   with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
     # Create model and load parameters.
     with tf.variable_scope("model", reuse=None):
-      model_dev, steps_done = create_model(sess, forward_only=True)
+      model_dev, steps_done = create_model(sess, feat_dim, forward_only=True)
 
     if debug:
       var_dict = {}
@@ -450,8 +494,6 @@ def decode(debug=True):
       pickle_file = os.path.join(FLAGS.train_dir, 'variables-'+ str(steps_done) +'.pickle')
       pickle.dump(var_dict, open(pickle_file, 'w'))
     
-    dev_set = load_dev_data()
-    eval_batch_size = FLAGS.batch_size
 
     start_time = time.time()
     #write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=True) 
@@ -459,11 +501,38 @@ def decode(debug=True):
     time_elapsed = time.time() - start_time
     print("Decoding all dev time: ", time_elapsed)
 
+def decode_test(debug=True):
+  test_set = load_test_data()
+  eval_batch_size = FLAGS.batch_size
+  sample = test_set[0][0]
+  feat_dim = sample[3].shape[0]
+  
+  with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
+    # Create model and load parameters.
+    with tf.variable_scope("model", reuse=None):
+      model_dev, steps_done = create_model(sess, feat_dim, forward_only=True)
+
+    if debug:
+      var_dict = {}
+      for v in tf.global_variables(): 
+          print(v.name, v.get_shape())
+          var_dict[v.name] = v.eval()
+      pickle_file = os.path.join(FLAGS.train_dir, 'variables-'+ str(steps_done) +'.pickle')
+      pickle.dump(var_dict, open(pickle_file, 'w'))
+    
+
+    start_time = time.time()
+    write_decode(model_dev, sess, test_set, eval_batch_size, steps_done, eval_now=False) 
+    time_elapsed = time.time() - start_time
+    print("Decoding time: ", time_elapsed)
+
 
 if __name__ == "__main__":
   FLAGS = parse_options()
   if FLAGS.eval_dev:
     decode(True)
+  elif FLAGS.test:
+    decode_test(True)
   else:
     train()
 

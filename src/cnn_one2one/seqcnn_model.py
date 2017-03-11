@@ -1,20 +1,3 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-
-"""Sequence-to-sequence model with an attention mechanism."""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -29,24 +12,22 @@ from tensorflow.python.ops import rnn_cell
 import data_utils
 import many2one_seq2seq
 
-#mfcc_num = 3
-#attn_vec_size = None # i.e. = hidden_size
-#attn_vec_size = 64
 
-class manySeq2SeqModel(object):
+class Seq2SeqModel(object):
   """Sequence-to-sequence model with attention and for multiple buckets.
 
   """
 
   def __init__(self, source_vocab_size, target_vocab_size, buckets, 
-          text_hidden_size, speech_hidden_size, parse_hidden_size,
-          text_num_layers, speech_num_layers, parse_num_layers,
+          text_hidden_size, parse_hidden_size,
+          text_num_layers, parse_num_layers,
           filter_sizes, num_filters, feat_dim, fixed_word_length, 
           embedding_size, max_gradient_norm, batch_size, 
           attn_vec_size, spscale,  
           learning_rate, learning_rate_decay_factor, 
           optimizer, use_lstm=True, output_keep_prob=0.8,
-          num_samples=512, forward_only=False):
+          num_samples=512, forward_only=False, use_conv=True,
+          conv_filter_width=40, conv_num_channels=5):
     """Create the model.
     """
     self.source_vocab_size = source_vocab_size
@@ -54,7 +35,9 @@ class manySeq2SeqModel(object):
     self.buckets = buckets
     self.batch_size = batch_size
     self.spscale = spscale
-    self.epoch = 0
+    self.epoch = tf.Variable(0, trainable=False)
+    self.epoch_incr = self.epoch.assign(self.epoch + 1)
+
     self.feat_dim = feat_dim
     self.fixed_word_length = fixed_word_length
 
@@ -101,18 +84,21 @@ class manySeq2SeqModel(object):
         return cell
 
     text_cell = create_cell(text_hidden_size, text_num_layers)
-    speech_cell = create_cell(speech_hidden_size, speech_num_layers)
+    #speech_cell = create_cell(speech_hidden_size, speech_num_layers)
     parse_cell = create_cell(parse_hidden_size, parse_num_layers)
 
     # The seq2seq function: we use embedding for the input and attention.
-    def seq2seq_f(encoder_inputs_list, decoder_inputs, text_len, speech_len, do_decode, attn_vec_size):
+    def seq2seq_f(encoder_inputs_list, decoder_inputs, text_len, text_len, do_decode, attn_vec_size):
       return many2one_seq2seq.many2one_attention_seq2seq(
           encoder_inputs_list, decoder_inputs, 
-          text_len, speech_len, feat_dim,  
-          text_cell, speech_cell, parse_cell,
+          text_len, feat_dim,  
+          text_cell, parse_cell,
           num_encoder_symbols=source_vocab_size,
           num_decoder_symbols=target_vocab_size,
           embedding_size=embedding_size,
+          use_conv=use_conv, 
+          conv_filter_width=conv_filter_width,
+          conv_num_channels=conv_num_channels,
           attention_vec_size=attn_vec_size,
           fixed_word_length=fixed_word_length,
           filter_sizes=filter_sizes, 
@@ -197,7 +183,7 @@ class manySeq2SeqModel(object):
             zip(clipped_gradients, params), global_step=self.global_step))
 
     #self.saver = tf.train.Saver(tf.all_variables())
-    self.saver = tf.train.Saver(tf.global_variables())
+    self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=3)
 
   def step(self, session, encoder_inputs_list, decoder_inputs, target_weights,
            text_len, speech_len, bucket_id, forward_only):
@@ -297,9 +283,12 @@ class manySeq2SeqModel(object):
           if end_idx > frame_idx[1] and this_word_frames.shape[1]<fixed_word_length:
               num_more = fixed_word_length - this_word_frames.shape[1]
               this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, num_more))])
+          # flip frames within word
+          this_word_frames = np.fliplr(this_word_frames)
           speech_frames.append(this_word_frames)
       mfcc_pad_num = encoder_size - len(text_encoder_input)
       mfcc_pad = [np.zeros((self.feat_dim, fixed_word_length)) for _ in range(mfcc_pad_num)]
+      # flip words in sequence
       speech_stuff = list(reversed(speech_frames)) + mfcc_pad
       speech_encoder_inputs.append(speech_stuff)
 

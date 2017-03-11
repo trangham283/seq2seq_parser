@@ -1,3 +1,21 @@
+# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
+"""Library for creating sequence-to-sequence models in TensorFlow.
+"""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -51,7 +69,6 @@ def _extract_argmax_and_embed(embedding, output_projection=None,
   return loop_function
 
 def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, cell,
-        seq_len, use_conv=True, conv_filter_width=40, conv_num_channels=5,
                       output_size=None, loop_function=None,
                       dtype=dtypes.float32, scope=None,
                       initial_state_attention=False, attention_vec_size=None):
@@ -105,20 +122,6 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
     speech_hidden_features = nn_ops.conv2d(speech_hidden, speech_k, [1, 1, 1, 1], "SAME")
     speech_v = variable_scope.get_variable("AttnV_speech", [speech_attention_vec_size])
 
-    ## CONVOLUTION ATTN STUFF
-    if use_conv:
-        F = {}
-        U = {}
-        F_text = variable_scope.get_variable("AttnF_text", [conv_filter_width, 1, 1, conv_num_channels])
-        U_text = variable_scope.get_variable("AttnU_text" % a, [1, 1, conv_num_channels, text_attention_vec_size])
-        F_speech = variable_scope.get_variable("AttnF_speech", [conv_filter_width, 1, 1, conv_num_channels])
-        U_speech = variable_scope.get_variable("AttnU_speech" % a, [1, 1, conv_num_channels, speech_attention_vec_size])
-        F['text'] = F_text
-        U['text'] = U_text
-        F['speech'] = F_speech
-        U['speech'] = U_speech
-
-
     text_state, speech_state = initial_state
     # this is d_0, choose from text branch for now
     state = text_state
@@ -138,37 +141,20 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
     hidden['text'] = text_hidden
     hidden['speech'] = speech_hidden
 
-    attn_mask = tf.sequence_mask(tf.cast(seq_len, tf.int32), dtype=tf.float32)
-
-    def attention(query, branch, prev_alpha):
+    def attention(query, branch):
       """Put attention masks on hidden using hidden_features and query."""
       ds = []  # Results of attention reads will be stored here.
       with variable_scope.variable_scope("Attention_%s" % branch):
           y = linear(query, attn_vec_size[branch], True)
           y = array_ops.reshape(y, [-1, 1, 1, attn_vec_size[branch]])
-          if use_conv:
-              conv_features = nn_ops.conv2d(prev_alpha, F[branch], [1, 1, 1, 1], "SAME")
-              feat_reshape = nn_ops.conv2d(conv_features, U[branch], [1, 1, 1, 1], "SAME")
-              s = math_ops.reduce_sum(v[branch] * math_ops.tanh(hidden_features[branch] \
-                      + y + feat_reshape), [2, 3])
-          else:
-              s = math_ops.reduce_sum(v[branch] * math_ops.tanh(hidden_features[branch] \
-                      + y), [2, 3])
-
-          #a = nn_ops.softmax(s)
-          alpha = nn_ops.softmax(s) * attn_mask
-          sum_vec = tf.reduce_sum(alpha, reduction_indices=[1], keep_dims=True) + 1e-12
-          norm_term = tf.tile(sum_vec, tf.stack([1, tf.shape(alpha)[1]]))
-          alpha = alpha / norm_term
-          alpha = tf.expand_dims(alpha, 2)
-          alpha = tf.expand_dims(alpha, 3)
-
+          # Attention mask is a softmax of v^T * tanh(...).
+          s = math_ops.reduce_sum(v[branch] * math_ops.tanh(hidden_features[branch] + y), [2, 3])
+          a = nn_ops.softmax(s)
           # Now calculate the attention-weighted vector d.
-          #d = math_ops.reduce_sum(array_ops.reshape(a, [-1, attn_length[branch], 1, 1]) * hidden[branch], [1, 2])
-          d = math_ops.reduce_sum(alpha * hidden[branch], [1, 2])
+          d = math_ops.reduce_sum(array_ops.reshape(a, [-1, attn_length[branch], 1, 1]) * hidden[branch], [1, 2])
           #ds.append(array_ops.reshape(d, [-1, attn_size]))
           ds.append(array_ops.reshape(d, [-1, hidden_size]))
-      return ds, alpha
+      return ds
 
 
     outputs = []
@@ -176,9 +162,6 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
     batch_attn_size = array_ops.pack([batch_size, hidden_size]) 
     # range(2) to account for both encoders!
     attns = [array_ops.zeros(batch_attn_size, dtype=dtype) for _ in range(2)]
-
-    batch_alpha_size = array_ops.stack([batch_size, attn_length, 1, 1])
-    alphas = [array_ops.zeros(batch_alpha_size, dtype=dtype) for _ in range(2)]
 
     for a in attns:  # Ensure the second shape of attention vectors is set.
       a.set_shape([None, hidden_size])
@@ -203,10 +186,9 @@ def many2one_attention_decoder(decoder_inputs, initial_state, attention_states, 
       # Run the attention mechanism.
       if i == 0 and initial_state_attention:
         with variable_scope.variable_scope(variable_scope.get_variable_scope(),reuse=True):
-          attns, prev_alphas = attention(cell_output, 'text', alphas[0]) + attention(cell_output, 'speech', alphas[1])
+          attns = attention(cell_output, 'text') + attention(cell_output, 'speech')
       else:
-      #TODO: FIXME
-        attns, prev_alphas = attention(cell_output, 'text', prev_alphas['text']) + attention(cell_output, 'speech', prev_alphas['speech'])
+        attns = attention(cell_output, 'text') + attention(cell_output, 'speech')
 
       with variable_scope.variable_scope("AttnOutputProjection"):
         output = linear([cell_output] + attns, output_size, True)
