@@ -9,7 +9,7 @@ import sys
 import argparse
 import random
 import re
-from nlp_util import pstree, render_tree, nlp_eval, treebanks, relaxed_parse_errors
+#from nlp_util import pstree, render_tree, nlp_eval, treebanks, relaxed_parse_errors
 
 
 def merge_dels(token_list):
@@ -171,6 +171,7 @@ def merge_sent_tree(parse, sent):
 
     return new_tree
 
+'''
 def compute_overall_score(gold_file, test_file):
     gold_in = open(gold_file).readlines()
     test_in = open(test_file).readlines()
@@ -254,6 +255,6 @@ if __name__ == '__main__':
     test_file = args.tf
     compute_overall_score(gold_file, test_file)
 
-
+'''
 
 

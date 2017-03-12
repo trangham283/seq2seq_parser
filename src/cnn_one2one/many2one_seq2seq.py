@@ -17,6 +17,8 @@ from tensorflow.python.ops import rnn
 from tensorflow.python.ops import rnn_cell
 from tensorflow.python.ops import variable_scope
 
+import tensorflow as tf
+
 # TODO(ebrevdo): Remove once _linear is fully deprecated.
 linear = rnn_cell._linear  # pylint: disable=protected-access
 
@@ -119,7 +121,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
                                     [1, 1, conv_num_channels, attention_vec_size]))
 
 
-    attn_mask = tf.sequence_mask(tf.cast(seq_len_inp, tf.int32), dtype=tf.float32)
+    attn_mask = tf.sequence_mask(tf.cast(seq_len, tf.int32), attn_length, dtype=tf.float32)
 
     state = initial_state
 
@@ -141,18 +143,21 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
           else:
               s = math_ops.reduce_sum(
                       v[a] * math_ops.tanh(hidden_features[a] + y), [2, 3])
+          #print(s.get_shape(), attn_mask.get_shape())
           #alpha = nn_ops.softmax(s)
           alpha = nn_ops.softmax(s) * attn_mask
           sum_vec = tf.reduce_sum(alpha, reduction_indices=[1], keep_dims=True) + 1e-12
           norm_term = tf.tile(sum_vec, tf.stack([1, tf.shape(alpha)[1]]))
           alpha = alpha / norm_term
+          alpha = tf.expand_dims(alpha, 2)
+          alpha = tf.expand_dims(alpha, 3)
 
-          array_ops.reshape(alpha, [-1, attn_length, 1, 1])
+          #array_ops.reshape(alpha, [-1, attn_length, 1, 1])
           alphas.append(alpha)
           # Now calculate the attention-weighted vector d.
           d = math_ops.reduce_sum(alpha * hidden, [1, 2])
           ds.append(array_ops.reshape(d, [-1, attn_size]))
-      return ds, alphas
+      return tuple(ds), tuple(alphas)
           
     outputs = []
     prev = None
@@ -182,7 +187,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
       input_size = inp.get_shape().with_rank(2)[1]
       if input_size.value is None:
         raise ValueError("Could not infer input size from input: %s" % inp.name)
-      x = linear([inp] + attns, input_size, True)
+      x = linear([inp] + list(attns), input_size, True)
       # Run the RNN.
       cell_output, state = cell(x, state)
       # Run the attention mechanism.
@@ -191,10 +196,10 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
                                            reuse=True):
           attns, alphas = attention(cell_output, alphas)
       else:
-        attns = attention(cell_output, alphas)
+        attns, alphas = attention(cell_output, alphas)
 
       with variable_scope.variable_scope("AttnOutputProjection"):
-        output = linear([cell_output] + attns, output_size, True)
+        output = linear([cell_output] + list(attns), output_size, True)
       if loop_function is not None:
         prev = output
       outputs.append(output)
@@ -211,7 +216,7 @@ def embedding_attention_decoder(decoder_inputs, initial_state, attention_states,
                                 update_embedding_for_previous=True,
                                 dtype=dtypes.float32, scope=None,
                                 initial_state_attention=False,
-                                attention_vec_size=attention_vec_size):
+                                attention_vec_size=64):
   if output_size is None:
     output_size = cell.output_size
   if output_projection is not None:
@@ -229,10 +234,10 @@ def embedding_attention_decoder(decoder_inputs, initial_state, attention_states,
         emb_inp, initial_state, attention_states, cell, seq_len, 
         use_conv=use_conv, conv_filter_width=conv_filter_width,
         conv_num_channels=conv_num_channels,
-        attention_vec_size=attention_vec_size, 
         output_size=output_size,
         num_heads=num_heads, loop_function=loop_function,
-        initial_state_attention=initial_state_attention)
+        initial_state_attention=initial_state_attention,
+        attention_vec_size=attention_vec_size)
 
 def many2one_attention_seq2seq(
         encoder_inputs_list, decoder_inputs, 
@@ -246,11 +251,12 @@ def many2one_attention_seq2seq(
         filter_sizes, num_filters,
         output_projection=None,feed_previous=False, 
         dtype=dtypes.float32,
-        scope=None, initial_state_attention=False):
+        scope=None, initial_state_attention=False,
+        use_speech=False):
 
   text_encoder_inputs, speech_encoder_inputs = encoder_inputs_list
   encoder_size = len(text_encoder_inputs)
-  seq_len = text_len
+  #print(encoder_size)
   #speech_encoder_inputs is size [seq_len, batch_size, fixed_word_length, feat_dim]
 
   with variable_scope.variable_scope(scope or "many2one_attention_seq2seq"):
@@ -258,41 +264,48 @@ def many2one_attention_seq2seq(
       embedding_words = variable_scope.get_variable("embedding_words",
               [num_encoder_symbols, embedding_size])
 
+    ## We need to do the embedding beforehand so that the rnn infers the input type 
+    ## to be float and doesn't cause trouble in copying state after sequence length 
+    ## This issue has been fixed in 0.10 version
+    ## The issue is referred here - https://github.com/tensorflow/tensorflow/issues/3322
     text_encoder_inputs = [embedding_ops.embedding_lookup(embedding_words, i) 
             for i in text_encoder_inputs] 
-    
-    # Convolution stuff happens here for speech inputs
-    pooled_outputs = []
-    for i, filter_size in enumerate(filter_sizes):
-        print(i, filter_size)
-        #with tf.name_scope("conv-maxpool-%s" % filter_size):
-        with variable_scope.variable_scope(scope or "conv-maxpool-%s" % filter_size):
-            filter_shape = [filter_size, feat_dim, 1, num_filters]
-            W = variable_scope.get_variable("W-%d"%i, filter_shape)
-            b = variable_scope.get_variable("B-%d"%i, num_filters)
-            pooled_words = []  
-            for j in range(encoder_size):
-                feats = speech_encoder_inputs[j]
-                feats_conv = tf.expand_dims(feats, -1)
-                conv = tf.nn.conv2d(feats_conv, W, strides=[1, 1, 1, 1],
-                            padding="VALID", name="conv")
-                # Apply nonlinearity
-                h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
-                pooled = tf.nn.max_pool(h,
-                        ksize=[1, fixed_word_length-filter_size+1, 1, 1],
-                        strides=[1, 1, 1, 1],
-                        padding='VALID',
-                        name="pool")
-                pooled_words.append(pooled)
-            pooled_outputs.append(pooled_words)
+   
+    if use_speech:
+        # Convolution stuff happens here for speech inputs
+        pooled_outputs = []
+        for i, filter_size in enumerate(filter_sizes):
+            print(i, filter_size)
+            #with tf.name_scope("conv-maxpool-%s" % filter_size):
+            with variable_scope.variable_scope(scope or "conv-maxpool-%s" % filter_size):
+                filter_shape = [filter_size, feat_dim, 1, num_filters]
+                W = variable_scope.get_variable("W-%d"%i, filter_shape)
+                b = variable_scope.get_variable("B-%d"%i, num_filters)
+                pooled_words = []  
+                for j in range(encoder_size):
+                    feats = speech_encoder_inputs[j]
+                    feats_conv = tf.expand_dims(feats, -1)
+                    conv = tf.nn.conv2d(feats_conv, W, strides=[1, 1, 1, 1],
+                                padding="VALID", name="conv")
+                    # Apply nonlinearity
+                    h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
+                    pooled = tf.nn.max_pool(h,
+                            ksize=[1, fixed_word_length-filter_size+1, 1, 1],
+                            strides=[1, 1, 1, 1],
+                            padding='VALID',
+                            name="pool")
+                    pooled_words.append(pooled)
+                pooled_outputs.append(pooled_words)
 
-    num_filters_total = num_filters * len(filter_sizes)
-    out_seq = tf.unpack(tf.concat(1, pooled_outputs))
-    speech_conv_outputs = [tf.reshape(x, [-1, num_filters_total]) for x in out_seq]
+        num_filters_total = num_filters * len(filter_sizes)
+        out_seq = tf.unpack(tf.concat(1, pooled_outputs))
+        speech_conv_outputs = [tf.reshape(x, [-1, num_filters_total]) for x in out_seq]
 
-    # concat text_encoder_inputs and speech_conv_outputs
-    both_encoder_inputs = [tf.concat([text_encoder_inputs[i], speech_conv_outputs][i], -1) \
-            for i in range(encoder_size)]
+        # concat text_encoder_inputs and speech_conv_outputs
+        both_encoder_inputs = [tf.concat(1, [text_encoder_inputs[i], speech_conv_outputs[i]]) \
+                for i in range(encoder_size)]
+    else:
+        both_encoder_inputs = text_encoder_inputs
 
     # Encoder.
     with variable_scope.variable_scope(scope or "encoder"):
@@ -312,7 +325,6 @@ def many2one_attention_seq2seq(
     #speech_top_states = [array_ops.reshape(e, [-1, 1, speech_cell.output_size])
     #              for e in speech_encoder_outputs]
     #m_states = array_ops.concat(1, speech_top_states)
-
     #attention_states = [h_states, m_states]
     #both_encoder_states = [text_encoder_state, speech_encoder_state]
 
@@ -423,8 +435,7 @@ def sequence_loss_by_example(logits, targets, weights,
   if len(targets) != len(logits) or len(weights) != len(logits):
     raise ValueError("Lengths of logits, weights, and targets must be the same "
                      "%d, %d, %d." % (len(logits), len(weights), len(targets)))
-  with ops.op_scope(logits + targets + weights, name,
-                    "sequence_loss_by_example"):
+  with tf.name_scope(name, "sequence_loss_by_example",logits + targets + weights):
     log_perp_list = []
     for logit, target, weight in zip(logits, targets, weights):
       if softmax_loss_function is None:
@@ -448,7 +459,7 @@ def sequence_loss_by_example(logits, targets, weights,
 def sequence_loss(logits, targets, weights,
                   average_across_timesteps=True, average_across_batch=True,
                   softmax_loss_function=None, name=None):
-  with ops.op_scope(logits + targets + weights, name, "sequence_loss"):
+  with tf.name_scope(name, "sequence_loss", logits + targets + weights):
     cost = math_ops.reduce_sum(sequence_loss_by_example(
         logits, targets, weights,
         average_across_timesteps=average_across_timesteps,
@@ -460,8 +471,8 @@ def sequence_loss(logits, targets, weights,
       return cost
 
 def many2one_model_with_buckets(encoder_inputs_list, decoder_inputs, targets, weights,
-                       buckets, seq2seq, softmax_loss_function=None,
-                       per_example_loss=False, name=None, spscale=1):
+                       text_len, speech_len, buckets, seq2seq, softmax_loss_function=None,
+                       per_example_loss=False, name=None, spscale=1, use_speech=False):
   
   # Modified model with buckets to accept 2 encoders
 
@@ -479,13 +490,19 @@ def many2one_model_with_buckets(encoder_inputs_list, decoder_inputs, targets, we
   losses = []
   outputs = []
   speech_buckets = [(x*spscale, y) for (x,y) in buckets]
-  with ops.op_scope(all_inputs, name, "many2one_model_with_buckets"):
+  with tf.name_scope(name, "many2one_model_with_buckets", all_inputs):
     for j, bucket in enumerate(buckets):
       with variable_scope.variable_scope(variable_scope.get_variable_scope(),
                                          reuse=True if j > 0 else None):
+        #bucket_outputs, _ = seq2seq(encoder_inputs[:bucket[0]], decoder_inputs[:bucket[1]])
         x = encoder_inputs_list[0][:bucket[0]]
-        y = encoder_inputs_list[1][:speech_buckets[j][0]]
-        bucket_outputs, _ = seq2seq([x, y], decoder_inputs[:bucket[1]])
+        if use_speech:
+            y = encoder_inputs_list[1][:speech_buckets[j][0]]
+        else:
+            y = []
+        bucket_outputs, _ = seq2seq([x, y], 
+                decoder_inputs[:bucket[1]], 
+                text_len)
         outputs.append(bucket_outputs)
         if per_example_loss:
           losses.append(sequence_loss_by_example(
@@ -497,7 +514,6 @@ def many2one_model_with_buckets(encoder_inputs_list, decoder_inputs, targets, we
               softmax_loss_function=softmax_loss_function))
 
   return outputs, losses
-
 
 
 def model_with_buckets(encoder_inputs, decoder_inputs, targets, weights, seq_len, 
@@ -516,7 +532,7 @@ def model_with_buckets(encoder_inputs, decoder_inputs, targets, weights, seq_len
   all_inputs = encoder_inputs + decoder_inputs + targets + weights
   losses = []
   outputs = []
-  with ops.op_scope(all_inputs, name, "model_with_buckets"):
+  with tf.name_scope(name, "model_with_buckets", all_inputs):
     for j, bucket in enumerate(buckets):
       with variable_scope.variable_scope(variable_scope.get_variable_scope(),
                                          reuse=True if j > 0 else None):

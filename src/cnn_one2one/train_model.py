@@ -24,11 +24,16 @@ from tree_utils import add_brackets, match_length, merge_sent_tree, delete_empty
 # Use the following buckets: 
 #_buckets = [(10, 40), (25, 85), (40, 150)]
 _buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
-NUM_THREADS = 4 
 FLAGS = object()
 # evalb paths
 evalb_path = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/evalb'
 prm_file = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/seq2seq.prm'
+NUM_THREADS = 4 
+
+# evalb paths
+#evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
+#prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
+#NUM_THREADS = 1 
 
 def process_eval(out_lines, this_size):
   # main stuff between outlines[3:-32]
@@ -60,15 +65,15 @@ def parse_options():
     parser.add_argument("-esize", "--embedding_size", default= 256, \
             type=int, help="Embedding Size")
 
+    # use speech or not
+    parser.add_argument("-use_speech", "--use_speech", default=False, \
+            action="store_true", help="Use speech features or text only")
+    
     # rnn architecture
     parser.add_argument("-text_hsize", "--text_hidden_size", default=256, \
             type=int, help="Hidden layer size of text encoder")
     parser.add_argument("-text_num_layers", "--text_num_layers", default=2, \
             type=int, help="Number of stacked layers of text encoder")
-#    parser.add_argument("-speech_hsize", "--speech_hidden_size", default=256, \
-#            type=int, help="Hidden layer size of speech encoder")
-#    parser.add_argument("-speech_num_layers", "--speech_num_layers", default=2, \
-#            type=int, help="Number of stacked layers of speech encoder")
     parser.add_argument("-parse_hsize", "--parse_hidden_size", default=256, \
             type=int, help="Hidden layer size of decoder")
     parser.add_argument("-parse_num_layers", "--parse_num_layers", default=2, \
@@ -77,15 +82,15 @@ def parse_options():
     # attention architecture
     parser.add_argument("-attn_vec_size", "--attention_vector_size", \
             default=64, type=int, help="Attention vector size in the tanh(...) operation")
-    parser.add_argument("-use_conv", "--use_convolution", default=True, \
+    parser.add_argument("-use_conv", "--use_convolution", default=False, \
             action="store_true", help="Use convolution feature in attention")
-    parser.add_argument("-conv_filter", "--conv_filter_dimension", default=40, \
+    parser.add_argument("-conv_filter", "--conv_filter_dimension", default=20, \
             type=int, help="Convolution filter width dimension")
     parser.add_argument("-conv_channel", "--conv_num_channel", default=5, \
             type=int, help="Number of channels in the convolution feature extracted")
 
     # cnn architecture
-    parser.add_argument("-num_filters", "--num_filters", default=5, \
+    parser.add_argument("-num_filters", "--num_filters", default=64, \
             type=int, help="Number of convolution filters")
     parser.add_argument("-filter_sizes", "--filter_sizes", \
             default="10-25-50", type=str, help="Convolution filter sizes")
@@ -134,13 +139,18 @@ def parse_options():
     if arg_dict['optimizer'] != "adam":
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
 
+    speech_string = ""
+    if arg_dict['use_speech']:
+        speech_string = "use_speech_"
+
     conv_string = ""
     if arg_dict['use_convolution']:
         conv_string = "use_conv_"
         conv_string += "filter_dim_" + str(arg_dict['conv_filter_dimension']) + "_"
         conv_string += "num_channel_" + str(arg_dict['conv_num_channel']) + "_"
     
-    train_dir = ('hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
+    train_dir = (speech_string + 
+                'hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
                 'num_layers' + '_' + str(arg_dict['text_num_layers']) + '_' +   
                 'num_filters' + '_' + str(arg_dict['num_filters']) + '_' +
                 'out_prob' + '_' + str(arg_dict['output_keep_prob']) + '_' + 
@@ -176,19 +186,19 @@ def parse_options():
     return options
     
 def load_test_data():
-    test_data_path = os.path.join(FLAGS.data_dir, 'test_pitch3.pickle')
+    test_data_path = os.path.join(FLAGS.data_dir, 'test_pitch3_energy_normalized.pickle')
     test_set = pickle.load(open(test_data_path))
     return test_set
 
 def load_dev_data():
-    dev_data_path = os.path.join(FLAGS.data_dir, 'dev_pitch3.pickle')
+    dev_data_path = os.path.join(FLAGS.data_dir, 'dev_pitch3_energy_normalized.pickle')
     dev_set = pickle.load(open(dev_data_path))
     return dev_set
 
 def load_train_data():
-    swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3.pickle')
+    swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3_energy_normalized.pickle')
     # debug with small data
-    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3.pickle')
+    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3_energy_normalized.pickle')
     train_sw = pickle.load(open(swtrain_data_path))
     sample = train_sw[0][0]
     feat_dim = sample[3].shape[0]
@@ -243,9 +253,9 @@ def get_model_graph(session, feat_dim, forward_only):
       FLAGS.attention_vector_size, FLAGS.speech_bucket_scale, 
       FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
       FLAGS.optimizer, use_lstm=FLAGS.lstm, 
-      output_keep_prob=FLAGS.output_keep_prob, forward_only=forward_only
-      use_conv=FLAGS.use_convolution, conv_filter_width=FLAGS.conv_filter_dimension
-      conv_num_channels=FLAGS.conv_num_channel)
+      output_keep_prob=FLAGS.output_keep_prob, forward_only=forward_only,
+      use_conv=FLAGS.use_convolution, conv_filter_width=FLAGS.conv_filter_dimension,
+      conv_num_channels=FLAGS.conv_num_channel, use_speech=FLAGS.use_speech)
   return model
 
 def create_model(session, feat_dim, forward_only, model_path=None):
@@ -307,7 +317,9 @@ def train():
     step_time, loss = 0.0, 0.0
     current_step = 0
     previous_losses = []
-    epoch = model.epoch 
+    epoch = model.epoch.eval() 
+    globstep = model.global_step.eval()
+    f_score_best = write_decode(model_dev, sess, dev_set, FLAGS.batch_size, globstep, eval_now=True)
    
     while epoch <= FLAGS.max_epochs:
       print("Doing epoch: ", epoch)
@@ -320,10 +332,10 @@ def train():
         start_time = time.time()
         text_encoder_inputs, speech_encoder_inputs, decoder_inputs, \
                 target_weights, text_seq_len, speech_seq_len = model.get_batch(
-                {bucket_id: this_sample}, bucket_id, bucket_offset)
+                {bucket_id: this_sample}, bucket_id, bucket_offset, FLAGS.use_speech)
         encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs]
         #print(len(text_encoder_inputs), len(speech_encoder_inputs), [x.shape for x in speech_encoder_inputs])
-        _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, False)
+        _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, False, FLAGS.use_speech)
         step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
         loss += step_loss / FLAGS.steps_per_checkpoint
         current_step += 1
@@ -343,14 +355,19 @@ def train():
           previous_losses.append(loss)
 
           globstep = model.global_step.eval()
+          write_time = time.time()
           f_score_cur = write_decode(model_dev, sess, dev_set, FLAGS.batch_size, globstep, eval_now=True)
+          print(f_score_cur)
+          time_elapsed = time.time() - write_time
+          print("decode writing time: ", time_elapsed, "\n")
+          sys.stdout.flush()
           # only save model if improves score on dev set
           if f_score_best < f_score_cur:
               f_score_best = f_score_cur
               print("Best F-Score: %.4f" % f_score_best)
-              print("Saving updated model")
+              print("Saving updated model \n")
               sys.stdout.flush()
-              checkpoint_path = os.path.join(FLAGS.train_dir, "cnn_many2one.ckpt")
+              checkpoint_path = os.path.join(FLAGS.train_dir, "cnn_one2one.ckpt")
               model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
 
           # zero timer and loss.
@@ -402,11 +419,13 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         speech_feats = [x[3] for x in all_examples]
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, text_seq_len, speech_seq_len = model_dev.get_batch(
+        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, \
+                text_seq_len, speech_seq_len = model_dev.get_batch(\
                 {bucket_id: zip(token_ids, dec_ids, partition, speech_feats)}, \
-                        bucket_id, batch_offset)
-        _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs], 
-                decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, True)
+                bucket_id, batch_offset, FLAGS.use_speech)
+        _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs],\
+                decoder_inputs, target_weights, text_seq_len, speech_seq_len, \
+                bucket_id, True, FLAGS.use_speech)
         outputs = [np.argmax(logit, axis=1) for logit in output_logits]
         to_decode = np.array(outputs).T
         num_dev_sents += to_decode.shape[0]
@@ -445,6 +464,8 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
   fout_br.close()
   fout_mx.close()  
 
+  f_score_mx = -1.0
+
   if eval_now:
     f_score_mx = 0.0
     correction_types = ["Bracket only", "Matched XX"]
@@ -468,7 +489,9 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         except ZeroDivisionError as e:
             recall, prec, f_score = 0.0, 0.0, 0.0
         
-        print("%s -- Num valid sentences: %d; p: %.4f; r: %.4f; f1: %.4f" %(c_type, s1, prec, recall, f_score) ) 
+        print("%s -- Num valid sentences: %d; p: %.4f; r: %.4f; f1: %.4f" \
+                %(c_type, s1, prec, recall, f_score) ) 
+        sys.stdout.flush()
         if "XX" in c_type:
             f_score_mx = f_score
   return f_score_mx

@@ -36,11 +36,11 @@ BASE_DIR=/g/ssli/transitory/ttmt001/seq2seq_parser/models
 #STEP_NUM=31000
 
 # text-only, with same parameters as above
-#MODEL_DIR=text_only
-#STEP_NUM=21195
+MODEL_DIR=text_only
+STEP_NUM=43803
 
-MODEL_DIR=text_only_prevbest
-STEP_NUM=8484
+#MODEL_DIR=text_only_prevbest
+#STEP_NUM=21917
 
 GOLD=$BASE_DIR/$MODEL_DIR/gold-step${STEP_NUM}.txt
 BR=$BASE_DIR/$MODEL_DIR/decoded-br-step${STEP_NUM}.txt
