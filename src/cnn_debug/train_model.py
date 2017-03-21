@@ -70,30 +70,30 @@ def parse_options():
             action="store_true", help="Use speech features or text only")
     
     # rnn architecture
-    parser.add_argument("-text_hsize", "--text_hidden_size", default=256, \
+    parser.add_argument("-text_hsize", "--text_hidden_size", default=32, \
             type=int, help="Hidden layer size of text encoder")
     parser.add_argument("-text_num_layers", "--text_num_layers", default=2, \
             type=int, help="Number of stacked layers of text encoder")
-    parser.add_argument("-parse_hsize", "--parse_hidden_size", default=256, \
+    parser.add_argument("-parse_hsize", "--parse_hidden_size", default=32, \
             type=int, help="Hidden layer size of decoder")
     parser.add_argument("-parse_num_layers", "--parse_num_layers", default=2, \
             type=int, help="Number of stacked layers of decoder") 
 
     # attention architecture
     parser.add_argument("-attn_vec_size", "--attention_vector_size", \
-            default=64, type=int, help="Attention vector size in the tanh(...) operation")
+            default=32, type=int, help="Attention vector size in the tanh(...) operation")
     parser.add_argument("-use_conv", "--use_convolution", default=False, \
             action="store_true", help="Use convolution feature in attention")
-    parser.add_argument("-conv_filter", "--conv_filter_dimension", default=40, \
+    parser.add_argument("-conv_filter", "--conv_filter_dimension", default=10, \
             type=int, help="Convolution filter width dimension")
     parser.add_argument("-conv_channel", "--conv_num_channel", default=5, \
             type=int, help="Number of channels in the convolution feature extracted")
 
     # cnn architecture
-    parser.add_argument("-num_filters", "--num_filters", default=64, \
+    parser.add_argument("-num_filters", "--num_filters", default=16, \
             type=int, help="Number of convolution filters")
     parser.add_argument("-filter_sizes", "--filter_sizes", \
-            default="10-25-50", type=str, help="Convolution filter sizes")
+            default="5-25", type=str, help="Convolution filter sizes")
     parser.add_argument("-fixed_word_length", "--fixed_word_length", \
             default=50, type=int, help="fixed word length for convolution")
     
@@ -118,15 +118,13 @@ def parse_options():
     parser.add_argument("-out_prob", "--output_keep_prob", \
             default=0.7, type=float, help="Output keep probability for dropout")
 
-    parser.add_argument("-max_epochs", "--max_epochs", default=45, \
+    parser.add_argument("-max_epochs", "--max_epochs", default=10, \
             type=int, help="Max epochs")
-    parser.add_argument("-num_check", "--steps_per_checkpoint", default=500, \
+    parser.add_argument("-num_check", "--steps_per_checkpoint", default=10, \
             type=int, help="Number of steps before updated model is saved")
     parser.add_argument("-eval", "--eval_dev", default=False, \
             action="store_true", help="Get dev set results using the last saved model")
     parser.add_argument("-test", "--test", default=False, \
-            action="store_true", help="Get test results using the last saved model")
-    parser.add_argument("-dump_vars", "--dump_vars", default=False, \
             action="store_true", help="Get test results using the last saved model")
     parser.add_argument("-run_id", "--run_id", type=int, help="Run ID")
 
@@ -198,9 +196,9 @@ def load_dev_data():
     return dev_set
 
 def load_train_data():
-    swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3_energy_normalized.pickle')
+    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3_energy_normalized.pickle')
     # debug with small data
-    #swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3_energy_normalized.pickle')
+    swtrain_data_path = os.path.join(FLAGS.data_dir, 'dev2_pitch3_energy_normalized.pickle')
     train_sw = pickle.load(open(swtrain_data_path))
     sample = train_sw[0][0]
     feat_dim = sample[3].shape[0]
@@ -519,6 +517,7 @@ def decode(debug=True):
       pickle_file = os.path.join(FLAGS.train_dir, 'variables-'+ str(steps_done) +'.pickle')
       pickle.dump(var_dict, open(pickle_file, 'w'))
     
+
     start_time = time.time()
     #write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=True) 
     write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=False) 
@@ -550,33 +549,13 @@ def decode_test(debug=True):
     time_elapsed = time.time() - start_time
     print("Decoding time: ", time_elapsed)
 
-def dump_vars(debug=True):
-  """ Decode file """
-  dev_set = load_dev_data()
-  eval_batch_size = FLAGS.batch_size
-  sample = dev_set[0][0]
-  feat_dim = sample[3].shape[0]
-  
-  with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
-    # Create model and load parameters.
-    with tf.variable_scope("model", reuse=None):
-      model_dev, steps_done = create_model(sess, feat_dim, forward_only=True)
 
-    var_dict = {}
-    for v in tf.global_variables():
-        if debug: print(v.name, v.get_shape())
-        var_dict[v.name] = v.eval()
-    pickle_file = os.path.join(FLAGS.train_dir, 'variables-'+ str(steps_done) +'.pickle')
-    pickle.dump(var_dict, open(pickle_file, 'w'))
-    
 if __name__ == "__main__":
   FLAGS = parse_options()
   if FLAGS.eval_dev:
     decode(True)
   elif FLAGS.test:
     decode_test(True)
-  elif FLAGS.dump_vars:
-    dump_vars(True)
   else:
     train()
 

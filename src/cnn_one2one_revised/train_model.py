@@ -118,15 +118,13 @@ def parse_options():
     parser.add_argument("-out_prob", "--output_keep_prob", \
             default=0.7, type=float, help="Output keep probability for dropout")
 
-    parser.add_argument("-max_epochs", "--max_epochs", default=45, \
+    parser.add_argument("-max_epochs", "--max_epochs", default=35, \
             type=int, help="Max epochs")
     parser.add_argument("-num_check", "--steps_per_checkpoint", default=500, \
             type=int, help="Number of steps before updated model is saved")
     parser.add_argument("-eval", "--eval_dev", default=False, \
             action="store_true", help="Get dev set results using the last saved model")
     parser.add_argument("-test", "--test", default=False, \
-            action="store_true", help="Get test results using the last saved model")
-    parser.add_argument("-dump_vars", "--dump_vars", default=False, \
             action="store_true", help="Get test results using the last saved model")
     parser.add_argument("-run_id", "--run_id", type=int, help="Run ID")
 
@@ -519,6 +517,7 @@ def decode(debug=True):
       pickle_file = os.path.join(FLAGS.train_dir, 'variables-'+ str(steps_done) +'.pickle')
       pickle.dump(var_dict, open(pickle_file, 'w'))
     
+
     start_time = time.time()
     #write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=True) 
     write_decode(model_dev, sess, dev_set, eval_batch_size, steps_done, eval_now=False) 
@@ -550,33 +549,13 @@ def decode_test(debug=True):
     time_elapsed = time.time() - start_time
     print("Decoding time: ", time_elapsed)
 
-def dump_vars(debug=True):
-  """ Decode file """
-  dev_set = load_dev_data()
-  eval_batch_size = FLAGS.batch_size
-  sample = dev_set[0][0]
-  feat_dim = sample[3].shape[0]
-  
-  with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS)) as sess:
-    # Create model and load parameters.
-    with tf.variable_scope("model", reuse=None):
-      model_dev, steps_done = create_model(sess, feat_dim, forward_only=True)
 
-    var_dict = {}
-    for v in tf.global_variables():
-        if debug: print(v.name, v.get_shape())
-        var_dict[v.name] = v.eval()
-    pickle_file = os.path.join(FLAGS.train_dir, 'variables-'+ str(steps_done) +'.pickle')
-    pickle.dump(var_dict, open(pickle_file, 'w'))
-    
 if __name__ == "__main__":
   FLAGS = parse_options()
   if FLAGS.eval_dev:
     decode(True)
   elif FLAGS.test:
     decode_test(True)
-  elif FLAGS.dump_vars:
-    dump_vars(True)
   else:
     train()
 

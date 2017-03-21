@@ -1,6 +1,9 @@
 #!/bin/bash
 
-BASE_DIR=/g/ssli/transitory/ttmt001/seq2seq_parser/models
+#BASE_DIR=/g/ssli/transitory/ttmt001/seq2seq_parser/models
+BASE_DIR=/s0/ttmt001
+
+
 #MODEL_DIR=lr_0.001_text_hsize_128_text_num_layers_2_speech_hsize_128_speech_num_layers_2_parse_hsize_128_parse_num_layers_2_num_filters_5_filter_sizes_10-25-50_out_prob_0.8_run_id_0
 #STEP_NUM=42444
 
@@ -18,13 +21,14 @@ BASE_DIR=/g/ssli/transitory/ttmt001/seq2seq_parser/models
 
 #MODEL_DIR=lr_0.001_text_hsize_256_text_num_layers_3_speech_hsize_256_speech_num_layers_3_parse_hsize_256_parse_num_layers_3_num_filters_5_filter_sizes_10-25-50_out_prob_0.7_run_id_0
 #STEP_NUM=59346
+#STEP_NUM=40977
 
 # Embedding size = 512 here
-#MODEL_DIR=lr_0.001_text_hsize_256_text_num_layers_2_speech_hsize_256_speech_num_layers_2_parse_hsize_256_parse_num_layers_2_num_filters_5_filter_sizes_10-25-50_out_prob_0.7_run_id_2
-#STEP_NUM=62172
+MODEL_DIR=lr_0.001_text_hsize_256_text_num_layers_2_speech_hsize_256_speech_num_layers_2_parse_hsize_256_parse_num_layers_2_num_filters_5_filter_sizes_10-25-50_out_prob_0.7_run_id_2
+STEP_NUM=40977
 
 #MODEL_DIR=lr_0.001_text_hsize_256_text_num_layers_2_speech_hsize_256_speech_num_layers_2_parse_hsize_256_parse_num_layers_2_num_filters_15_filter_sizes_10-25-50_out_prob_0.7_run_id_2
-#STEP_NUM=72063
+#STEP_NUM=40977
 
 #MODEL_DIR=lr_0.001_text_hsize_256_text_num_layers_2_speech_hsize_256_speech_num_layers_2_parse_hsize_256_parse_num_layers_2_num_filters_5_filter_sizes_10-25-50_out_prob_0.8_run_id_2
 #STEP_NUM=19768
@@ -33,11 +37,11 @@ BASE_DIR=/g/ssli/transitory/ttmt001/seq2seq_parser/models
 
 # model with zero speech, same architecture as model above
 #MODEL_DIR=run_id_98
-#STEP_NUM=31000
+#STEP_NUM=31064
 
 # text-only, with same parameters as above
-MODEL_DIR=text_only
-STEP_NUM=43803
+#MODEL_DIR=text_only
+#STEP_NUM=43803
 
 #MODEL_DIR=text_only_prevbest
 #STEP_NUM=21917

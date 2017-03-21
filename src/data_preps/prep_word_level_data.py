@@ -551,6 +551,12 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic, normal
                 dname = os.path.join(data_dir, 'fbank_var.pickle')
                 var_vec = pickle.load(open(dname))
                 fbank = fbank / np.sqrt(var_vec.reshape(var_vec.shape[0],1)) 
+                dname = os.path.join(data_dir, 'pitch3_mean.pickle')
+                mean_vec = pickle.load(open(dname))
+                pitch3 = pitch3 - mean_vec.reshape((mean_vec.shape[0],1))
+                dname = os.path.join(data_dir, 'pitch3_var.pickle')
+                var_vec = pickle.load(open(dname))
+                pitch3 = pitch3 / np.sqrt(var_vec.reshape(var_vec.shape[0],1)) 
             energy = fbank[0,:].reshape((1,fbank.shape[1]))
             pitch3_energy = np.vstack([pitch3, energy])
             sent_ids = sentence_to_token_ids(sentence, sent_vocab, True, True)
@@ -623,12 +629,14 @@ def main(_):
 
     #get_mean('fbank', 41)
     #get_var('fbank', 41)
+    #get_mean('pitch3', 3)
+    #get_var('pitch3', 3)
     
     split = 'train'
     
     # split frames into utterances first
-    acoustic = ['pitch3', 'fbank'] 
-    split_frames(split, acoustic)  # ==> dumps to output_dir
+    #acoustic = ['pitch3', 'fbank'] 
+    #split_frames(split, acoustic)  # ==> dumps to output_dir
 
     # process data into buckets
     acoustic = 'pitch3_energy'
@@ -636,7 +644,8 @@ def main(_):
     this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, \
             acoustic, normalize)
     if normalize:
-        this_file = os.path.join(output_dir, split + '_' + acoustic + '_normalized.pickle')
+        #this_file = os.path.join(output_dir, split + '_' + acoustic + '_normalized.pickle')
+        this_file = os.path.join(output_dir, split + '_' + acoustic + '_all_normed.pickle')
     else:
         this_file = os.path.join(output_dir, split + '_' + acoustic + '.pickle')
     pickle.dump(this_set, open(this_file,'w'))
