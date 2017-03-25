@@ -1,3 +1,9 @@
+Processing data with pause:
+No pause info for sentence  sw3049_B_0167 (train set)
+
+#############################################################
+
+
 POS tag stats
 ############
 dev2
