@@ -149,6 +149,7 @@ def parse_options():
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
 
     speech_string = ""
+    pool_string = ""
     if arg_dict['use_speech']:
         speech_string = "use_speech_"
         pool_string = "maxpool_"

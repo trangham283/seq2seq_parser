@@ -149,6 +149,7 @@ def parse_options():
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
 
     speech_string = ""
+    pool_string = ""
     if arg_dict['use_speech']:
         speech_string = "use_speech_"
         pool_string = "maxpool_"
@@ -440,7 +441,7 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         text_encoder_inputs, speech_encoder_inputs, pause_bef, pause_aft, \
                 decoder_inputs, target_weights, \
                 text_seq_len, speech_seq_len = model_dev.get_batch(\
-                {bucket_id: zip(token_ids, dec_ids, partition, speech_feats)}, \
+                {bucket_id: zip(token_ids, dec_ids, partition, speech_feats, pbfs, pafs)}, \
                 bucket_id, batch_offset, FLAGS.use_speech)
         _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs, \
                 pause_bef, pause_aft],\

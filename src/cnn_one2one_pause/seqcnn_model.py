@@ -391,9 +391,6 @@ class Seq2SeqModel(object):
       batch_weights.append(batch_weight)
     
     sequence_lengths = np.asarray(sequence_lengths, dtype=np.int64)
-    return batch_text_encoder_inputs, batch_speech_encoder_inputs, \
-            batch_pause_bef, batch_pause_aft, \
-            batch_decoder_inputs, batch_weights, sequence_lengths, \
-            sequence_lengths
+    return batch_text_encoder_inputs, batch_speech_encoder_inputs, batch_pause_bef, batch_pause_aft, batch_decoder_inputs, batch_weights, sequence_lengths, sequence_lengths
 
 
