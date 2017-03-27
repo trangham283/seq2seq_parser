@@ -157,7 +157,6 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, \
                 for w in vocab_list:
                     vocab_file.write(w + b"\n")
 
-
 def do_section_keep_punc(ptb_files, out_dir, name):
     times_file = os.path.join(out_dir, '%s.data_with_punctuations.csv' % name)
     list_row = []
@@ -190,46 +189,6 @@ def do_section_keep_punc(ptb_files, out_dir, name):
     data_df = pd.DataFrame(list_row)
     data_df.to_csv(times_file, sep='\t', index=False)
 
-def do_section_keep_all(ptb_files, out_dir, name):
-    times_file = os.path.join(out_dir, '%s.data_with_punctuations_tok1.csv' % name)
-    list_row = []
-    for file_ in ptb_files:
-        sents = []
-        orig_words = []
-        for sent in file_.children():
-            prune_trace(sent)
-            line = str(sent)
-            new_tree = detach_brackets(line)
-            # Weird non-sentence case:
-            #if len(new_tree) <= 1: continue
-            if len(new_tree) <= 1:
-                print line, new_tree
-                continue
-
-            try:
-                sentence, parse = linearize_tree(new_tree)
-            except:
-                print new_tree
-
-            assert len(sent._children) == 1
-            stimes = [w.start_time for w in sent.listWords()] 
-            etimes = [w.end_time for w in sent.listWords()] 
-            words = [w.text for w in sent.listWords()]
-            assert len(stimes) == len(etimes) == len(words)
-            if not stimes or not etimes:
-                print "no time info for ", sent.globalID
-                continue
-            list_row.append({'file_id': file_.ID, \
-                    'speaker': sent.speaker, \
-                    'sent_id': sent.globalID, \
-                    'tokens': words, \
-                    'start_times': stimes, \
-                    'end_times': etimes, \
-                    'sentence': sentence, \
-                    'parse': parse})
-    data_df = pd.DataFrame(list_row)
-    data_df.to_csv(times_file, sep='\t', index=False)
-
 def do_section(ptb_files, out_dir, name):
     times_file = os.path.join(out_dir, '%s.data.csv' % name)
     list_row = []
@@ -242,38 +201,6 @@ def do_section(ptb_files, out_dir, name):
             new_tree = detach_brackets(line)
             # Weird non-sentence case:
             if len(new_tree) <= 1: continue
-            sentence, parse = linearize_tree(new_tree)
-            assert len(sent._children) == 1
-            stimes = [w.start_time for w in sent.listWords()] 
-            etimes = [w.end_time for w in sent.listWords()] 
-            words = [w.text for w in sent.listWords()]
-            assert len(stimes) == len(etimes) == len(words)
-            if not stimes or not etimes:
-                print "no time info for ", sent.globalID
-                continue
-            list_row.append({'file_id': file_.ID, \
-                    'speaker': sent.speaker, \
-                    'sent_id': sent.globalID, \
-                    'tokens': words, \
-                    'start_times': stimes, \
-                    'end_times': etimes, \
-                    'sentence': sentence, \
-                    'parse': parse})
-    data_df = pd.DataFrame(list_row)
-    data_df.to_csv(times_file, sep='\t', index=False)
-
-def do_section_tok1(ptb_files, out_dir, name):
-    times_file = os.path.join(out_dir, '%s.data_no_punctuations_tok1.csv' % name)
-    list_row = []
-    for file_ in ptb_files:
-        sents = []
-        orig_words = []
-        for sent in file_.children():
-            cleanup(sent)
-            line = str(sent)
-            new_tree = detach_brackets(line)
-            # Weird non-sentence case:
-            #if len(new_tree) <= 1: continue
             sentence, parse = linearize_tree(new_tree)
             assert len(sent._children) == 1
             stimes = [w.start_time for w in sent.listWords()] 
@@ -333,14 +260,42 @@ def get_prns(ptb_files, split):
                         counts['PRN'] += 1
     print split, counts
 
-
+def prep_bkparser_data(ptb_files, out_dir, name):
+    out_file = os.path.join(out_dir, '%s_trees_for_bk.mrg' % name)
+    out_f = open(out_file, 'w')
+    for file_ in ptb_files:
+        sents = []
+        orig_words = []
+        for sent in file_.children():
+            assert len(sent._children) == 1
+            stimes = [w.start_time for w in sent.listWords()] 
+            etimes = [w.end_time for w in sent.listWords()] 
+            words = [w.text for w in sent.listWords()]
+            assert len(stimes) == len(etimes) == len(words)
+            if not stimes or not etimes:
+                print "no time info for ", sent.globalID
+                continue
+            prune_trace(sent)
+            prune_empty(sent)
+            line = str(sent)
+            new_tree = detach_brackets(line)
+            if len(new_tree) <= 1: continue
+            new_tree = ['(ROOT'] + new_tree + [')']
+            item = ' '.join(new_tree) + '\n'
+            out_f.write(item)
+    out_f.close()
 
 def main(nxt_loc, out_dir):
     corpus = Treebank.PTB.NXTSwitchboard(path=nxt_loc)
-    get_prns(corpus.train_files(), 'train')
-    get_prns(corpus.dev_files(), 'dev')
-    get_prns(corpus.dev2_files(), 'dev2')
-    get_prns(corpus.eval_files(), 'test')
+    #prep_bkparser_data(corpus.dev2_files(), out_dir, 'dev2')
+    prep_bkparser_data(corpus.dev_files(), out_dir, 'dev')
+    prep_bkparser_data(corpus.eval_files(), out_dir, 'test')
+    prep_bkparser_data(corpus.train_files(), out_dir, 'train')
+
+    #get_prns(corpus.train_files(), 'train')
+    #get_prns(corpus.dev_files(), 'dev')
+    #get_prns(corpus.dev2_files(), 'dev2')
+    #get_prns(corpus.eval_files(), 'test')
     
     #do_section(corpus.train_files(), out_dir, 'train')
     #do_section(corpus.dev_files(), out_dir, 'dev')
@@ -357,7 +312,6 @@ def main(nxt_loc, out_dir):
     #do_section_keep_punc(corpus.dev2_files(), out_dir, 'dev2')
     #do_section_keep_punc(corpus.eval_files(), out_dir, 'test')
 
-    #do_section_tok1(corpus.dev_files(), out_dir, 'dev')
     #write_txt(out_dir, out_dir)
     #sent_data_path = os.path.join(out_dir, 'train_sents_punctuations.txt')
     #parse_data_path = os.path.join(out_dir, 'train_parse_punctuations.txt')
@@ -365,7 +319,6 @@ def main(nxt_loc, out_dir):
     #parse_vocabulary_path = os.path.join(out_dir, 'vocab_punc.parse')
     #create_vocabulary(sent_vocabulary_path, sent_data_path, 45000)
     #create_vocabulary(parse_vocabulary_path, parse_data_path, 45000)
-    
 
 if __name__ == '__main__':
     nxt_loc = '/s0/ttmt001/speech_parsing'
