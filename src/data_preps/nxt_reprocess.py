@@ -264,8 +264,6 @@ def prep_bkparser_data(ptb_files, out_dir, name):
     out_file = os.path.join(out_dir, '%s_trees_for_bk.mrg' % name)
     out_f = open(out_file, 'w')
     for file_ in ptb_files:
-        sents = []
-        orig_words = []
         for sent in file_.children():
             assert len(sent._children) == 1
             stimes = [w.start_time for w in sent.listWords()] 
@@ -285,12 +283,40 @@ def prep_bkparser_data(ptb_files, out_dir, name):
             out_f.write(item)
     out_f.close()
 
+def prep_bkparser_eval(ptb_files, out_dir, name):
+    out_file = os.path.join(out_dir, '%s_sents_for_bk.txt' % name)
+    out_f = open(out_file, 'w')
+    for file_ in ptb_files:
+        for sent in file_.children():
+            assert len(sent._children) == 1
+            stimes = [w.start_time for w in sent.listWords()] 
+            etimes = [w.end_time for w in sent.listWords()] 
+            words = [w.text for w in sent.listWords()]
+            assert len(stimes) == len(etimes) == len(words)
+            if not stimes or not etimes:
+                print "no time info for ", sent.globalID
+                continue
+            prune_trace(sent)
+            prune_empty(sent)
+            line = str(sent)
+            new_tree = detach_brackets(line)
+            if len(new_tree) <= 1: continue
+            sentence, parse = linearize_tree(new_tree)
+            item = sentence + '\n'
+            out_f.write(item)
+    out_f.close()
+
 def main(nxt_loc, out_dir):
     corpus = Treebank.PTB.NXTSwitchboard(path=nxt_loc)
     #prep_bkparser_data(corpus.dev2_files(), out_dir, 'dev2')
-    prep_bkparser_data(corpus.dev_files(), out_dir, 'dev')
-    prep_bkparser_data(corpus.eval_files(), out_dir, 'test')
-    prep_bkparser_data(corpus.train_files(), out_dir, 'train')
+    #prep_bkparser_data(corpus.dev_files(), out_dir, 'dev')
+    #prep_bkparser_data(corpus.eval_files(), out_dir, 'test')
+    #prep_bkparser_data(corpus.train_files(), out_dir, 'train')
+
+    #prep_bkparser_eval(corpus.dev2_files(), out_dir, 'dev2')
+    prep_bkparser_eval(corpus.dev_files(), out_dir, 'dev')
+    prep_bkparser_eval(corpus.eval_files(), out_dir, 'test')
+    #prep_bkparser_eval(corpus.train_files(), out_dir, 'train')
 
     #get_prns(corpus.train_files(), 'train')
     #get_prns(corpus.dev_files(), 'dev')

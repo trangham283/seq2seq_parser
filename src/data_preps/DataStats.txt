@@ -1,3 +1,10 @@
+Stats on sentence counts; no punctuations           
+split       used    all %
+train       91,115  91,746  99.31%
+dev set     5,716   5,769   99.08%
+test set    5,855   5,901   99.22%
+
+############################################################
 Processing data with pause:
 No pause info for sentence  sw3049_B_0167 (train set)
 

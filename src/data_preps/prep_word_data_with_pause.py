@@ -9,6 +9,7 @@ import numpy as np
 from tensorflow.python.platform import gfile
 import tensorflow as tf
 import cPickle as pickle
+from tree_utils import merge_sent_tree
 
 tf.app.flags.DEFINE_string("data_dir", "/s0/ttmt001/speech_parsing", \
         "directory of swbd data files")
@@ -49,6 +50,7 @@ UNF_ID = 4
 # Use the following buckets: 
 #_buckets = [(10, 40), (25, 85), (40, 150)]
 _buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
+#_buckets = [(10, 55), (25, 110), (50, 200), (100, 350)]
 
 def basic_tokenizer(sentence):
   """Very basic tokenizer: split the sentence into a list of tokens."""
@@ -132,18 +134,63 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False)
                     pause_bef, pause_aft])
     return data_set
 
+def prep_bkdata(data_dir, split, sent_vocab, parse_vocab):
+    treefile = os.path.join(data_dir, split + '_trees_for_bk_new_buckets.mrg')
+    ft = open(treefile, 'w')
+    sentfile = os.path.join(data_dir, split + '_sents_for_bk_new_buckets.txt')
+    fs = open(sentfile, 'w')
+    pause_file = os.path.join(pause_dir, split+'_nopunc.pickle')
+    pause_data = pickle.load(open(pause_file))
+    pauses = make_dict(pause_data)
+    data_set = [[] for _ in _buckets]
+    split_path = os.path.join(data_dir, split)
+    split_files = glob.glob(split_path + "/*")
+    for file_path in split_files:
+        this_data = pickle.load(open(file_path))
+        for k in this_data.keys():
+            if k not in pauses:
+                print "No pause info for sentence ", k
+                continue
+            pause_bef = pauses[k]['pause_bef']
+            pause_aft = pauses[k]['pause_aft']
+            sentence = this_data[k]['sents']
+            sent_toks = sentence.strip().split()
+            parse = this_data[k]['parse']
+            parse_toks = parse.strip().split()
+            windices = this_data[k]['windices']
+            pitch3 = make_array(this_data[k]['pitch3'])
+            fbank = make_array(this_data[k]['fbank'])
+            sent_ids = sentence_to_token_ids(sentence, sent_vocab, True, True)
+            parse_ids = sentence_to_token_ids(parse, parse_vocab, False, False)
+            if split != 'extra':
+                parse_ids.append(EOS_ID)
+            maybe_buckets = [b for b in xrange(len(_buckets)) 
+                if _buckets[b][0] >= len(sent_ids) and _buckets[b][1] >= len(parse_ids)]
+            if not maybe_buckets: 
+                #print(k, sentence, parse)
+                continue
+            bucket_id = min(maybe_buckets)
+            fs.write(sentence + '\n')
+            merged = merge_sent_tree(parse_toks, sent_toks)
+            ft.write(' '.join(merged) + '\n')
+    ft.close()
+    fs.close()
+
+
 def main(_):
     sent_vocabulary_path = os.path.join(data_dir, 'vocab.sents') 
     parse_vocabulary_path = os.path.join(data_dir, 'vocab.parse')
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
 
-    split = 'test'
+    split = 'dev'
     # process data into buckets
-    normalize = True
-    this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, normalize)
-    this_file = os.path.join(output_dir, split + '_p3f4norm_pause.pickle')
-    pickle.dump(this_set, open(this_file,'w'))
+    #normalize = True
+    #this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, normalize)
+    #this_file = os.path.join(output_dir, split + '_p3f4norm_pause_new_buckets.pickle')
+    #pickle.dump(this_set, open(this_file,'w'))
+
+    prep_bkdata(output_dir, split, sent_vocab, parse_vocab)
 
 if __name__ == "__main__":
     tf.app.run()

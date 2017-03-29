@@ -291,8 +291,8 @@ def many2one_attention_seq2seq(
                     h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
                     temp_length = fixed_word_length - filter_size + 1
                     pooled = tf.nn.max_pool(h,
-                            ksize=[1, max(temp_length/2, 1), 1, 1],
-                            strides=[1, max(temp_length/3, 1), 1, 1],
+                            ksize=[1, max(int(temp_length/3), 1), 1, 1],
+                            strides=[1, max(int(temp_length/4), 1), 1, 1],
                             padding='SAME',
                             name="pool")
                     new_shape = num_filters * pooled.get_shape()[1].value

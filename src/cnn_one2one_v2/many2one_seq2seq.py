@@ -208,7 +208,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
 
 
 def embedding_attention_decoder(decoder_inputs, initial_state, attention_states,
-                                cell, seq_len, num_symbols, embedding_size,  
+                                cell, seq_len, num_symbols, embedding_size, 
                                 use_conv, conv_filter_width, conv_num_channels,
                                 num_heads=1,
                                 output_size=None, output_projection=None,
@@ -239,12 +239,12 @@ def embedding_attention_decoder(decoder_inputs, initial_state, attention_states,
         initial_state_attention=initial_state_attention,
         attention_vec_size=attention_vec_size)
 
-def multipool_attention_seq2seq(
+def many2one_attention_seq2seq(
         encoder_inputs_list, decoder_inputs, 
         seq_len, feat_dim, 
         encoder_cell, parse_cell,
-        num_encoder_symbols, num_pause_symbols, num_decoder_symbols,
-        embedding_size, pause_size, use_conv, conv_filter_width,
+        num_encoder_symbols, num_decoder_symbols,
+        embedding_size, use_conv, conv_filter_width,
         conv_num_channels,
         attention_vec_size, 
         fixed_word_length, 
@@ -254,7 +254,7 @@ def multipool_attention_seq2seq(
         scope=None, initial_state_attention=False,
         use_speech=False):
 
-  text_encoder_inputs, speech_encoder_inputs, pause_bef, pause_aft = encoder_inputs_list
+  text_encoder_inputs, speech_encoder_inputs = encoder_inputs_list
   encoder_size = len(text_encoder_inputs)
   #print(encoder_size)
   #speech_encoder_inputs is size [seq_len, batch_size, fixed_word_length, feat_dim]
@@ -264,161 +264,12 @@ def multipool_attention_seq2seq(
       embedding_words = variable_scope.get_variable("embedding_words",
               [num_encoder_symbols, embedding_size])
 
-    with ops.device("/cpu:0"):
-      embedding_pauses = variable_scope.get_variable("embedding_pauses",
-              [num_pause_symbols, pause_size])
-    
     ## We need to do the embedding beforehand so that the rnn infers the input type 
     ## to be float and doesn't cause trouble in copying state after sequence length 
     ## This issue has been fixed in 0.10 version
     ## The issue is referred here - https://github.com/tensorflow/tensorflow/issues/3322
     text_encoder_inputs = [embedding_ops.embedding_lookup(embedding_words, i) 
             for i in text_encoder_inputs] 
-    pause_bef = [embedding_ops.embedding_lookup(embedding_pauses, i) 
-            for i in pause_bef] 
-    pause_aft = [embedding_ops.embedding_lookup(embedding_pauses, i) 
-            for i in pause_aft] 
-    text_encoder_inputs = [tf.concat(1, [text_encoder_inputs[i], pause_bef[i], pause_aft[i] ]) \
-                            for i in range(encoder_size)]
-   
-    if use_speech:
-        # Convolution stuff happens here for speech inputs
-        pooled_outputs = []
-        for i, filter_size in enumerate(filter_sizes):
-            print(i, filter_size)
-            #with tf.name_scope("conv-maxpool-%s" % filter_size):
-            with variable_scope.variable_scope(scope or "conv-maxpool-%s" % filter_size):
-                filter_shape = [filter_size, feat_dim, 1, num_filters]
-                W = variable_scope.get_variable("W-%d"%i, filter_shape)
-                b = variable_scope.get_variable("B-%d"%i, num_filters)
-                pooled_words = []  
-                for j in range(encoder_size):
-                    feats = speech_encoder_inputs[j]
-                    feats_conv = tf.expand_dims(feats, -1)
-                    conv = tf.nn.conv2d(feats_conv, W, strides=[1, 1, 1, 1],
-                                padding="VALID", name="conv")
-                    # Apply nonlinearity
-                    h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
-                    temp_length = fixed_word_length - filter_size + 1
-                    pooled = tf.nn.max_pool(h,
-                            ksize=[1, max(int(temp_length/3), 1), 1, 1],
-                            strides=[1, max(int(temp_length/4), 1), 1, 1],
-                            padding='SAME',
-                            name="pool")
-                    new_shape = num_filters * pooled.get_shape()[1].value
-                    pooled = tf.reshape(pooled, [-1, new_shape])
-                    pooled_words.append(pooled)
-                pooled_outputs.append(pooled_words)
-
-        #num_filters_total = num_filters * len(filter_sizes)
-        speech_conv_outputs = tf.unpack(tf.concat(2, pooled_outputs))
-        #speech_conv_outputs = [tf.reshape(x, [-1, num_filters_total]) for x in out_seq]
-
-        # concat text_encoder_inputs and speech_conv_outputs
-        both_encoder_inputs = [tf.concat(1, [text_encoder_inputs[i], speech_conv_outputs[i]]) \
-                for i in range(encoder_size)]
-    else:
-        both_encoder_inputs = text_encoder_inputs
-
-    # Encoder.
-    with variable_scope.variable_scope(scope or "encoder"):
-      encoder_outputs, encoder_states = rnn.rnn(
-              encoder_cell, both_encoder_inputs, sequence_length=seq_len, dtype=dtype)
-  
-#    with variable_scope.variable_scope(scope or "speech_encoder"):
-#      speech_encoder_outputs, speech_encoder_state = rnn.rnn(
-#              speech_cell, speech_conv_outputs, sequence_length=speech_len, dtype=dtype)
-
-
-    # First calculate a concatenation of encoder outputs to put attention on.
-    top_states = [array_ops.reshape(e, [-1, 1, encoder_cell.output_size])
-                  for e in encoder_outputs]
-    attention_states = array_ops.concat(1, top_states)
-    
-    #speech_top_states = [array_ops.reshape(e, [-1, 1, speech_cell.output_size])
-    #              for e in speech_encoder_outputs]
-    #m_states = array_ops.concat(1, speech_top_states)
-    #attention_states = [h_states, m_states]
-    #both_encoder_states = [text_encoder_state, speech_encoder_state]
-
-    # Decoder.
-    output_size = None
-    if output_projection is None:
-      parse_cell = rnn_cell.OutputProjectionWrapper(parse_cell, num_decoder_symbols)
-      output_size = num_decoder_symbols
-
-    if isinstance(feed_previous, bool):
-      return embedding_attention_decoder(
-          decoder_inputs, encoder_states, attention_states,
-          parse_cell, seq_len, num_decoder_symbols, embedding_size, 
-          use_conv, conv_filter_width, conv_num_channels,
-          output_size=output_size, output_projection=output_projection,
-          feed_previous=feed_previous,
-          initial_state_attention=initial_state_attention, 
-          attention_vec_size=attention_vec_size)
-
-    # If feed_previous is a Tensor, we construct 2 graphs and use cond.
-    def decoder(feed_previous_bool):
-      reuse = None if feed_previous_bool else True
-      with variable_scope.variable_scope(variable_scope.get_variable_scope(),
-                                         reuse=reuse):
-        outputs, state = embedding_attention_decoder(
-            decoder_inputs, both_encoder_states, attention_states, 
-            parse_cell, seq_len, num_decoder_symbols, embedding_size, 
-            use_conv, conv_filter_width, conv_num_channels,
-            output_size=output_size, output_projection=output_projection,
-            feed_previous=feed_previous_bool,
-            update_embedding_for_previous=False,
-            initial_state_attention=initial_state_attention, 
-            attention_vec_size=attention_vec_size)
-        return outputs + [state]
-
-    outputs_and_state = control_flow_ops.cond(feed_previous,
-                                              lambda: decoder(True),
-                                              lambda: decoder(False))
-    return outputs_and_state[:-1], outputs_and_state[-1]
-
-def maxpool_attention_seq2seq(
-        encoder_inputs_list, decoder_inputs, 
-        seq_len, feat_dim, 
-        encoder_cell, parse_cell,
-        num_encoder_symbols, num_pause_symbols, num_decoder_symbols,
-        embedding_size, pause_size, use_conv, conv_filter_width,
-        conv_num_channels,
-        attention_vec_size, 
-        fixed_word_length, 
-        filter_sizes, num_filters,
-        output_projection=None,feed_previous=False, 
-        dtype=dtypes.float32,
-        scope=None, initial_state_attention=False,
-        use_speech=False):
-
-  text_encoder_inputs, speech_encoder_inputs, pause_bef, pause_aft = encoder_inputs_list
-  encoder_size = len(text_encoder_inputs)
-  #print(encoder_size)
-  #speech_encoder_inputs is size [seq_len, batch_size, fixed_word_length, feat_dim]
-
-  with variable_scope.variable_scope(scope or "many2one_attention_seq2seq"):
-    with ops.device("/cpu:0"):
-      embedding_words = variable_scope.get_variable("embedding_words",
-              [num_encoder_symbols, embedding_size])
-
-    with ops.device("/cpu:0"):
-      embedding_pauses = variable_scope.get_variable("embedding_pauses",
-              [num_pause_symbols, pause_size])
-    
-    ## We need to do the embedding beforehand so that the rnn infers the input type 
-    ## to be float and doesn't cause trouble in copying state after sequence length 
-    ## This issue has been fixed in 0.10 version
-    ## The issue is referred here - https://github.com/tensorflow/tensorflow/issues/3322
-    text_encoder_inputs = [embedding_ops.embedding_lookup(embedding_words, i) 
-            for i in text_encoder_inputs] 
-    pause_bef = [embedding_ops.embedding_lookup(embedding_pauses, i) 
-            for i in pause_bef] 
-    pause_aft = [embedding_ops.embedding_lookup(embedding_pauses, i) 
-            for i in pause_aft] 
-    text_encoder_inputs = [tf.concat(1, [text_encoder_inputs[i], pause_bef[i], pause_aft[i] ]) \
-                            for i in range(encoder_size)]
    
     if use_speech:
         # Convolution stuff happens here for speech inputs
@@ -486,7 +337,7 @@ def maxpool_attention_seq2seq(
     if isinstance(feed_previous, bool):
       return embedding_attention_decoder(
           decoder_inputs, encoder_states, attention_states,
-          parse_cell, seq_len, num_decoder_symbols, embedding_size,  
+          parse_cell, seq_len, num_decoder_symbols, embedding_size, 
           use_conv, conv_filter_width, conv_num_channels,
           output_size=output_size, output_projection=output_projection,
           feed_previous=feed_previous,
@@ -645,13 +496,11 @@ def many2one_model_with_buckets(encoder_inputs_list, decoder_inputs, targets, we
                                          reuse=True if j > 0 else None):
         #bucket_outputs, _ = seq2seq(encoder_inputs[:bucket[0]], decoder_inputs[:bucket[1]])
         x = encoder_inputs_list[0][:bucket[0]]
-        pb = encoder_inputs_list[2][:bucket[0]]
-        pa = encoder_inputs_list[3][:bucket[0]]
         if use_speech:
             y = encoder_inputs_list[1][:speech_buckets[j][0]]
         else:
             y = []
-        bucket_outputs, _ = seq2seq([x, y, pb, pa], 
+        bucket_outputs, _ = seq2seq([x, y], 
                 decoder_inputs[:bucket[1]], 
                 text_len)
         outputs.append(bucket_outputs)
