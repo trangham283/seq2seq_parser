@@ -26,14 +26,14 @@ from tree_utils import add_brackets, match_length, merge_sent_tree, delete_empty
 _buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
 FLAGS = object()
 # evalb paths
-#evalb_path = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/evalb'
-#prm_file = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/seq2seq.prm'
-#NUM_THREADS = 4 
+evalb_path = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/evalb'
+prm_file = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/seq2seq.prm'
+NUM_THREADS = 4 
 
 # evalb paths
-evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
-prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
-NUM_THREADS = 1 
+#evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
+#prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
+#NUM_THREADS = 1 
 
 
 def process_eval(out_lines, this_size):
@@ -106,7 +106,8 @@ def parse_options():
             default="vocab.sents", type=str, help="Vocab file for source")
     parser.add_argument("-tv_file", "--target_vocab_file", \
             default="vocab.parse", type=str, help="Vocab file for target")
-    
+    parser.add_argument("-bm_dir", "--best_model_dir", \
+            default="/s0/ttmt001/speech_parsing/models", type=str, help="Best model directory") 
     parser.add_argument("-data_dir", "--data_dir", \
             default="/s0/ttmt001/speech_parsing/word_level", type=str, help="Data directory")
     parser.add_argument("-tb_dir", "--train_base_dir", \
@@ -160,6 +161,7 @@ def parse_options():
                 'run_id' + '_' + str(arg_dict['run_id']) )
      
     arg_dict['train_dir'] = os.path.join(arg_dict['train_base_dir'], train_dir)
+    arg_dict['best_model_dir'] = os.path.join(arg_dict['best_model_dir'], train_dir)
     arg_dict['apply_dropout'] = False
 
     source_vocab_path = os.path.join(arg_dict['data_dir'], arg_dict['source_vocab_file'])
@@ -174,6 +176,8 @@ def parse_options():
         arg_dict['apply_dropout'] = True
         if not os.path.exists(arg_dict['train_dir']):
             os.makedirs(arg_dict['train_dir'])
+        if not os.path.exists(arg_dict['best_model_dir']):
+            os.makedirs(arg_dict['best_model_dir'])
     
         ## Sort the arg_dict to create a parameter file
         parameter_file = 'parameters.txt'
@@ -264,8 +268,21 @@ def create_model(session, feat_dim, forward_only, model_path=None):
   """Create translation model and initialize or load parameters in session."""
   model = get_model_graph(session, feat_dim, forward_only)
   ckpt = tf.train.get_checkpoint_state(FLAGS.train_dir)
-  #if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path) and not model_path:
+  ckpt_best = tf.train.get_checkpoint_state(FLAGS.best_model_dir)
+  steps_done = 0
+
+  if ckpt:
+      steps_done = int(ckpt.model_checkpoint_path.split('-')[-1])
+      if ckpt_best:
+          steps_done_best = int(ckpt_best.model_checkpoint_path.split('-')[-1])
+          if (steps_done_best > steps_done) or actual_eval:
+              ckpt = ckpt_best
+              steps_done = steps_done_best
+  elif ckpt_best:
+      ckpt = ckpt_best
+
   if ckpt and not model_path:
+    print("loaded from %d done steps" %(steps_done) )
     print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
     model.saver.restore(session, ckpt.model_checkpoint_path)
     steps_done = int(ckpt.model_checkpoint_path.split('-')[-1])
@@ -319,9 +336,19 @@ def train():
     step_time, loss = 0.0, 0.0
     current_step = 0
     previous_losses = []
+
     epoch = model.epoch.eval() 
-    globstep = model.global_step.eval()
-    f_score_best = write_decode(model_dev, sess, dev_set, FLAGS.batch_size, globstep, eval_now=True)
+    f_score_best = 0.0
+    if steps_done > 0:
+        ## Some training has been done
+        score_file = os.path.join(FLAGS.train_dir, "best.txt")
+        if os.path.isfile(score_file):
+            try:
+                f_score_best = float(open(score_file).readline().strip("\n"))
+            except ValueError:
+                f_score_best = 0.0
+
+    print("Best F-Score: %.4f" % f_score_best)
    
     while epoch <= FLAGS.max_epochs:
       print("Doing epoch: ", epoch)
@@ -369,11 +396,23 @@ def train():
               print("Best F-Score: %.4f" % f_score_best)
               print("Saving updated model \n")
               sys.stdout.flush()
+
+              ## Save the best score
+              f = open(os.path.join(FLAGS.train_dir, "best.txt"), "w")
+              f.write(str(f_score_best))
+              f.close()
+
+              ## Save the model in best model directory
+              checkpoint_path = os.path.join(FLAGS.best_model_dir, "cnn_one2one.ckpt")
+              model.best_saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
+          else:
+              print("Saving for the sake of record")
               checkpoint_path = os.path.join(FLAGS.train_dir, "cnn_one2one.ckpt")
-              model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
+              model.saver.save(sess, checkpoint_path, global_step=model.global_step, write_meta_graph=False)
 
           # zero timer and loss.
           step_time, loss = 0.0, 0.0
+          sys.stdout.flush()
         
       #print("Current step: ", current_step)
       #globstep = model.global_step.eval()
@@ -385,7 +424,6 @@ def train():
       #time_elapsed = time.time() - write_time
       #print("decode writing time: ", time_elapsed)
 
-      sys.stdout.flush()
       sess.run(model.epoch_incr)
       epoch += 1
     

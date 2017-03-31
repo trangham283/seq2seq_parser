@@ -12,7 +12,7 @@ import cPickle as pickle
 
 tf.app.flags.DEFINE_string("data_dir", "/s0/ttmt001/speech_parsing", \
         "directory of swbd data files")
-tf.app.flags.DEFINE_string("output_dir", "/s0/ttmt001/speech_parsing/word_level", \
+tf.app.flags.DEFINE_string("output_dir", "/s0/ttmt001/speech_parsing/prosody", \
         "directory of output files")
 tf.app.flags.DEFINE_integer("sp_scale", 10, "scaling of input buckets")
 tf.app.flags.DEFINE_integer("avg_frame", 5, "number of frames to average over")
@@ -30,7 +30,6 @@ pause_dir = data_dir + '/pause_data'
 
 hop = 10.0 # in msec
 num_sec = 0.04  # amount of time to approximate extra frames when no time info available
-
 
 # Regular expressions used to tokenize.
 _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
@@ -299,110 +298,13 @@ def get_stats(split):
     print num50p, num75p
 
 
-def get_var(feat, feat_dim):
-    split = 'train'  # use training set to normalize features
-    mean_name = os.path.join(data_dir, feat+'_mean.pickle')
-    mean_vec = pickle.load(open(mean_name))
-    dname = os.path.join(data_dir, feat+'_var.pickle')
-    print dname
-    data_file = os.path.join(time_dir, split + '.data.csv')
-    df = pandas.read_csv(data_file, sep='\t')
-    sw_files = set(df.file_id.values)
-    running_sum = np.zeros((feat_dim,))
-    running_count = 0
-    for sw in sw_files:
-        for speaker in ['A', 'B']:
-            mfcc_file = os.path.join(mfcc_dir, sw + '-' + speaker + '.pickle')
-            pitch_file = os.path.join(pitch_dir, sw + '-' + speaker + '.pickle')
-            pitch_pov_file = os.path.join(pitch_pov_dir,sw+'-'+speaker+'.pickle')
-            fbank_file = os.path.join(fbank_dir, sw + '-' +speaker+'.pickle')
-
-            if feat == 'mfcc':
-                try:
-                    data_mfcc = pickle.load(open(mfcc_file))
-                except: 
-                    print("No mfcc file for ", sw, speaker)
-                    continue
-                this_feats = data_mfcc.values()[0]
-            if feat == 'pitch2':
-                try:
-                    data_pitch = pickle.load(open(pitch_file))
-                except: 
-                    print("No pitch file for ", sw, speaker)
-                    continue
-                this_feats = data_pitch.values()[0]
-            if feat == 'pitch3':
-                try:
-                    data_pitch_pov = pickle.load(open(pitch_pov_file))
-                except: 
-                    print("No pitch pov file for ", sw, speaker)
-                this_feats = data_pitch_pov.values()[0]
-            if feat == 'fbank':
-                try:
-                    data_fbank = pickle.load(open(fbank_file))
-                except: 
-                    print("No fbank file for ", sw, speaker)
-                    continue
-                this_feats = data_fbank.values()[0]
-            
-            running_count += len(this_feats)
-            this_feats = np.array(this_feats) - mean_vec
-            this_feats = this_feats * this_feats
-            running_sum = running_sum + np.sum(this_feats,0)
-    var_vec = running_sum/running_count 
-    pickle.dump(var_vec, open(dname,'w'))
-    print var_vec
-
-
-def get_mean(feat, feat_dim):
-    split = 'train'  # use training set to normalize features
-    dname = os.path.join(data_dir, feat+'_mean.pickle')
-    print dname
-    data_file = os.path.join(time_dir, split + '.data.csv')
-    df = pandas.read_csv(data_file, sep='\t')
-    sw_files = set(df.file_id.values)
-    running_sum = np.zeros((feat_dim,))
-    running_count = 0
-    for sw in sw_files:
-        for speaker in ['A', 'B']:
-            mfcc_file = os.path.join(mfcc_dir, sw + '-' + speaker + '.pickle')
-            pitch_file = os.path.join(pitch_dir, sw + '-' + speaker + '.pickle')
-            pitch_pov_file = os.path.join(pitch_pov_dir,sw+'-'+speaker+'.pickle')
-            fbank_file = os.path.join(fbank_dir, sw + '-' +speaker+'.pickle')
-
-            if feat == 'mfcc':
-                try:
-                    data_mfcc = pickle.load(open(mfcc_file))
-                except: 
-                    print("No mfcc file for ", sw, speaker)
-                    continue
-                this_feats = data_mfcc.values()[0]
-            if feat == 'pitch2':
-                try:
-                    data_pitch = pickle.load(open(pitch_file))
-                except: 
-                    print("No pitch file for ", sw, speaker)
-                    continue
-                this_feats = data_pitch.values()[0]
-            if feat == 'pitch3':
-                try:
-                    data_pitch_pov = pickle.load(open(pitch_pov_file))
-                except: 
-                    print("No pitch pov file for ", sw, speaker)
-                this_feats = data_pitch_pov.values()[0]
-            if feat == 'fbank':
-                try:
-                    data_fbank = pickle.load(open(fbank_file))
-                except: 
-                    print("No fbank file for ", sw, speaker)
-                    continue
-                this_feats = data_fbank.values()[0]
-            
-            running_count += len(this_feats)
-            running_sum = running_sum + np.sum(np.array(this_feats),0)
-    mean_vec = running_sum/running_count 
-    pickle.dump(mean_vec, open(dname,'w'))
-    print mean_vec
+def make_dict(pause_data):
+    pauses = dict()
+    for bucket in pause_data:
+        for sample in bucket:
+            sent_id, info_dict, parse = sample
+            pauses[sent_id] = info_dict
+    return pauses
 
 
 # The following functions perform data processing from raw in the steps:
@@ -412,6 +314,9 @@ def get_mean(feat, feat_dim):
 # 4. put everything in a dictionary
 def split_frames(split, feat_types):
     data_file = os.path.join(time_dir, split + '.data.csv')
+    pause_file = os.path.join(pause_dir, split+'_nopunc.pickle')
+    pause_data = pickle.load(open(pause_file))
+    pauses = make_dict(pause_data)
     df = pandas.read_csv(data_file, sep='\t')
     sw_files = set(df.file_id.values)
     for sw in sw_files:
@@ -486,11 +391,6 @@ def split_frames(split, feat_types):
                     else:
                         continue
                 
-                #s_ms = begin*1000 # in msec
-                #e_ms = end*1000
-                #s_frame = int(np.floor(s_ms / hop))
-                #e_frame = int(np.ceil(e_ms / hop))
-                
                 # final clean up
                 stimes, etimes = clean_up(stimes, etimes)
                 assert len(stimes) == len(etimes) == len(tokens)
@@ -510,9 +410,15 @@ def split_frames(split, feat_types):
                 word_bounds = [(x-offset,y-offset) for x,y in zip(sframes, eframes)]
                 assert len(word_bounds) == len(tokens)
                 globID = row.sent_id.replace('~','_'+speaker+'_')
+                if globID not in pauses: 
+                    print "No pause info for sentence: ", globID
+                    continue
                 this_dict[globID]['sents'] = row.sentence
                 this_dict[globID]['parse'] = row.parse
                 this_dict[globID]['windices'] = word_bounds
+                this_dict[globID]['word_dur'] = [etimes[i]-stimes[i] for i in range(len(stimes))]
+                this_dict[globID]['pause_bef'] = pauses[globID]['pause_bef']
+                this_dict[globID]['pause_aft'] = pauses[globID]['pause_aft']
                 for feat in feat_types:
                     if feat=='mfcc':
                         mf_frames = mfccs[s_frame:e_frame]
@@ -527,39 +433,83 @@ def split_frames(split, feat_types):
                         fb_frames = fbanks[s_frame:e_frame]
                         this_dict[globID]['fbank'] = fb_frames
 
-        dict_name = os.path.join(output_dir, split, sw + '_word_level.pickle')
+        dict_name = os.path.join(output_dir, split, sw + '_prosody.pickle')
         pickle.dump(this_dict, open(dict_name, 'w'))
 
 
-def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic, normalize=False):
+def norm_energy_by_turn(this_data):
+    feat_dim = 41
+    turnA = np.empty((feat_dim,0)) 
+    turnB = np.empty((feat_dim,0))
+    for k in this_data.keys():
+        fbank = this_data[k]['fbank']
+        fbank = np.array(fbank).T
+        if 'A' in k:
+            turnA = np.hstack([turnA, fbank])
+        else:
+            turnB = np.hstack([turnB, fbank])
+    meanA = np.mean(turnA, 1) 
+    stdA = np.std(turnA, 1)
+    meanB = np.mean(turnB, 1)
+    stdB = np.std(turnB, 1)
+    maxA = np.max(turnA, 1)
+    maxB = np.max(turnB, 1)
+    return meanA, stdA, meanB, stdB, maxA, maxB 
+
+def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False):
     data_set = [[] for _ in _buckets]
+    dur_stats_file = os.path.join(data_dir, 'avg_word_stats.pickle')
+    dur_stats = pickle.load(open(dur_stats_file))
+    global_mean = np.mean([x['mean'] for x in dur_stats.values()])
     split_path = os.path.join(data_dir, split)
     split_files = glob.glob(split_path + "/*")
     for file_path in split_files:
         this_data = pickle.load(open(file_path))
+
+        if normalize:
+            meanA, stdA, meanB, stdB, maxA, maxB  = norm_energy_by_turn(this_data)
+
         for k in this_data.keys():
             sentence = this_data[k]['sents']
             parse = this_data[k]['parse']
             windices = this_data[k]['windices']
-            #mfccs = make_array(this_data[k]['mfccs'])
-            #pitch2 = make_array(this_data[k]['pitch2'])
+            pause_bef = this_data[k]['pause_bef']
+            pause_aft = this_data[k]['pause_aft']
+
+            # features needing normalization
+            word_dur = this_data[k]['word_dur']
             pitch3 = make_array(this_data[k]['pitch3'])
             fbank = make_array(this_data[k]['fbank'])
             if normalize:
-                dname = os.path.join(data_dir, 'fbank_mean.pickle')
-                mean_vec = pickle.load(open(dname))
-                fbank = fbank - mean_vec.reshape((mean_vec.shape[0],1))
-                dname = os.path.join(data_dir, 'fbank_var.pickle')
-                var_vec = pickle.load(open(dname))
-                fbank = fbank / np.sqrt(var_vec.reshape(var_vec.shape[0],1)) 
-                dname = os.path.join(data_dir, 'pitch3_mean.pickle')
-                mean_vec = pickle.load(open(dname))
-                pitch3 = pitch3 - mean_vec.reshape((mean_vec.shape[0],1))
-                dname = os.path.join(data_dir, 'pitch3_var.pickle')
-                var_vec = pickle.load(open(dname))
-                pitch3 = pitch3 / np.sqrt(var_vec.reshape(var_vec.shape[0],1)) 
-            energy = fbank[0,:].reshape((1,fbank.shape[1]))
+                # normalize energy by z-scoring
+                if 'A' in k:
+                    mu = meanA
+                    sigma = stdA
+                else:
+                    mu = meanB
+                    sigma = stdB
+
+                e_total = np.sum(mu[1:])
+                e0 = (fbank[0, :] - mu[0]) / sigma[0]
+                elow = np.sum(fbank[1:21,:],0)/e_total
+                ehigh = np.sum(fbank[21:,:],0)/e_total
+                energy = np.array([e0,elow,ehigh])                
+
+                # normalize word durations by dividing by mean
+                words = sentence.split()
+                assert len(word_dur) == len(words)
+                for i in range(len(words)):
+                    if words[i] not in dur_stats:
+                        print "No mean dur info for word ", words[i]
+                        wmean = global_mean
+                    wmean = dur_stats[words[i]]['mean']
+                    word_dur[i] = word_dur[i]/wmean
+            else:
+                energy = fbank[0,:].reshape((1,fbank.shape[1]))
+
             pitch3_energy = np.vstack([pitch3, energy])
+
+            # convert tokens to ids
             sent_ids = sentence_to_token_ids(sentence, sent_vocab, True, True)
             parse_ids = sentence_to_token_ids(parse, parse_vocab, False, False)
             if split != 'extra':
@@ -570,51 +520,14 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, acoustic, normal
                 #print(k, sentence, parse)
                 continue
             bucket_id = min(maybe_buckets)
-            if acoustic == 'all':
-                data_set[bucket_id].append([sent_ids, parse_ids, windices, mfccs, pitch2, pitch3])
-            elif acoustic == 'mfcc':
-                data_set[bucket_id].append([sent_ids, parse_ids, windices, mfccs])
-            elif acoustic == 'fbank':
-                data_set[bucket_id].append([sent_ids, parse_ids, windices, fbank])
-            elif acoustic == 'pitch2':
-                data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch2])
-            elif acoustic == 'pitch3_energy':
-                data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch3_energy])
-            else: #acoustic == 'pitch3'
-                data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch3])
+            
+            data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch3_energy, \
+                    pause_bef, pause_aft, word_dur])
 
     return data_set
 
-def map_sentences(data_dir, split):
-    mappings = [[] for _ in _buckets]
-    split_path = os.path.join(data_dir, split)
-    split_files = glob.glob(split_path + "/*")
-    for file_path in split_files:
-        this_data = pickle.load(open(file_path))
-        for k in this_data.keys():
-            sentence = this_data[k]['sents']
-            parse = this_data[k]['parse']
-            sent_ids = sentence.rstrip().split() 
-            parse_ids = parse.rstrip().split()
-            #include line below for swbd_new, but not for swbd_speech and swbd_tune
-            if split != 'extra':
-                parse_ids.append(EOS_ID)
-            maybe_buckets = [b for b in xrange(len(_buckets)) 
-                if _buckets[b][0] >= len(sent_ids) and _buckets[b][1] >= len(parse_ids)]
-                #if _buckets[b][0] > len(sent_ids) and _buckets[b][1] > len(parse_ids)]
-            # > for swbd_speech; >= for swbd_new
-            if not maybe_buckets: 
-                #print(k, sentence, parse)
-                continue
-            bucket_id = min(maybe_buckets)
-            mappings[bucket_id].append(k)
-    return mappings 
-
-
 def main(_):
     '''
-    print "Check dev2"
-    get_stats('dev2')
     print "\nCheck dev"
     get_stats('dev')
     print "\nCheck test"
@@ -623,32 +536,20 @@ def main(_):
     get_stats('train')
     '''
     
-    sent_vocabulary_path = os.path.join(data_dir, 'vocab.sents') 
-    parse_vocabulary_path = os.path.join(data_dir, 'vocab.parse')
+    sent_vocabulary_path = os.path.join(output_dir, 'vocab.sents') 
+    parse_vocabulary_path = os.path.join(output_dir, 'vocab.parse')
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
 
-    #get_mean('fbank', 41)
-    #get_var('fbank', 41)
-    #get_mean('pitch3', 3)
-    #get_var('pitch3', 3)
-    
-    split = 'train'
-    
+    split = 'test'
     # split frames into utterances first
-    #acoustic = ['pitch3', 'fbank'] 
-    #split_frames(split, acoustic)  # ==> dumps to output_dir
+    #feats = ['pitch3', 'fbank'] 
+    #split_frames(split, feats)  # ==> dumps to output_dir
 
-    # process data into buckets
-    acoustic = 'pitch3_energy'
+    # normalize and process data into buckets
     normalize = True
-    this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, \
-            acoustic, normalize)
-    if normalize:
-        #this_file = os.path.join(output_dir, split + '_' + acoustic + '_normalized.pickle')
-        this_file = os.path.join(output_dir, split + '_' + acoustic + '_all_normed.pickle')
-    else:
-        this_file = os.path.join(output_dir, split + '_' + acoustic + '.pickle')
+    this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, normalize)
+    this_file = os.path.join(output_dir, split + '_prosody_normed.pickle')
     pickle.dump(this_set, open(this_file,'w'))
 
 if __name__ == "__main__":

@@ -189,6 +189,7 @@ class Seq2SeqModel(object):
 
     #self.saver = tf.train.Saver(tf.all_variables())
     self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=3)
+    self.best_saver = tf.train.Saver(tf.global_variables(), max_to_keep=3)
 
   def step(self, session, encoder_inputs_list, decoder_inputs, target_weights,
            text_len, speech_len, bucket_id, forward_only, use_speech):
