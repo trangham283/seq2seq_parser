@@ -26,14 +26,14 @@ from tree_utils import add_brackets, match_length, merge_sent_tree, delete_empty
 _buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
 FLAGS = object()
 # evalb paths
-evalb_path = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/evalb'
-prm_file = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/seq2seq.prm'
-NUM_THREADS = 4 
+#evalb_path = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/evalb'
+#prm_file = '/homes/ttmt001/transitory/seq2seq_parser/EVALB/seq2seq.prm'
+#NUM_THREADS = 4 
 
 # evalb paths
-#evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
-#prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
-#NUM_THREADS = 1 
+evalb_path = '/share/data/speech/Data/ttran/parser_misc/EVALB/evalb'
+prm_file = '/share/data/speech/Data/ttran/parser_misc/EVALB/seq2seq.prm'
+NUM_THREADS = 1 
 
 
 def process_eval(out_lines, this_size):
@@ -65,6 +65,8 @@ def parse_options():
             type=int, help="Mini-batch Size")
     parser.add_argument("-esize", "--embedding_size", default= 512, \
             type=int, help="Embedding Size")
+    parser.add_argument("-psize", "--pause_size", default= 32, \
+            type=int, help="Pause Embedding Size")
 
     # use speech or not
     parser.add_argument("-use_speech", "--use_speech", default=False, \
@@ -91,6 +93,8 @@ def parse_options():
             type=int, help="Number of channels in the convolution feature extracted")
 
     # cnn architecture
+    parser.add_argument("-multipool", "--multipool", default=False, \
+            action="store_true", help="Pooling type for speech features")
     parser.add_argument("-num_filters", "--num_filters", default=64, \
             type=int, help="Number of convolution filters")
     parser.add_argument("-filter_sizes", "--filter_sizes", \
@@ -104,14 +108,17 @@ def parse_options():
             type=int, help="Scaling factor for speech encoder buckets")
     parser.add_argument("-sv_file", "--source_vocab_file", \
             default="vocab.sents", type=str, help="Vocab file for source")
+    parser.add_argument("-pv_file", "--pause_vocab_file", \
+            default="vocab.pause", type=str, help="Vocab file for pause")
     parser.add_argument("-tv_file", "--target_vocab_file", \
             default="vocab.parse", type=str, help="Vocab file for target")
-    parser.add_argument("-bm_dir", "--best_model_dir", \
-            default="/s0/ttmt001/speech_parsing/models", type=str, help="Best model directory") 
+    
     parser.add_argument("-data_dir", "--data_dir", \
             default="/s0/ttmt001/speech_parsing/word_level", type=str, help="Data directory")
     parser.add_argument("-tb_dir", "--train_base_dir", \
             default="/s0/ttmt001/speech_parsing/models", type=str, help="Training directory")
+    parser.add_argument("-bm_dir", "--best_model_dir", \
+            default="/s0/ttmt001/speech_parsing/best_models", type=str, help="Best model directory")
     parser.add_argument("-ws_path", "--warm_start_path", \
             default="None", type=str, help="Warm start model path")
 
@@ -144,8 +151,12 @@ def parse_options():
         opt_string = 'opt_' + arg_dict['optimizer'] + '_'
 
     speech_string = ""
+    pool_string = ""
     if arg_dict['use_speech']:
         speech_string = "use_speech_"
+        pool_string = "maxpool_"
+        if arg_dict['multipool']:
+            pool_string = "multipool_"
 
     conv_string = ""
     if arg_dict['use_convolution']:
@@ -153,11 +164,10 @@ def parse_options():
         conv_string += "filter_dim_" + str(arg_dict['conv_filter_dimension']) + "_"
         conv_string += "num_channel_" + str(arg_dict['conv_num_channel']) + "_"
     
-    train_dir = (speech_string + 
-                'hsize' + '_' + str(arg_dict['text_hidden_size']) + '_' +  
-                'num_layers' + '_' + str(arg_dict['text_num_layers']) + '_' +   
+    train_dir = ('prosody_' + speech_string + pool_string + 
+                'psize' + '_' + str(arg_dict['pause_size']) + '_' +
                 'num_filters' + '_' + str(arg_dict['num_filters']) + '_' +
-                'out_prob' + '_' + str(arg_dict['output_keep_prob']) + '_' + 
+                'filter_sizes' + '_' + str(arg_dict['filter_sizes']) + '_' + 
                 'run_id' + '_' + str(arg_dict['run_id']) )
      
     arg_dict['train_dir'] = os.path.join(arg_dict['train_base_dir'], train_dir)
@@ -165,12 +175,15 @@ def parse_options():
     arg_dict['apply_dropout'] = False
 
     source_vocab_path = os.path.join(arg_dict['data_dir'], arg_dict['source_vocab_file'])
+    pause_vocab_path = os.path.join(arg_dict['data_dir'], arg_dict['pause_vocab_file'])
     target_vocab_path = os.path.join(arg_dict['data_dir'], arg_dict['target_vocab_file'])
     source_vocab, _ = data_utils.initialize_vocabulary(source_vocab_path)
+    pause_vocab, _ = data_utils.initialize_vocabulary(pause_vocab_path)
     target_vocab, _ = data_utils.initialize_vocabulary(target_vocab_path)
     
     arg_dict['input_vocab_size'] = len(source_vocab)
     arg_dict['output_vocab_size'] = len(target_vocab)
+    arg_dict['pause_vocab_size'] = len(pause_vocab)
 
     if not arg_dict['test'] and not arg_dict['eval_dev']:
         arg_dict['apply_dropout'] = True
@@ -193,17 +206,17 @@ def parse_options():
     return options
     
 def load_test_data():
-    test_data_path = os.path.join(FLAGS.data_dir, 'test_pitch3_energy_normalized.pickle')
+    test_data_path = os.path.join(FLAGS.data_dir, 'test_prosody_normed.pickle')
     test_set = pickle.load(open(test_data_path))
     return test_set
 
 def load_dev_data():
-    dev_data_path = os.path.join(FLAGS.data_dir, 'dev_pitch3_energy_normalized.pickle')
+    dev_data_path = os.path.join(FLAGS.data_dir, 'dev_prosody_normed.pickle')
     dev_set = pickle.load(open(dev_data_path))
     return dev_set
 
 def load_train_data():
-    swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_pitch3_energy_normalized.pickle')
+    swtrain_data_path = os.path.join(FLAGS.data_dir, 'train_prosody_normed.pickle')
     # debug with small data
     train_sw = pickle.load(open(swtrain_data_path))
     sample = train_sw[0][0]
@@ -251,17 +264,18 @@ def map_var_names(this_var_name):
 def get_model_graph(session, feat_dim, forward_only):
   filter_sizes = [int(x) for x in FLAGS.filter_sizes.strip().split('-')]
   model = seqcnn_model.Seq2SeqModel(
-      FLAGS.input_vocab_size, FLAGS.output_vocab_size, _buckets,
+      FLAGS.input_vocab_size, FLAGS.pause_vocab_size, FLAGS.output_vocab_size, _buckets,
       FLAGS.text_hidden_size, FLAGS.parse_hidden_size, 
       FLAGS.text_num_layers, FLAGS.parse_num_layers,
       filter_sizes, FLAGS.num_filters, feat_dim, FLAGS.fixed_word_length,  
-      FLAGS.embedding_size, FLAGS.max_gradient_norm, FLAGS.batch_size,
+      FLAGS.embedding_size, FLAGS.pause_size, FLAGS.max_gradient_norm, FLAGS.batch_size,
       FLAGS.attention_vector_size, FLAGS.speech_bucket_scale, 
       FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
       FLAGS.optimizer, use_lstm=FLAGS.lstm, 
       output_keep_prob=FLAGS.output_keep_prob, forward_only=forward_only,
       use_conv=FLAGS.use_convolution, conv_filter_width=FLAGS.conv_filter_dimension,
-      conv_num_channels=FLAGS.conv_num_channel, use_speech=FLAGS.use_speech)
+      conv_num_channels=FLAGS.conv_num_channel, use_speech=FLAGS.use_speech, 
+      multipool=FLAGS.multipool)
   return model
 
 def create_model(session, feat_dim, forward_only, model_path=None):
@@ -270,7 +284,7 @@ def create_model(session, feat_dim, forward_only, model_path=None):
   ckpt = tf.train.get_checkpoint_state(FLAGS.train_dir)
   ckpt_best = tf.train.get_checkpoint_state(FLAGS.best_model_dir)
   steps_done = 0
-
+  
   if ckpt:
       steps_done = int(ckpt.model_checkpoint_path.split('-')[-1])
       if ckpt_best:
@@ -280,9 +294,8 @@ def create_model(session, feat_dim, forward_only, model_path=None):
               steps_done = steps_done_best
   elif ckpt_best:
       ckpt = ckpt_best
-
+    
   if ckpt and not model_path:
-    print("loaded from %d done steps" %(steps_done) )
     print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
     model.saver.restore(session, ckpt.model_checkpoint_path)
     steps_done = int(ckpt.model_checkpoint_path.split('-')[-1])
@@ -347,9 +360,8 @@ def train():
                 f_score_best = float(open(score_file).readline().strip("\n"))
             except ValueError:
                 f_score_best = 0.0
-
     print("Best F-Score: %.4f" % f_score_best)
-   
+
     while epoch <= FLAGS.max_epochs:
       print("Doing epoch: ", epoch)
       sys.stdout.flush()
@@ -359,10 +371,11 @@ def train():
         #print(bucket_id, bucket_offset)
         this_sample = train_sw[bucket_id][bucket_offset:bucket_offset+FLAGS.batch_size]
         start_time = time.time()
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, \
-                target_weights, text_seq_len, speech_seq_len = model.get_batch(
+        text_encoder_inputs, speech_encoder_inputs, pause_bef, pause_aft, word_dur, \
+                decoder_inputs, target_weights, text_seq_len, speech_seq_len = model.get_batch(
                 {bucket_id: this_sample}, bucket_id, bucket_offset, FLAGS.use_speech)
-        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs]
+        encoder_inputs_list = [text_encoder_inputs, speech_encoder_inputs, \
+                pause_bef, pause_aft, word_dur]
         _, step_loss, _ = model.step(sess, encoder_inputs_list, decoder_inputs, target_weights, text_seq_len, speech_seq_len, bucket_id, False, FLAGS.use_speech)
         step_time += (time.time() - start_time) / FLAGS.steps_per_checkpoint
         loss += step_loss / FLAGS.steps_per_checkpoint
@@ -407,7 +420,7 @@ def train():
           else:
               print("Saving for the sake of record")
               checkpoint_path = os.path.join(FLAGS.train_dir, "cnn_one2one.ckpt")
-              model.saver.save(sess, checkpoint_path, global_step=model.global_step, write_meta_graph=False)
+              model.saver.save(sess,checkpoint_path,global_step=model.global_step,write_meta_graph=False)
 
           # zero timer and loss.
           step_time, loss = 0.0, 0.0
@@ -456,15 +469,19 @@ def write_decode(model_dev, sess, dev_set, eval_batch_size, globstep, eval_now=F
         token_ids = [x[0] for x in all_examples]
         partition = [x[2] for x in all_examples]
         speech_feats = [x[3] for x in all_examples]
+        pbfs = [x[4] for x in all_examples]
+        pafs = [x[5] for x in all_examples]
+        wds = [x[6] for x in all_examples]
         gold_ids = [x[1] for x in all_examples]
         dec_ids = [[]] * len(token_ids)
-        text_encoder_inputs, speech_encoder_inputs, decoder_inputs, target_weights, \
+        text_encoder_inputs, speech_encoder_inputs, pause_bef, pause_aft, \
+                word_dur, decoder_inputs, target_weights, \
                 text_seq_len, speech_seq_len = model_dev.get_batch(\
-                {bucket_id: zip(token_ids, dec_ids, partition, speech_feats)}, \
+                {bucket_id: zip(token_ids, dec_ids, partition, speech_feats, pbfs, pafs, wds)}, \
                 bucket_id, batch_offset, FLAGS.use_speech)
-        _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs],\
-                decoder_inputs, target_weights, text_seq_len, speech_seq_len, \
-                bucket_id, True, FLAGS.use_speech)
+        _, _, output_logits = model_dev.step(sess, [text_encoder_inputs, speech_encoder_inputs, \
+                pause_bef, pause_aft, word_dur], decoder_inputs, target_weights, \
+                text_seq_len, speech_seq_len, bucket_id, True, FLAGS.use_speech)
         outputs = [np.argmax(logit, axis=1) for logit in output_logits]
         to_decode = np.array(outputs).T
         num_dev_sents += to_decode.shape[0]
@@ -618,6 +635,5 @@ if __name__ == "__main__":
     dump_vars(True)
   else:
     train()
-
 
 

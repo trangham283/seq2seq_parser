@@ -541,7 +541,7 @@ def main(_):
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
 
-    split = 'test'
+    split = 'train'
     # split frames into utterances first
     #feats = ['pitch3', 'fbank'] 
     #split_frames(split, feats)  # ==> dumps to output_dir
