@@ -278,7 +278,7 @@ def get_model_graph(session, feat_dim, forward_only):
       multipool=FLAGS.multipool)
   return model
 
-def create_model(session, feat_dim, forward_only, model_path=None):
+def create_model(session, feat_dim, forward_only, model_path=None, actual_eval=False):
   """Create translation model and initialize or load parameters in session."""
   model = get_model_graph(session, feat_dim, forward_only)
   ckpt = tf.train.get_checkpoint_state(FLAGS.train_dir)
