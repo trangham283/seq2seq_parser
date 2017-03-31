@@ -151,7 +151,7 @@ class Seq2SeqModel(object):
               name="text_encoder{0}".format(i)))
       self.pause_bef.append(tf.placeholder(tf.int32,shape=[None],name="pause_bef{0}".format(i)))
       self.pause_aft.append(tf.placeholder(tf.int32,shape=[None],name="pause_aft{0}".format(i))) 
-      self.pause_aft.append(tf.placeholder(tf.float32,shape=[None],name="word_dur{0}".format(i)))
+      self.word_dur.append(tf.placeholder(tf.float32,shape=[None],name="word_dur{0}".format(i)))
 
     if use_speech:
         print("Using speech")

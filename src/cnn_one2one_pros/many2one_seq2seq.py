@@ -279,7 +279,7 @@ def multipool_attention_seq2seq(
     pause_aft = [embedding_ops.embedding_lookup(embedding_pauses, i) 
             for i in pause_aft] 
     text_encoder_inputs = [tf.concat(1, [text_encoder_inputs[i], pause_bef[i], pause_aft[i], \
-            word_durs[i] ]) for i in range(encoder_size)]
+            tf.expand_dims(word_durs[i],-1) ]) for i in range(encoder_size)]
    
     if use_speech:
         # Convolution stuff happens here for speech inputs
@@ -418,7 +418,7 @@ def maxpool_attention_seq2seq(
     pause_aft = [embedding_ops.embedding_lookup(embedding_pauses, i) 
             for i in pause_aft] 
     text_encoder_inputs = [tf.concat(1, [text_encoder_inputs[i], pause_bef[i], pause_aft[i], \
-            word_durs[i] ]) for i in range(encoder_size)]
+            tf.expand_dims(word_durs[i],-1) ]) for i in range(encoder_size)]
    
     if use_speech:
         # Convolution stuff happens here for speech inputs
