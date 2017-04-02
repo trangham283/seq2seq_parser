@@ -4,6 +4,7 @@ import sys
 import glob
 import pandas
 from collections import defaultdict
+from tree_utils import merge_sent_tree
 
 import numpy as np
 from tensorflow.python.platform import gfile
@@ -12,7 +13,7 @@ import cPickle as pickle
 
 tf.app.flags.DEFINE_string("data_dir", "/s0/ttmt001/speech_parsing", \
         "directory of swbd data files")
-tf.app.flags.DEFINE_string("output_dir", "/s0/ttmt001/speech_parsing/prosody", \
+tf.app.flags.DEFINE_string("output_dir", "/s0/ttmt001/speech_parsing/tmp-prosody", \
         "directory of output files")
 tf.app.flags.DEFINE_integer("sp_scale", 10, "scaling of input buckets")
 tf.app.flags.DEFINE_integer("avg_frame", 5, "number of frames to average over")
@@ -53,7 +54,8 @@ UNF_ID = 4
 
 # Use the following buckets: 
 #_buckets = [(10, 40), (25, 85), (40, 150)]
-_buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
+#_buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
+_buckets = [(10, 55), (25, 110), (50, 200), (100, 350)]
 
 def basic_tokenizer(sentence):
   """Very basic tokenizer: split the sentence into a list of tokens."""
@@ -133,12 +135,12 @@ def check_valid(num):
     if num < 0 or np.isnan(num): return False
     return True
 
-def clean_up(stimes, etimes):
+def clean_up_old(stimes, etimes):
     if not check_valid(stimes[-1]):
         stimes[-1] = max(etimes[-1] - num_sec, 0)
     
     if not check_valid(etimes[0]):
-        etimes[0] = stimes[0] + num_sec
+        etimes[0] = stimes[0] +  num_sec
     
     for i in range(1,len(stimes)-1):
         this_st = stimes[i]
@@ -171,131 +173,28 @@ def clean_up(stimes, etimes):
 
     return stimes, etimes
 
-def get_stats(split):
-    lengths = []
-    wlens = []
-    data_file = os.path.join(time_dir, split + '.data.csv')
-    df = pandas.read_csv(data_file, sep='\t')
-    sw_files = set(df.file_id.values)
-    for sw in sw_files:
-        this_dict = defaultdict(dict) 
-        for speaker in ['A', 'B']:
-            mfcc_file = os.path.join(mfcc_dir, sw + '-' + speaker + '.pickle')
-            pitch_file = os.path.join(pitch_dir, sw + '-' + speaker + '.pickle')
-            pitch_pov_file = os.path.join(pitch_pov_dir,sw+'-'+speaker+'.pickle')
-            fbank_file = os.path.join(fbank_dir, sw + '-' +speaker+'.pickle')
-            try:
-                data_pitch = pickle.load(open(pitch_file))
-            except: 
-                print("No pitch file for ", sw, speaker)
-                continue
-            pitchs = data_pitch.values()[0]
-            this_df = df[(df.file_id==sw)&(df.speaker==speaker)]
-            for i, row in this_df.iterrows():
-                tokens = row.sentence.strip().split()
-                stimes = convert_to_array(row.start_times)
-                etimes = convert_to_array(row.end_times)
-                
-                if len(stimes)==1: 
-                    if (not check_valid(stimes[0])) or (not check_valid(etimes[0])):
-                        continue
-                 
-                # go back 5 frames approximately
-                if check_valid(stimes[0]): 
-                    begin = stimes[0]
-                else:
-                    if check_valid(etimes[0]): 
-                        begin = max(etimes[0] - num_sec, 0) 
-                        stimes[0] = begin
-                    elif check_valid(stimes[1]):
-                        begin = max(stimes[1] - num_sec, 0)
-                        stimes[0] = begin
-                    else:
-                        continue
+def clean_up(stimes, etimes, tokens, dur_stats):
+    total_raw_time = etimes[-1] - stimes[0]
+    total_mean_time = sum([dur_stats[w]['mean'] for w in tokens])
+    scale = min(total_raw_time / total_mean_time, 1)
 
-                if check_valid(etimes[-1]): 
-                    end = etimes[-1]
-                else:
-                    if check_valid(stimes[-1]): 
-                        end = stimes[-1] + num_sec
-                        etimes[-1] = end
-                    elif check_valid(etimes[-2]):
-                        end = etimes[-2] + num_sec
-                        etimes[-1] = end
-                    else:
-                        continue
-                
-                s_ms = begin*1000 # in msec
-                e_ms = end*1000
+    no_start_idx = find_bad_alignment(stimes)
+    no_end_idx = find_bad_alignment(etimes)
 
-                s_frame = int(np.floor(s_ms / hop))
-                e_frame = int(np.ceil(e_ms / hop))
-                pf_frames = pitchs[s_frame:e_frame] 
+    # fix start times first
+    for idx in no_start_idx:
+        if idx not in no_end_idx:
+            # this means the word does have an end time; let's use it
+            stimes[idx] = etimes[idx] - scale*dur_stats[tokens[idx]]['mean']
+        else:
+            # this means the idx does not s/e times -- just use prev's start
+            stimes[idx] = stimes[idx-1] 
 
-                # final clean up
-                stimes, etimes = clean_up(stimes, etimes)
-                assert len(stimes) == len(etimes) == len(tokens)
-
-                sframes = [int(np.floor(x*100)) for x in stimes]
-                eframes = [int(np.ceil(x*100)) for x in etimes]
-                word_lengths = [e-s for s,e in zip(sframes,eframes)]
-                invalid = [x for x in word_lengths if x <=0]
-                if len(invalid)>0: 
-                    print begin, stimes[0], etimes[0] 
-                    print 
-                    continue
-                #print wlens
-                wlens += word_lengths
-
-                # TESTS PASSED
-                if find_bad_alignment(stimes): 
-                    six = find_bad_alignment(stimes)
-                    print [tokens[i] for i in six], stimes, etimes 
-                if find_bad_alignment(etimes): 
-                    eix = find_bad_alignment(etimes)
-                    print [tokens[i] for i in eix], stimes, etimes
-
-                seq_len = len(pf_frames)
-                lengths.append(seq_len)
-
-    '''
-    num5 = len([x for x in lengths if x<5])
-    num25 = len([x for x in lengths if x<25])
-    num100 = len([x for x in lengths if x<100])
-    num1500 = len([x for x in lengths if x>=1500])
-    num2000 = len([x for x in lengths if x>=2000])
-    num3000 = len([x for x in lengths if x>=3000])
-    num3500 = len([x for x in lengths if x>=3500])
-    
-    lengths = np.array(lengths)
-    print "Split    | avg length    | max length    | min length"
-    print split, np.mean(lengths), max(lengths), min(lengths)
-    print "Number of sentences with < 5/25/100 frames; total #sentences:"
-    print num5, num25, num100, len(lengths)
-    print "Number of sentences with >= 1500/2000/3000/3500 frames:"
-    print num1500, num2000, num3000, num3500
-    '''
-
-    #num5 = len([x for x in wlens if x<5])
-    #num25 = len([x for x in wlens if x<25])
-    #num100 = len([x for x in wlens if x<100])
-
-    num50p = len([x for x in wlens if x>=50])
-    num75p = len([x for x in wlens if x>=75])
-    #num100p = len([x for x in wlens if x>=100])
-    #num200p = len([x for x in wlens if x>=200])
-    #num500p = len([x for x in wlens if x>=500])
-    
-    wlens = np.array(wlens)
-    print "word level stats"
-    #print "Split    | avg length    | max length    | min length"
-    #print split, np.mean(wlens), max(wlens), min(wlens)
-    #print "Number of words with < 5/25/100 frames; total #words:"
-    #print num5, num25, num100, len(wlens)
-    #print "Number of words with >= 100/200/500 frames; total #words:"
-    #print num100p, num200p, num500p
-    print "Number of words with >= 50/75 frames; total #words:"
-    print num50p, num75p
+    # now all start times should be there
+    for idx in no_end_idx:
+        etimes[idx] = stimes[idx] + scale*dur_stats[tokens[idx]]['mean']
+            
+    return stimes, etimes
 
 
 def make_dict(pause_data):
@@ -313,10 +212,15 @@ def make_dict(pause_data):
 # 3. convert parses to token ids
 # 4. put everything in a dictionary
 def split_frames(split, feat_types):
+    errfile = os.path.join(output_dir, split + '_frame_long_stats.txt')
+    ftoolong = open(errfile, 'w')
     data_file = os.path.join(time_dir, split + '.data.csv')
     pause_file = os.path.join(pause_dir, split+'_nopunc.pickle')
     pause_data = pickle.load(open(pause_file))
     pauses = make_dict(pause_data)
+    dur_stats_file = os.path.join(data_dir, 'avg_word_stats.pickle')
+    dur_stats = pickle.load(open(dur_stats_file))
+
     df = pandas.read_csv(data_file, sep='\t')
     sw_files = set(df.file_id.values)
     for sw in sw_files:
@@ -363,18 +267,23 @@ def split_frames(split, feat_types):
                 etimes = convert_to_array(row.end_times)
                 
                 if len(stimes)==1: 
-                    if (not check_valid(stimes[0])) or (not check_valid(etimes[0])):
+                    if (not check_valid(stimes[0])) and (not check_valid(etimes[0])):
+                        print "no time available for sentence", row.sent_id
                         continue
+                    elif not check_valid(stimes[0]):
+                        stimes[0] = max(etimes[0] - dur_stats[tokens[0]]['mean'], 0)
+                    else:
+                        etimes[0] = stimes[0] + dur_stats[tokens[0]]['mean']
                  
-                # go back 5 frames approximately
                 if check_valid(stimes[0]): 
                     begin = stimes[0]
                 else:
+                    # cases where the first word is unaligned
                     if check_valid(etimes[0]): 
-                        begin = max(etimes[0] - num_sec, 0) 
+                        begin = max(etimes[0] - dur_stats[tokens[0]]['mean'], 0) 
                         stimes[0] = begin
                     elif check_valid(stimes[1]):
-                        begin = max(stimes[1] - num_sec, 0)
+                        begin = max(stimes[1] - dur_stats[tokens[-1]]['mean'], 0)
                         stimes[0] = begin
                     else:
                         continue
@@ -382,17 +291,18 @@ def split_frames(split, feat_types):
                 if check_valid(etimes[-1]): 
                     end = etimes[-1]
                 else:
+                    # cases where the last word is unaligned
                     if check_valid(stimes[-1]): 
-                        end = stimes[-1] + num_sec
+                        end = stimes[-1] + dur_stats[tokens[-1]]['mean']
                         etimes[-1] = end
                     elif check_valid(etimes[-2]):
-                        end = etimes[-2] + num_sec
+                        end = etimes[-2] + dur_stats[tokens[-1]]['mean']
                         etimes[-1] = end
                     else:
                         continue
                 
                 # final clean up
-                stimes, etimes = clean_up(stimes, etimes)
+                stimes, etimes = clean_up(stimes, etimes, tokens, dur_stats)
                 assert len(stimes) == len(etimes) == len(tokens)
 
                 sframes = [int(np.floor(x*100)) for x in stimes]
@@ -401,10 +311,14 @@ def split_frames(split, feat_types):
                 e_frame = eframes[-1]
                 word_lengths = [e-s for s,e in zip(sframes,eframes)]
                 invalid = [x for x in word_lengths if x <=0]
+                toolong = [x for x in word_lengths if x >=100]
                 if len(invalid)>0: 
-                    print "End time < start time for: ", row.tokens 
+                    print "End time < start time for: ", row.sent_id, row.speaker 
                     print invalid
                     continue
+                if len(toolong)>0:
+                    item = row.sent_id + ' ' +row.speaker +' ' + str(toolong) + '\n'
+                    ftoolong.write(item)
 
                 offset = s_frame
                 word_bounds = [(x-offset,y-offset) for x,y in zip(sframes, eframes)]
@@ -435,6 +349,7 @@ def split_frames(split, feat_types):
 
         dict_name = os.path.join(output_dir, split, sw + '_prosody.pickle')
         pickle.dump(this_dict, open(dict_name, 'w'))
+    ftoolong.close()
 
 
 def norm_energy_by_turn(this_data):
@@ -458,6 +373,7 @@ def norm_energy_by_turn(this_data):
 
 def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False):
     data_set = [[] for _ in _buckets]
+    sentID_set = [[] for _ in _buckets]
     dur_stats_file = os.path.join(data_dir, 'avg_word_stats.pickle')
     dur_stats = pickle.load(open(dur_stats_file))
     global_mean = np.mean([x['mean'] for x in dur_stats.values()])
@@ -481,19 +397,28 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False)
             pitch3 = make_array(this_data[k]['pitch3'])
             fbank = make_array(this_data[k]['fbank'])
             if normalize:
+                exp_fbank = np.exp(fbank)
                 # normalize energy by z-scoring
                 if 'A' in k:
                     mu = meanA
                     sigma = stdA
+                    hi = maxA
                 else:
                     mu = meanB
                     sigma = stdB
+                    hi = maxB
 
-                e_total = np.sum(mu[1:])
-                e0 = (fbank[0, :] - mu[0]) / sigma[0]
-                elow = np.sum(fbank[1:21,:],0)/e_total
-                ehigh = np.sum(fbank[21:,:],0)/e_total
-                energy = np.array([e0,elow,ehigh])                
+                #e_total = np.sum(mu[1:])
+                #e0 = (fbank[0, :] - mu[0]) / sigma[0]
+                #elow = np.sum(fbank[1:21,:],0)/e_total
+                #ehigh = np.sum(fbank[21:,:],0)/e_total
+
+                e_total = exp_fbank[0, :]
+                e0 = fbank[0, :] / hi[0]
+                elow = np.log(np.sum(exp_fbank[1:21,:],0)/e_total)
+                ehigh = np.log(np.sum(exp_fbank[21:,:],0)/e_total)
+
+                energy = np.array([e0,elow,ehigh])
 
                 # normalize word durations by dividing by mean
                 words = sentence.split()
@@ -503,7 +428,8 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False)
                         print "No mean dur info for word ", words[i]
                         wmean = global_mean
                     wmean = dur_stats[words[i]]['mean']
-                    word_dur[i] = word_dur[i]/wmean
+                    # clip at 5.0
+                    word_dur[i] = min(word_dur[i]/wmean, 5.0)
             else:
                 energy = fbank[0,:].reshape((1,fbank.shape[1]))
 
@@ -517,14 +443,49 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False)
             maybe_buckets = [b for b in xrange(len(_buckets)) 
                 if _buckets[b][0] >= len(sent_ids) and _buckets[b][1] >= len(parse_ids)]
             if not maybe_buckets: 
-                #print(k, sentence, parse)
+                print "Sentence does not fit bucket: ", k, len(sent_ids), len(parse_ids)
                 continue
             bucket_id = min(maybe_buckets)
             
             data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch3_energy, \
                     pause_bef, pause_aft, word_dur])
+            sentID_set[bucket_id].append(k)
 
-    return data_set
+    return data_set, sentID_set
+
+def prep_bk_data(data_dir, split):
+    treefile = os.path.join(data_dir, split + '_trees_for_bk_new_buckets.mrg')
+    ft = open(treefile, 'w')
+    sentfile = os.path.join(data_dir, split + '_sents_for_bk_new_buckets.txt')
+    fs = open(sentfile, 'w')
+    idfile = os.path.join(data_dir, split + '_sentence_ids_flat.txt')
+    fi = open(idfile, 'w')
+    
+    split_path = os.path.join(data_dir, split)
+    split_files = glob.glob(split_path + "/*")
+    for file_path in split_files:
+        this_data = pickle.load(open(file_path))
+
+        for k in this_data.keys():
+            sentence = this_data[k]['sents']
+            sent_toks = sentence.strip().split()
+            parse = this_data[k]['parse']
+            parse_toks = parse.strip().split()
+
+            maybe_buckets = [b for b in xrange(len(_buckets)) 
+                if _buckets[b][0] >= len(sent_toks) and _buckets[b][1] >= len(parse_toks)+1 ]
+            if not maybe_buckets: 
+                print "Sentence does not fit bucket: ", k, len(sent_toks), len(parse_toks) + 1
+                continue
+            bucket_id = min(maybe_buckets)
+            fs.write(sentence + '\n')
+            merged = merge_sent_tree(parse_toks, sent_toks)
+            ft.write(' '.join(merged) + '\n')
+            fi.write(k + '\n')
+    ft.close()
+    fs.close()
+    fi.close()
+            
 
 def main(_):
     '''
@@ -542,15 +503,22 @@ def main(_):
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
 
     split = 'train'
+ 
     # split frames into utterances first
     #feats = ['pitch3', 'fbank'] 
-    #split_frames(split, feats)  # ==> dumps to output_dir
+    #split_frames(split, feats)
+    #split_frames('test', feats)  # ==> dumps to output_dir
+    #split_frames('train', feats)
 
     # normalize and process data into buckets
-    normalize = True
-    this_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, normalize)
-    this_file = os.path.join(output_dir, split + '_prosody_normed.pickle')
-    pickle.dump(this_set, open(this_file,'w'))
+    #normalize = True
+    #this_set, sentID_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, normalize)
+    #this_file = os.path.join(output_dir, split + '_prosody_normed.pickle')
+    #pickle.dump(this_set, open(this_file,'w'))
+    #sent_file = os.path.join(output_dir, split + '_sentID.pickle')
+    #pickle.dump(sentID_set, open(sent_file, 'w'))
+
+    prep_bk_data(output_dir, 'test')
 
 if __name__ == "__main__":
     tf.app.run()

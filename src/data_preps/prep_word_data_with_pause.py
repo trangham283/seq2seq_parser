@@ -49,8 +49,8 @@ UNF_ID = 4
 
 # Use the following buckets: 
 #_buckets = [(10, 40), (25, 85), (40, 150)]
-_buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
-#_buckets = [(10, 55), (25, 110), (50, 200), (100, 350)]
+#_buckets = [(10, 40), (25, 100), (50, 200), (100, 350)]
+_buckets = [(10, 55), (25, 110), (50, 200), (100, 350)]
 
 def basic_tokenizer(sentence):
   """Very basic tokenizer: split the sentence into a list of tokens."""
