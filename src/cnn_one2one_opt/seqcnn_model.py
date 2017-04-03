@@ -352,7 +352,12 @@ class Seq2SeqModel(object):
                   print("Alignment issues: missing frames for batch ", bucket_id, bucket_offset)
               if start_idx < 0 and this_word_frames.shape[1]<fixed_word_length:
                   this_word_frames = np.hstack([np.zeros((self.feat_dim,-start_idx)),this_word_frames])
-              if end_idx > frame_idx[1] and this_word_frames.shape[1]<fixed_word_length:
+              #if end_idx > frame_idx[1] and this_word_frames.shape[1]<fixed_word_length:
+              #    num_more = fixed_word_length - this_word_frames.shape[1]
+              #    this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, num_more))])
+              # if still insufficient frames:
+              # this only happens for the last words, when there is no more frames to take
+              if this_word_frames.shape[1]<fixed_word_length:
                   num_more = fixed_word_length - this_word_frames.shape[1]
                   this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, num_more))])
               # flip frames within word
