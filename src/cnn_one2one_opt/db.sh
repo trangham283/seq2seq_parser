@@ -19,5 +19,5 @@ BEST_DIR=/share/data/speech/Data/ttran/speech-nlp/venv_projects/seq2seq_parser/b
 
 #LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python train_model.py -run_id 10 -use_wd -use_speech -use_conv -conv_filter 4 -conv_channel 1 -text_hsize 32 -parse_hsize 32 -psize 2 -esize 32 -data_dir $DATA_DIR -tb_dir $MODEL_DIR -bm_dir $BEST_DIR -num_filters 4 -filter_sizes 10-50 -max_epochs 2 -num_check 50 >> $MODEL_DIR/output.id10e.txt
 
-LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python train_model.py -run_id 10 -use_wd -use_pause -use_speech -multipool -use_conv -conv_filter 4 -conv_channel 1 -text_hsize 32 -parse_hsize 32 -psize 2 -esize 32 -data_dir $DATA_DIR -tb_dir $MODEL_DIR -bm_dir $BEST_DIR -num_filters 4 -filter_sizes 10-50 -max_epochs 2 -num_check 50 >> $MODEL_DIR/output.id10f.txt
+LD_PRELOAD="/home-nfs/ttran/sw/opt/lib/libtcmalloc.so" python train_model.py -run_id 99 -use_wd -use_pause -use_speech -multipool -use_conv -conv_filter 4 -conv_channel 1 -text_hsize 16 -parse_hsize 16 -psize 2 -esize 16 -data_dir $DATA_DIR -tb_dir $MODEL_DIR -bm_dir $BEST_DIR -num_filters 4 -filter_sizes 10-50 -max_epochs 2 -num_check 50 >> $MODEL_DIR/debug.txt
 

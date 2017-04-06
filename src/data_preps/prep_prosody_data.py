@@ -371,6 +371,40 @@ def norm_energy_by_turn(this_data):
     maxB = np.max(turnB, 1)
     return meanA, stdA, meanB, stdB, maxA, maxB 
 
+def process_remaining_data(data_dir, split, sent_vocab, parse_vocab):
+    data_set = [[] for _ in _buckets]
+    sentID_set = [[] for _ in _buckets]
+    dur_stats_file = os.path.join(data_dir, 'avg_word_stats.pickle')
+    dur_stats = pickle.load(open(dur_stats_file))
+    global_mean = np.mean([x['mean'] for x in dur_stats.values()])
+    data_file = os.path.join(time_dir, split + '.data.csv')
+    pre_data_file = os.path.join(pause_dir, split+'_unproc_nopunc.pickle')
+    pre_data = pickle.load(open(pre_data_file))
+    df = pandas.read_csv(data_file, sep='\t')
+    for bucket_id in range(len(pre_data)):
+        for sample in pre_data[bucket_id]:
+            if not sample:
+                continue
+            k, fd, _ = sample
+            swfile, speaker, sentnum = k.split('_')
+            sent_name_in_df = swfile + '~' + sentnum
+            sent_data = df[df.sent_id==sent_name_in_df]
+            assert len(sent_data) == 1
+            parse = sent_data.parse.values[0]
+            sentence = sent_data.sentence.values[0]
+            sent_ids = sentence_to_token_ids(sentence, sent_vocab, True, True)
+            parse_ids = sentence_to_token_ids(parse, parse_vocab, False, False)
+            if split != 'extra':
+                parse_ids.append(EOS_ID)
+            pause_bef = fd['pause_bef']
+            pause_aft = fd['pause_aft'] 
+            data_set[bucket_id].append([sent_ids, parse_ids, [], [], \
+                    pause_bef, pause_aft, []])
+            sentID_set[bucket_id].append(k)
+
+    return data_set, sentID_set
+
+
 def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False):
     data_set = [[] for _ in _buckets]
     sentID_set = [[] for _ in _buckets]
@@ -518,7 +552,14 @@ def main(_):
     #sent_file = os.path.join(output_dir, split + '_sentID.pickle')
     #pickle.dump(sentID_set, open(sent_file, 'w'))
 
-    prep_bk_data(output_dir, 'test')
+    #prep_bk_data(output_dir, 'test')
+    
+    split = 'test'
+    this_set, sentID_set = process_remaining_data(output_dir, split, sent_vocab, parse_vocab)
+    this_file = os.path.join(output_dir, split + '_remaining.pickle')
+    pickle.dump(this_set, open(this_file,'w'))
+    sent_file = os.path.join(output_dir, split + '_remaining_sentID.pickle')
+    pickle.dump(sentID_set, open(sent_file, 'w'))
 
 if __name__ == "__main__":
     tf.app.run()

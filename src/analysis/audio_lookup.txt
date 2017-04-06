@@ -1,0 +1,300 @@
+sw4548_B_0021
+i think i would rather a person go ahead and be put down than give them the opportunity to get out and do it again
+[6, 1, 5, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 5, 1, 1, 1, 1, 1]
+[1, 5, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 5, 1, 1, 1, 1, 1, 6]
+(S (S (NP XX )_NP (VP XX (SBAR (S (NP XX )_NP (VP XX (ADVP (ADVP XX )_ADVP )_ADVP (SBAR (S (NP XX XX )_NP (VP (VP XX (ADVP XX )_ADVP )_VP XX (VP XX (VP XX (PRT XX )_PRT )_VP )_VP (SBAR XX (S (VP XX (NP XX )_NP (NP XX XX (S (VP XX (VP (VP XX (ADVP XX )_ADVP )_VP XX (VP XX (NP XX )_NP (ADVP XX )_ADVP )_VP )_VP )_VP )_S )_NP )_VP )_S )_SBAR )_VP )_S )_SBAR )_VP )_S )_SBAR )_VP )_S )_S
+
+sw4572_A_0066
+the aids population i guess that have it that do n't know they do are spreading it
+[6, 5, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 6, 1, 1]
+[5, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 6, 1, 1, 6]
+(S (S (NP (NP XX XX XX )_NP (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (SBAR (WHNP XX )_WHNP (S (VP XX (NP XX )_NP )_VP )_S )_SBAR (SBAR (WHNP XX )_WHNP (S (VP XX XX (VP XX (SBAR (S (NP XX )_NP (VP XX )_VP )_S )_SBAR )_VP )_VP )_S )_SBAR )_NP (VP XX (VP XX (NP XX )_NP )_VP )_VP )_S )_S
+
+sw4572_B_0071
+maybe chop their weenies off
+[6, 1, 1, 1, 1]
+[1, 1, 1, 1, 6]
+(S (FRAG (ADVP XX )_ADVP (VP XX (NP XX XX )_NP (PRT XX )_PRT )_VP )_FRAG )_S
+
+sw4608_B_0131
+they did in miami that time
+[6, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 6]
+(S (S (NP XX )_NP (VP XX (PP XX (NP XX )_NP )_PP (NP XX XX )_NP )_VP )_S )_S
+
+sw4611_A_0018
+what am i trying to say uh
+[6, 1, 1, 1, 1, 1, 4]
+[1, 1, 1, 1, 1, 4, 6]
+(S (SBARQ (WHNP XX )_WHNP (SQ XX (NP XX )_NP (VP XX (S (VP XX (VP XX )_VP )_VP )_S )_VP (INTJ XX )_INTJ )_SQ )_SBARQ )_S
+
+sw4611_A_0076
+the thomas and anita hill business
+[6, 1, 1, 1, 1, 5]
+[1, 1, 1, 1, 5, 6]
+(S (NP XX XX XX XX XX XX )_NP )_S
+
+sw4611_B_0064
+and and that 's a that 's is a reasonable start
+[6, 4, 1, 2, 1, 5, 2, 1, 1, 1, 1]
+[4, 1, 2, 1, 5, 2, 1, 1, 1, 1, 6]
+(S (S (EDITED XX )_EDITED XX (EDITED (S (NP XX )_NP (VP XX (NP XX )_NP )_VP )_S )_EDITED (NP XX )_NP (X XX )_X (VP XX (NP XX XX XX )_NP )_VP )_S )_S
+
+sw4617_B_0123
+she 's not involved in that that case
+[6, 2, 1, 1, 1, 1, 5, 1]
+[2, 1, 1, 1, 1, 5, 1, 6]
+(S (S (NP XX )_NP (VP XX XX (ADJP XX (PP XX (EDITED (NP XX )_NP )_EDITED (NP XX XX )_NP )_PP )_ADJP )_VP )_S )_S
+
+sw4618_A_0038
+because i know of somebody that tested for an airline and did n't get the job
+[6, 5, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 2, 1, 1, 1]
+[5, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 2, 1, 1, 1, 6]
+(S (SBAR XX (S (NP XX )_NP (VP XX (PP XX (NP (NP XX )_NP (SBAR (WHNP XX )_WHNP (S (VP (VP XX (PP XX (NP XX XX )_NP )_PP )_VP XX (VP XX XX (VP XX (NP XX XX )_NP )_VP )_VP )_VP )_S )_SBAR )_NP )_PP )_VP )_S )_SBAR )_S
+
+sw4619_A_0064
+and when you walked into their room they had brought all their furniture from their house
+[6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 6]
+(S (S XX (SBAR (WHADVP XX )_WHADVP (S (NP XX )_NP (VP XX (PP XX (NP XX XX )_NP )_PP )_VP )_S )_SBAR (NP XX )_NP (VP XX (VP XX (NP XX XX XX )_NP (PP XX (NP XX XX )_NP )_PP )_VP )_VP )_S )_S
+
+sw4646_B_0048
+that 's what my grandparents
+[6, 2, 2, 2, 1]
+[2, 2, 2, 1, 6]
+(S (S (NP XX )_NP (VP XX (SBAR (WHNP XX )_WHNP (S (NP XX XX )_NP )_S )_SBAR )_VP )_S )_S
+
+sw4646_B_0054
+and also so they could find someplace that they enjoyed while they still had choices to make so they would n't be stuck going into just whatever nursing home was available at the time
+[6, 1, 1, 1, 1, 1, 1, 2, 2, 1, 5, 1, 1, 1, 5, 1, 1, 5, 1, 1, 2, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 2, 2, 1, 5, 1, 1, 1, 5, 1, 1, 5, 1, 1, 2, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (FRAG XX (ADVP XX )_ADVP (SBAR (SBAR XX (S (NP XX )_NP (VP XX (VP XX (NP (NP XX )_NP (SBAR (WHNP XX )_WHNP (S (NP XX )_NP (VP XX )_VP )_S )_SBAR )_NP (SBAR XX (S (NP XX )_NP (ADVP XX )_ADVP (VP XX (NP (NP XX )_NP (SBAR (S (VP XX (VP XX )_VP )_VP )_S )_SBAR )_NP )_VP )_S )_SBAR )_VP )_VP )_S )_SBAR (SBAR XX (S (NP XX )_NP (VP XX XX (VP XX (VP XX (S (VP XX (PP XX (SBAR (WHNP (WHADJP XX XX )_WHADJP XX XX )_WHNP (S (VP XX (ADJP XX )_ADJP (PP XX (NP XX XX )_NP )_PP )_VP )_S )_SBAR )_PP )_VP )_S )_VP )_VP )_VP )_S )_SBAR )_SBAR )_FRAG )_S
+
+sw4649_A_0046
+i do n't think it 's as common as uh the newspapers would make you believe
+[6, 1, 2, 1, 1, 2, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1]
+[1, 2, 1, 1, 2, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 6]
+(S (S (NP XX )_NP (VP XX XX (VP XX (SBAR (S (NP XX )_NP (VP XX (ADJP (ADJP XX XX )_ADJP (SBAR XX (INTJ XX )_INTJ (S (NP XX XX )_NP (VP XX (VP XX (S (NP XX )_NP (VP XX )_VP )_S )_VP )_VP )_S )_SBAR )_ADJP )_VP )_S )_SBAR )_VP )_VP )_S )_S
+
+sw4649_A_0056
+and i 'm really happy we did it although it was very very difficult
+[6, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S XX (NP XX )_NP (VP XX (ADJP XX XX (SBAR (S (NP XX )_NP (VP XX (NP XX )_NP )_VP )_S )_SBAR )_ADJP (SBAR XX (S (NP XX )_NP (VP XX (ADJP XX XX XX )_ADJP )_VP )_S )_SBAR )_VP )_S )_S
+
+sw4649_B_0095
+but i have n't really had a chance to talk to her about that for a while
+[6, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S XX (NP XX )_NP (VP XX XX (ADVP XX )_ADVP (VP XX (NP XX XX (S (VP XX (VP XX (PP XX (NP XX )_NP )_PP (PP XX (NP XX )_NP )_PP )_VP )_VP )_S )_NP (PP XX (NP XX XX )_NP )_PP )_VP )_VP )_S )_S
+
+sw4682_A_0037
+and when she stood up it caught and broke
+[6, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S XX (SBAR (WHADVP XX )_WHADVP (S (NP XX )_NP (VP XX (PRT XX )_PRT )_VP )_S )_SBAR (NP XX )_NP (VP XX XX XX )_VP )_S )_S
+
+sw4691_B_0102
+like they have this world football league
+[6, 1, 1, 5, 1, 1, 1]
+[1, 1, 5, 1, 1, 1, 6]
+(S (S (INTJ XX )_INTJ (NP XX )_NP (VP XX (NP XX XX XX XX )_NP )_VP )_S )_S
+
+sw4697_A_0002
+and uh one of the things i thought about was a lot of the drunk cases that they were having that especially for repeat offenders that uh
+[6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 5, 4]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 5, 4, 6]
+(S (S XX (INTJ XX )_INTJ (NP (NP XX )_NP (PP XX (NP (NP XX XX )_NP (SBAR (S (NP XX )_NP (VP XX (PP XX )_PP )_VP )_S )_SBAR )_NP )_PP )_NP (VP XX (NP (NP XX XX )_NP (PP XX (NP (NP XX XX XX )_NP (SBAR (WHNP XX )_WHNP (S (NP XX )_NP (VP XX (VP XX )_VP )_VP )_S )_SBAR (SBAR (EDITED (WHNP XX )_WHNP )_EDITED (PP (ADVP XX )_ADVP XX (NP XX XX )_NP )_PP (WHNP XX )_WHNP (INTJ XX )_INTJ )_SBAR )_NP )_PP )_NP )_VP )_S )_S
+
+sw4698_A_0104
+but it 's really true
+[6, 1, 2, 1, 1]
+[1, 2, 1, 1, 6]
+(S (S XX (NP XX )_NP (VP XX (ADVP XX )_ADVP (ADJP XX )_ADJP )_VP )_S )_S
+
+sw4720_A_0021
+in a in a given year dental ca- dental expenses can really kill you
+[6, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S (EDITED (PP XX (NP XX )_NP )_PP )_EDITED (PP XX (NP XX XX XX )_NP )_PP (EDITED (S (NP XX )_NP (VP XX )_VP )_S )_EDITED (NP XX XX )_NP (VP XX (ADVP XX )_ADVP (VP XX (NP XX )_NP )_VP )_VP )_S )_S
+
+sw4725_A_0039
+guess i do n't sound like it huh
+[6, 1, 1, 2, 1, 1, 1, 1]
+[1, 1, 2, 1, 1, 1, 1, 6]
+(S (S (VP XX (SBAR (S (NP XX )_NP (VP XX XX (VP XX (PP XX (NP XX )_NP )_PP )_VP )_VP )_S )_SBAR (INTJ XX )_INTJ )_VP )_S )_S
+
+sw4728_A_0138
+if i only had some place that i could store the uh camper top i would have it off most of the time
+[6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S (SBAR XX (S (NP XX )_NP (ADVP XX )_ADVP (VP XX (NP (NP XX XX )_NP (SBAR (WHADVP XX )_WHADVP (S (NP XX )_NP (VP XX (VP XX (NP XX (INTJ XX )_INTJ XX XX )_NP )_VP )_VP )_S )_SBAR )_NP )_VP )_S )_SBAR (NP XX )_NP (VP XX (VP XX (NP XX )_NP (PRT XX )_PRT (NP (NP XX )_NP (PP XX (NP XX XX )_NP )_PP )_NP )_VP )_VP )_S )_S
+
+sw4728_B_0097
+drove it right to the shop and left it off
+[6, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S (VP (VP XX (NP XX )_NP (PP (ADVP XX )_ADVP XX (NP XX XX )_NP )_PP )_VP XX (VP XX (NP XX )_NP (PRT XX )_PRT )_VP )_VP )_S )_S
+
+sw4736_A_0040
+uh in in the old days you know and say round about times of battle of hastings you know and the villages if you were a transgressor they they either you know drove you out in the woods
+[6, 5, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[5, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S (INTJ XX )_INTJ (EDITED (PP XX )_PP )_EDITED (PP (PP XX (NP XX XX XX )_NP )_PP (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN XX (INTJ XX )_INTJ (PP XX (PP XX (NP (NP XX )_NP (PP XX (NP (NP XX )_NP (PP XX (NP XX )_NP )_PP )_NP )_PP )_NP )_PP )_PP (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (EDITED XX )_EDITED )_PP (NP XX XX )_NP (SBAR XX (S (NP XX )_NP (VP XX (NP XX XX )_NP )_VP )_S )_SBAR (EDITED (NP XX )_NP )_EDITED (NP XX )_NP (ADVP XX )_ADVP (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (VP XX (NP XX )_NP (PP XX (PP XX (NP XX XX )_NP )_PP )_PP )_VP )_S )_S
+
+sw4736_B_0019
+well i think that currently the way the law stands is n't so much that the laws are enforceable or not
+[6, 1, 1, 1, 5, 1, 4, 1, 1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 1, 1, 1]
+[1, 1, 1, 5, 1, 4, 1, 1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 1, 1, 1, 6]
+(S (S (INTJ XX )_INTJ (NP XX )_NP (VP XX (SBAR XX (S (ADVP XX )_ADVP (NP (NP XX XX )_NP (SBAR (S (NP XX XX )_NP (VP XX )_VP )_S )_SBAR )_NP (X (VP XX XX (ADJP (ADJP XX XX )_ADJP (SBAR XX (S (NP XX XX )_NP (VP (VP XX (ADJP XX )_ADJP )_VP (VP XX (FRAG XX )_FRAG )_VP )_VP )_S )_SBAR )_ADJP )_VP )_X )_S )_SBAR )_VP )_S )_S
+
+sw4765_B_0049
+i mean because it 's illegal it costs more
+[6, 1, 1, 1, 2, 1, 1, 1, 1]
+[1, 1, 1, 2, 1, 1, 1, 1, 6]
+(S (S (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (SBAR XX (S (NP XX )_NP (VP XX (ADJP XX )_ADJP )_VP )_S )_SBAR (NP XX )_NP (VP XX (NP XX )_NP )_VP )_S )_S
+
+sw4765_A_0078
+a- a- as soon as we wind up uh uh you know for
+[6, 1, 1, 5, 1, 1, 4, 1, 1, 5, 1, 1, 1]
+[1, 1, 5, 1, 1, 4, 1, 1, 5, 1, 1, 1, 6]
+(S (FRAG (EDITED (EDITED (ADVP XX )_ADVP )_EDITED (ADVP XX )_ADVP )_EDITED (ADVP (ADVP XX XX )_ADVP (SBAR XX (S (NP XX )_NP (VP XX (PRT XX )_PRT (INTJ XX )_INTJ (INTJ XX )_INTJ (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (PP XX )_PP )_VP )_S )_SBAR )_ADVP )_FRAG )_S
+
+sw4784_A_0006
+uh i guess uh i think they 've lost their compass
+[6, 5, 1, 1, 5, 1, 1, 2, 1, 1, 1]
+[5, 1, 1, 5, 1, 1, 2, 1, 1, 1, 6]
+(S (S (INTJ XX )_INTJ (EDITED (S (NP XX )_NP (VP XX )_VP )_S )_EDITED (INTJ XX )_INTJ (NP XX )_NP (VP XX (SBAR (S (NP XX )_NP (VP XX (VP XX (NP XX XX )_NP )_VP )_VP )_S )_SBAR )_VP )_S )_S
+
+sw4784_B_0050
+it has taken on a more profound and you 'd think we 'd notice it economic uh thrust
+[6, 1, 1, 1, 1, 5, 5, 1, 1, 2, 1, 1, 2, 1, 1, 4, 5, 5]
+[1, 1, 1, 1, 5, 5, 1, 1, 2, 1, 1, 2, 1, 1, 4, 5, 5, 6]
+(S (S (NP XX )_NP (VP XX (VP XX (PRT XX )_PRT (NP XX (ADJP XX XX )_ADJP (PRN (S XX (NP XX )_NP (VP XX (VP XX (SBAR (S (NP XX )_NP (VP XX (VP XX (NP XX )_NP )_VP )_VP )_S )_SBAR )_VP )_VP )_S )_PRN XX (INTJ XX )_INTJ XX )_NP )_VP )_VP )_S )_S
+
+sw4785_B_0067
+if my husband golfs you know he 'll do it during nap time
+[6, 1, 1, 1, 1, 1, 1, 2, 5, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 2, 5, 1, 1, 1, 1, 6]
+(S (S (SBAR XX (S (NP XX XX )_NP (VP XX )_VP )_S )_SBAR (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (NP XX )_NP (VP XX (VP XX (NP XX )_NP (PP XX (NP XX XX )_NP )_PP )_VP )_VP )_S )_S
+
+sw4792_A_0082
+when i was a couple of years ago involved in some pretrial stuff and
+[6, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (SBAR (WHADVP XX )_WHADVP (S (NP XX )_NP (VP XX (ADVP (NP (NP XX XX )_NP (PP XX (NP XX )_NP )_PP )_NP XX )_ADVP (ADJP XX (PP XX (NP XX XX XX )_NP )_PP )_ADJP (X XX )_X )_VP )_S )_SBAR )_S
+
+sw4792_B_0094
+and then you get people who who bring in cases just because they want to bring them up just because
+[6, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 5, 1]
+[1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 5, 1, 6]
+(S (S (CONJP XX XX )_CONJP (NP XX )_NP (VP XX (NP (NP XX )_NP (SBAR (EDITED (WHNP XX )_WHNP )_EDITED (WHNP XX )_WHNP (S (VP XX (ADVP XX )_ADVP (NP XX )_NP (SBAR XX XX (S (NP XX )_NP (VP XX (S (VP XX (VP XX (NP XX )_NP (PRT XX )_PRT )_VP )_VP )_S )_VP )_S )_SBAR (SBAR XX XX )_SBAR )_VP )_S )_SBAR )_NP )_VP )_S )_S
+
+sw4796_A_0040
+it would be great if we could find some way to to uh use that to boost the economy
+[6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S (NP XX )_NP (VP XX (VP XX (ADJP XX )_ADJP (SBAR XX (S (NP XX )_NP (VP XX (VP XX (NP (NP XX XX )_NP (SBAR (S (EDITED (VP XX )_VP )_EDITED (VP XX (INTJ XX )_INTJ (VP XX (NP XX )_NP (S (VP XX (VP XX (NP XX XX )_NP )_VP )_VP )_S )_VP )_VP )_S )_SBAR )_NP )_VP )_VP )_S )_SBAR )_VP )_VP )_S )_S
+
+sw4796_A_0100
+was it john denver that that tried to buy his way on to the space shuttle
+[6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (SQ XX (NP XX )_NP (NP XX XX )_NP (SBAR (EDITED (WHNP XX )_WHNP )_EDITED (WHNP XX )_WHNP (S (VP XX (S (VP XX (VP XX (NP (NP XX XX )_NP (PP XX (PP XX (NP XX XX XX )_NP )_PP )_PP )_NP )_VP )_VP )_S )_VP )_S )_SBAR )_SQ )_S
+
+sw4801_B_0053
+but there 's not a whole lot you can do about it because there 's only so many jails you can build
+[6, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1]
+[5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S XX (NP XX )_NP (VP XX XX (NP (NP XX XX XX )_NP (SBAR (S (NP XX )_NP (VP XX (VP XX (PP XX (NP XX )_NP )_PP )_VP )_VP )_S )_SBAR )_NP (SBAR XX (S (NP XX )_NP (VP XX (ADVP XX )_ADVP (NP (NP (ADJP XX XX )_ADJP XX )_NP (SBAR (S (NP XX )_NP (VP XX (VP XX )_VP )_VP )_S )_SBAR )_NP )_VP )_S )_SBAR )_VP )_S )_S
+
+sw4826_B_0076
+the county i am i 'm in the minorities are mostly hispanic
+[6, 1, 1, 1, 1, 2, 1, 5, 1, 1, 1, 1]
+[1, 1, 1, 1, 2, 1, 5, 1, 1, 1, 1, 6]
+(S (S (NP (NP XX XX )_NP (SBAR (S (EDITED (S (NP XX )_NP (VP XX )_VP )_S )_EDITED (NP XX )_NP (VP XX (PP XX )_PP )_VP )_S )_SBAR )_NP (NP XX XX )_NP (VP XX (ADVP XX )_ADVP (ADJP XX )_ADJP )_VP )_S )_S
+
+sw4830_B_0038
+i work for a law firm mumblex
+[6, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 6]
+(S (S (NP XX )_NP (VP XX (PP XX (NP XX XX XX )_NP )_PP (X XX )_X )_VP )_S )_S
+
+sw4830_B_0090
+uh a- like i said as far as removing of the jury and having the judge sentence that 's absurd
+[6, 5, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1]
+[5, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 6]
+(S (S (INTJ XX )_INTJ (EDITED (NP XX )_NP )_EDITED (SBAR XX (S (NP XX )_NP (VP XX )_VP )_S )_SBAR (ADVP (ADVP XX XX )_ADVP (PP XX (NP (NP (NP XX )_NP (PP XX (NP XX XX )_NP )_PP )_NP XX (S (VP XX (S (NP XX XX )_NP (VP XX )_VP )_S )_VP )_S )_NP )_PP )_ADVP (NP XX )_NP (VP XX (ADJP XX )_ADJP )_VP )_S )_S
+
+sw4831_A_0052
+and you know if you do n't really count if you 're not part of the program you might not get told for months
+[6, 5, 1, 1, 1, 1, 2, 5, 1, 4, 1, 2, 1, 1, 1, 1, 1, 5, 1, 5, 1, 1, 1, 1]
+[5, 1, 1, 1, 1, 2, 5, 1, 4, 1, 2, 1, 1, 1, 1, 1, 5, 1, 5, 1, 1, 1, 1, 6]
+(S (S XX (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (SBAR XX (S (NP XX )_NP (VP XX XX (ADVP XX )_ADVP (VP XX )_VP )_VP )_S )_SBAR (SBAR XX (S (NP XX )_NP (VP XX XX (NP (NP XX )_NP (PP XX (NP XX XX )_NP )_PP )_NP )_VP )_S )_SBAR (NP XX )_NP (VP XX XX (VP XX (VP XX (PP XX (NP XX )_NP )_PP )_VP )_VP )_VP )_S )_S
+
+sw4831_B_0072
+uh see my son 's eighteen right now
+[6, 5, 1, 1, 2, 1, 1, 1]
+[5, 1, 1, 2, 1, 1, 1, 6]
+(S (S (INTJ XX )_INTJ (INTJ XX )_INTJ (NP XX XX )_NP (VP XX (NP XX )_NP (ADVP XX XX )_ADVP )_VP )_S )_S
+
+sw4859_A_0013
+but here i am you know cheek by jowl with our nation 's capital
+[6, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 2, 1]
+[1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 2, 1, 6]
+(S (S XX (ADVP XX )_ADVP (NP XX )_NP (VP XX (PRN (S (NP XX )_NP (VP XX )_VP )_S )_PRN (S (NP (NP XX )_NP (PP XX (NP XX )_NP )_PP )_NP (PP XX (NP (NP XX XX XX )_NP XX )_NP )_PP )_S )_VP )_S )_S
+
+sw4859_A_0080
+it 's one that 's
+[6, 2, 1, 1, 2]
+[2, 1, 1, 2, 6]
+(S (S (NP XX )_NP (VP XX (NP (NP XX )_NP (SBAR (WHNP XX )_WHNP (S (VP XX )_VP )_S )_SBAR )_NP )_VP )_S )_S
+
+sw4859_A_0087
+here 's this dude in a wig
+[6, 2, 1, 1, 1, 1, 1]
+[2, 1, 1, 1, 1, 1, 6]
+(S (SINV (ADVP XX )_ADVP (VP XX )_VP (NP (NP XX XX )_NP (PP XX (NP XX XX )_NP )_PP )_NP )_SINV )_S
+
+sw4880_A_0052
+it is not random in the sense that they have said that within three years everyone in the company will be tested
+[6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S (NP XX )_NP (VP XX XX (ADJP XX )_ADJP (PP XX (NP XX XX (SBAR XX (S (NP XX )_NP (VP XX (VP XX (SBAR XX (S (PP XX (NP XX XX )_NP )_PP (NP (NP XX )_NP (PP XX (NP XX XX )_NP )_PP )_NP (VP XX (VP XX (VP XX )_VP )_VP )_VP )_S )_SBAR )_VP )_VP )_S )_SBAR )_NP )_PP )_VP )_S )_S
+
+sw4880_A_0030
+it to me no matter how much the our company claims it 's not a constitutional issue that because this is uh between a company and an employee it is not it is not a government
+[6, 1, 1, 5, 1, 1, 1, 1, 5, 1, 1, 4, 2, 1, 1, 1, 1, 5, 4, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 5, 2, 1, 1, 1]
+[1, 1, 5, 1, 1, 1, 1, 5, 1, 1, 4, 2, 1, 1, 1, 1, 5, 4, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 5, 2, 1, 1, 1, 6]
+(S (FRAG (EDITED (NP XX )_NP )_EDITED (PP XX (NP XX )_NP )_PP (ADVP XX XX (SBAR (WHADVP XX XX )_WHADVP (S (EDITED (EDITED (NP XX )_NP )_EDITED )_EDITED (NP XX XX )_NP (VP XX (SBAR (SBAR (S (NP XX )_NP (VP XX XX (NP XX XX XX )_NP )_VP )_S )_SBAR (SBAR XX (S (SBAR XX (S (NP XX )_NP (VP XX (INTJ XX )_INTJ (PP XX (NP (NP XX XX )_NP XX (NP XX XX )_NP )_NP )_PP )_VP )_S )_SBAR (EDITED (S (NP XX )_NP (VP XX XX )_VP )_S )_EDITED (NP XX )_NP (VP XX XX (NP XX XX )_NP )_VP )_S )_SBAR )_SBAR )_VP )_S )_SBAR )_ADVP )_FRAG )_S
+
+sw4886_B_0175
+but it 's i do n't know
+[6, 5, 2, 1, 1, 2, 1]
+[5, 2, 1, 1, 2, 1, 6]
+(S (S XX (EDITED (S (NP XX )_NP (VP XX )_VP )_S )_EDITED (NP XX )_NP (VP XX XX (VP XX )_VP )_VP )_S )_S
+
+sw4886_B_0182
+gas is a dollar t- dollar twelve a gallon
+[6, 1, 1, 1, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S (NP XX )_NP (VP XX (NP (NP XX (EDITED XX XX )_EDITED XX XX )_NP (NP XX XX )_NP )_NP )_VP )_S )_S
+
+sw4902_A_0029
+they always want to be able to uh do some brain draining
+[6, 1, 1, 2, 1, 1, 1, 5, 5, 1, 1, 1]
+[1, 1, 2, 1, 1, 1, 5, 5, 1, 1, 1, 6]
+(S (S (NP XX )_NP (ADVP XX )_ADVP (VP XX (S (VP XX (VP XX (ADJP XX (S (VP XX (INTJ XX )_INTJ (VP XX (NP XX XX XX )_NP )_VP )_VP )_S )_ADJP )_VP )_VP )_S )_VP )_S )_S
+
+sw4902_A_0066
+so there 's uh there 's a lot to be said for having a steady stream of people who know how it is someplace else coming in
+[6, 1, 2, 4, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 5, 1, 1, 1, 1, 1, 1, 1]
+[1, 2, 4, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 5, 1, 1, 1, 1, 1, 1, 1, 6]
+(S (S XX (EDITED (S (NP XX )_NP (VP XX )_VP )_S )_EDITED (INTJ XX )_INTJ (NP XX )_NP (VP XX (NP (NP XX XX )_NP (SBAR (S (VP XX (VP XX (VP XX (PP XX (S (VP XX (S (NP (NP XX XX XX )_NP (PP XX (NP (NP XX )_NP (SBAR (WHNP XX )_WHNP (S (VP XX (SBAR (WHADVP XX )_WHADVP (S (NP XX )_NP (VP XX (NP (NP XX )_NP (ADVP XX )_ADVP )_NP )_VP )_S )_SBAR )_VP )_S )_SBAR )_NP )_PP )_NP (VP XX (ADVP XX )_ADVP )_VP )_S )_VP )_S )_PP )_VP )_VP )_VP )_S )_SBAR )_NP )_VP )_S )_S
+
+sw4928_A_0042
+but if it gets longer than that i i i- it i start not doing anything
+[6, 1, 1, 1, 1, 1, 1, 2, 2, 2, 5, 1, 1, 1, 1, 1]
+[1, 1, 1, 1, 1, 1, 2, 2, 2, 5, 1, 1, 1, 1, 1, 6]
+(S (S XX (SBAR XX (S (NP XX )_NP (VP XX (ADJP (ADJP XX )_ADJP (PP XX (NP XX )_NP )_PP )_ADJP )_VP )_S )_SBAR (EDITED (EDITED (EDITED (EDITED (NP XX )_NP )_EDITED (NP XX )_NP )_EDITED (NP XX )_NP )_EDITED (NP XX )_NP )_EDITED (NP XX )_NP (VP XX (S XX (VP XX (NP XX )_NP )_VP )_S )_VP )_S )_S
+

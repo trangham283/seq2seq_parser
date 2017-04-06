@@ -65,11 +65,6 @@ if __name__ == '__main__':
 
 		gold_text = gold_text.strip()
 		test_text = test_text.strip()
-
-		gold_relaxed_text = flatten_edited_nodes(gold_text)
-		test_relaxed_text = flatten_edited_nodes(test_text)
-		print test_text
-		print test_relaxed_text
 		if len(gold_text) == 0:
 			mprint("No gold tree", out, 'all')
 			continue
@@ -77,15 +72,12 @@ if __name__ == '__main__':
 			mprint("Not parsed", out, 'all')
 			continue
 
-		gold_complete_tree = pstree.tree_from_text(gold_text, allow_empty_labels=True)
+		gold_complete_tree = pstree.tree_from_text(gold_text,
+				allow_empty_labels=True)
 		gold_complete_tree = treebanks.homogenise_tree(gold_complete_tree)
 		treebanks.ptb_cleaning(gold_complete_tree)
 		gold_tree = treebanks.apply_collins_rules(gold_complete_tree, False)
-		
-		gold_relaxed_tree = pstree.tree_from_text(gold_relaxed_text, allow_empty_labels=True)
-		gold_relaxed_tree = treebanks.homogenise_tree(gold_relaxed_tree)
-		treebanks.ptb_cleaning(gold_relaxed_tree)
-		gold_relaxed_tree = treebanks.apply_collins_rules(gold_relaxed_tree, False)
+		#gold_tree = gold_complete_tree 
 		if gold_tree is None:
 			mprint("Empty gold tree", out, 'all')
 			mprint(gold_complete_tree.__repr__(), out, 'all')
@@ -95,15 +87,12 @@ if __name__ == '__main__':
 		if '()' in test_text:
 			mprint("() test tree", out, 'all')
 			continue
-		test_complete_tree = pstree.tree_from_text(test_text, allow_empty_labels=True)
+		test_complete_tree = pstree.tree_from_text(test_text,
+				allow_empty_labels=True)
 		test_complete_tree = treebanks.homogenise_tree(test_complete_tree)
 		treebanks.ptb_cleaning(test_complete_tree)
 		test_tree = treebanks.apply_collins_rules(test_complete_tree, False)
-		
-		test_relaxed_tree = pstree.tree_from_text(test_relaxed_text, allow_empty_labels=True)
-		test_relaxed_tree = treebanks.homogenise_tree(test_relaxed_tree)
-		treebanks.ptb_cleaning(test_relaxed_tree)
-		test_relaxed_tree = treebanks.apply_collins_rules(test_relaxed_tree, False)
+		#test_tree = test_complete_tree 
 		if test_tree is None:
 			mprint("Empty test tree", out, 'all')
 			mprint(test_complete_tree.__repr__(), out, 'all')
@@ -118,7 +107,7 @@ if __name__ == '__main__':
 			mprint("Test: " + test_words.__repr__(), out, 'all')
 
 		match_strict, gold_strict, test_strict, _, _ = relaxed_parse_errors.counts_for_prf(test_tree, gold_tree)
-		match_relaxed, gold_relaxed, test_relaxed , _, _ = relaxed_parse_errors.counts_for_prf(test_relaxed_tree, gold_relaxed_tree)
+		match_relaxed, gold_relaxed, test_relaxed , _, _ = relaxed_parse_errors.relaxed_counts_for_prf(test_tree, gold_tree)
 		stats['out_evalb'][0] += match_strict
 		stats['out_evalb'][1] += gold_strict
 		stats['out_evalb'][2] += test_strict

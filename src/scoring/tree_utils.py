@@ -11,6 +11,53 @@ import random
 import re
 from nlp_util import pstree, render_tree, nlp_eval, treebanks, relaxed_parse_errors
 
+POS_SET = ['CC', 'CD', 'DT', 'EX', 'FW', 'IN', 'JJ', 'JJR', 'JJS', 'LS', \
+        'MD', 'NN', 'NNS', 'NNP', 'NNPS', 'PDT', 'POS', 'PRP', 'PRP$', 'RB', \
+        'RBR', 'RBS', 'RP', 'SYM', 'TO', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', \
+        'VBZ', 'WDT', 'WP', 'WP$', 'WRB', 'XX']
+
+def flatten_edited_nodes(raw_text):
+    if 'EDITED' not in raw_text:
+        return raw_text
+    new_tok = []
+    tokens = raw_text.rstrip().split()
+    saw_edit = False
+    prev_XX = False
+    nest_count = 0
+    for i in range(len(tokens)-1):
+        tok = tokens[i]
+        next_tok = tokens[i+1]
+        if not saw_edit:
+            new_tok.append(tok)
+            if tok == '(EDITED':
+                saw_edit = True
+                nest_count += 1
+            #print tok, saw_edit, nest_count, ' '.join(new_tok).count('('), ' '.join(new_tok).count(')') 
+            continue
+        # have seen edit previously
+        nest_count -= tok.count(')')
+        nest_count += tok.count('(')
+        if tok[0] == '(' and next_tok[-1]==')': # is terminal
+        #if tok.lstrip('(') in POS_SET: # is terminal
+            new_tok.append(tok)
+            prev_XX = True
+        else:
+            if prev_XX:
+                new_tok.append(tok)
+                prev_XX = False
+        if nest_count == 0: 
+            saw_edit = False # reset saw_edit flag
+            new_tok.append(')') # finish EDIT consituent
+        print tok, saw_edit, nest_count, ' '.join(new_tok).count('('), ' '.join(new_tok).count(')')
+    if nest_count == 0:
+        new_tok.append(tokens[-1])
+    else:
+        # EDIT node has closing bracket at the end; choose only enough amount of closing )
+        new_tok.append(tokens[-1][:-nest_count+1])
+
+    return ' '.join(new_tok)
+            
+
 
 def merge_dels(token_list):
     new_list = []

@@ -337,29 +337,50 @@ class Seq2SeqModel(object):
           pause_afts.append(list(reversed(pause_aft)) + encoder_pad)
       if use_wd:
           word_durs.append(list(reversed(word_dur)) + wdur_pad)
-      
+      # need to process speech frames for each word first
       if use_speech:
-          # need to process speech frames for each word first
           speech_frames = []
           fixed_word_length = self.fixed_word_length
           for frame_idx in partition:
               center_frame = int((frame_idx[0] + frame_idx[1])/2)
               start_idx = center_frame - int(fixed_word_length/2)
               end_idx = center_frame + int(fixed_word_length/2)
-              this_word_frames = speech_encoder_input[:, max(0,start_idx):end_idx]
-              if this_word_frames.shape[1]==0:  # make random if no frame info
-                  this_word_frames = np.random.random((self.feat_dim, fixed_word_length))
-                  print("Alignment issues: missing frames for batch ", bucket_id, bucket_offset)
-              if start_idx < 0 and this_word_frames.shape[1]<fixed_word_length:
-                  this_word_frames = np.hstack([np.zeros((self.feat_dim,-start_idx)),this_word_frames])
-              #if end_idx > frame_idx[1] and this_word_frames.shape[1]<fixed_word_length:
-              #    num_more = fixed_word_length - this_word_frames.shape[1]
-              #    this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, num_more))])
-              # if still insufficient frames:
-              # this only happens for the last words, when there is no more frames to take
-              if this_word_frames.shape[1]<fixed_word_length:
-                  num_more = fixed_word_length - this_word_frames.shape[1]
-                  this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, num_more))])
+              raw_word_frames = speech_encoder_input[:, frame_idx[0]:frame_idx[1]]
+              raw_count = raw_word_frames.shape[1]
+              if raw_count > fixed_word_length:
+                  # too many frames, choose wisely
+                  this_word_frames = speech_encoder_input[:, frame_idx[0]:frame_idx[1]]
+                  extra_ratio = int(raw_count/fixed_word_length)
+                  if extra_ratio < 2: # delete things in the middle
+                      mask = np.ones(raw_count, dtype=bool)
+                      num_extra = raw_count - fixed_word_length
+                      not_include = range(center_frame-num_extra,center_frame+num_extra)[::2]
+                      # need to offset by beginning frame
+                      not_include = [x-frame_idx[0] for x in not_include]
+                      mask[not_include] = False
+                  else: # too big, just sample
+                      mask = np.zeros(raw_count, dtype=bool)
+                      include = range(frame_idx[0], frame_idx[1])[::extra_ratio]
+                      include = [x-frame_idx[0] for x in include]
+                      if len(include) > fixed_word_length: # still too many frames
+                          num_current = len(include)
+                          sub_extra = num_current - fixed_word_length
+                          num_start = int((num_current - sub_extra)/2)
+                          not_include = include[num_start:num_start+sub_extra]
+                          for ni in not_include:
+                              include.remove(ni)
+                      mask[include] = True
+                  this_word_frames = this_word_frames[:, mask]
+              else: # not enough frames, choose frames extending from center
+                  this_word_frames = speech_encoder_input[:, max(0,start_idx):end_idx]
+                  if this_word_frames.shape[1]==0:  # make random if no frame info
+                      this_word_frames = np.random.random((self.feat_dim, fixed_word_length))
+                      print("Alignment issues: missing frames for batch ", bucket_id, bucket_offset)
+                  if start_idx < 0 and this_word_frames.shape[1]<fixed_word_length:
+                      this_word_frames = np.hstack([np.zeros((self.feat_dim,-start_idx)),this_word_frames])
+                  if this_word_frames.shape[1]<fixed_word_length: # still not enough frames
+                      num_more = fixed_word_length - this_word_frames.shape[1]
+                      this_word_frames = np.hstack([this_word_frames,np.zeros((self.feat_dim, num_more))])
               # flip frames within word
               this_word_frames = np.fliplr(this_word_frames)
               speech_frames.append(this_word_frames)
