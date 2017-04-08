@@ -1,3 +1,14 @@
+Frame count info
+train
+counts_train, edge_train = np.histogram(train_frames, bins=[0,10,20,30,40,50,60,100,400])
+counts_train = array([ 62159, 244437, 155466, 100049,  60369,  29588,  25861,   1153])
+
+dev
+counts_dev = array([ 4611, 18054, 11982,  7405,  4365,  2104,  1712,  58])
+
+
+##############################################
+
 no time available for sentence sw4611~0021
 no time available for sentence sw4890~0020
 no time available for sentence sw4890~0068

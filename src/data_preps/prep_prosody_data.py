@@ -215,7 +215,10 @@ def split_frames(split, feat_types):
     errfile = os.path.join(output_dir, split + '_frame_long_stats.txt')
     ftoolong = open(errfile, 'w')
     data_file = os.path.join(time_dir, split + '.data.csv')
-    pause_file = os.path.join(pause_dir, split+'_nopunc.pickle')
+    if split == 'dev2':
+        pause_file = os.path.join(pause_dir, 'train_nopunc.pickle')
+    else:
+        pause_file = os.path.join(pause_dir, split+'_nopunc.pickle')
     pause_data = pickle.load(open(pause_file))
     pauses = make_dict(pause_data)
     dur_stats_file = os.path.join(data_dir, 'avg_word_stats.pickle')
@@ -372,6 +375,10 @@ def norm_energy_by_turn(this_data):
     return meanA, stdA, meanB, stdB, maxA, maxB 
 
 def process_remaining_data(data_dir, split, sent_vocab, parse_vocab):
+    treefile = os.path.join(data_dir, split + '_remaining_trees_for_bk_new_buckets.mrg')
+    ft = open(treefile, 'w')
+    sentfile = os.path.join(data_dir, split + '_remaining_sents_for_bk_new_buckets.txt')
+    fs = open(sentfile, 'w')
     data_set = [[] for _ in _buckets]
     sentID_set = [[] for _ in _buckets]
     dur_stats_file = os.path.join(data_dir, 'avg_word_stats.pickle')
@@ -392,6 +399,8 @@ def process_remaining_data(data_dir, split, sent_vocab, parse_vocab):
             assert len(sent_data) == 1
             parse = sent_data.parse.values[0]
             sentence = sent_data.sentence.values[0]
+            sent_toks = sentence.strip().split()
+            parse_toks = parse.strip().split()
             sent_ids = sentence_to_token_ids(sentence, sent_vocab, True, True)
             parse_ids = sentence_to_token_ids(parse, parse_vocab, False, False)
             if split != 'extra':
@@ -401,7 +410,12 @@ def process_remaining_data(data_dir, split, sent_vocab, parse_vocab):
             data_set[bucket_id].append([sent_ids, parse_ids, [], [], \
                     pause_bef, pause_aft, []])
             sentID_set[bucket_id].append(k)
+            fs.write(sentence + '\n')
+            merged = merge_sent_tree(parse_toks, sent_toks)
+            ft.write(' '.join(merged) + '\n')
 
+    fs.close()
+    ft.close()
     return data_set, sentID_set
 
 
@@ -480,7 +494,6 @@ def process_data_both(data_dir, split, sent_vocab, parse_vocab, normalize=False)
                 print "Sentence does not fit bucket: ", k, len(sent_ids), len(parse_ids)
                 continue
             bucket_id = min(maybe_buckets)
-            
             data_set[bucket_id].append([sent_ids, parse_ids, windices, pitch3_energy, \
                     pause_bef, pause_aft, word_dur])
             sentID_set[bucket_id].append(k)
@@ -520,6 +533,18 @@ def prep_bk_data(data_dir, split):
     fs.close()
     fi.close()
             
+def get_frame_stats(data_dir, split):
+    this_file = os.path.join(data_dir, split + '_prosody_normed.pickle')
+    data = pickle.load(open(this_file))
+    num_frames = []
+    for bucket in data:
+        for sample in bucket:
+            sent, parse, partition, speech_feats, pause_bef, pause_aft, word_dur = sample
+            for frame_idx in partition:
+                raw_word_frames = speech_feats[:, frame_idx[0]:frame_idx[1]]
+                num_frames.append(raw_word_frames.shape[1])
+    return num_frames
+
 
 def main(_):
     '''
@@ -536,30 +561,27 @@ def main(_):
     parse_vocab, _ = initialize_vocabulary(parse_vocabulary_path)
     sent_vocab, _ = initialize_vocabulary(sent_vocabulary_path)
 
-    split = 'train'
+    split = 'train_combined'
  
     # split frames into utterances first
     #feats = ['pitch3', 'fbank'] 
-    #split_frames(split, feats)
-    #split_frames('test', feats)  # ==> dumps to output_dir
-    #split_frames('train', feats)
+    #split_frames(split, feats) # ==> dumps to output_dir 
 
     # normalize and process data into buckets
-    #normalize = True
-    #this_set, sentID_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, normalize)
-    #this_file = os.path.join(output_dir, split + '_prosody_normed.pickle')
-    #pickle.dump(this_set, open(this_file,'w'))
-    #sent_file = os.path.join(output_dir, split + '_sentID.pickle')
-    #pickle.dump(sentID_set, open(sent_file, 'w'))
+    normalize = True
+    this_set, sentID_set = process_data_both(output_dir, split, sent_vocab, parse_vocab, normalize)
+    this_file = os.path.join(output_dir, split + '_prosody_normed.pickle')
+    pickle.dump(this_set, open(this_file,'w'))
+    sent_file = os.path.join(output_dir, split + '_sentID.pickle')
+    pickle.dump(sentID_set, open(sent_file, 'w'))
 
     #prep_bk_data(output_dir, 'test')
     
-    split = 'test'
-    this_set, sentID_set = process_remaining_data(output_dir, split, sent_vocab, parse_vocab)
-    this_file = os.path.join(output_dir, split + '_remaining.pickle')
-    pickle.dump(this_set, open(this_file,'w'))
-    sent_file = os.path.join(output_dir, split + '_remaining_sentID.pickle')
-    pickle.dump(sentID_set, open(sent_file, 'w'))
+    #this_set, sentID_set = process_remaining_data(output_dir, split, sent_vocab, parse_vocab)
+    #this_file = os.path.join(output_dir, split + '_remaining.pickle')
+    #pickle.dump(this_set, open(this_file,'w'))
+    #sent_file = os.path.join(output_dir, split + '_remaining_sentID.pickle')
+    #pickle.dump(sentID_set, open(sent_file, 'w'))
 
 if __name__ == "__main__":
     tf.app.run()
